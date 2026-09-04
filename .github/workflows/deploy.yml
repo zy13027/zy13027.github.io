@@ -2,9 +2,9 @@ name: Build and deploy to GitHub Pages
 
 # Builds the Jekyll site and publishes it to GitHub Pages.
 #
-# The China half (阿里云 ECS, 101.200.176.111) is NOT deployed from here yet —
-# that job gets added once ICP 备案 clears and an SSH deploy key is in place.
-# Until the filing is approved, nothing may legally serve on that server.
+# The China half is NOT deployed from here yet — that job gets added once
+# ICP 备案 clears and an SSH deploy key is in place. Until the filing is
+# approved, nothing may legally serve from the mainland host.
 
 on:
   push:
