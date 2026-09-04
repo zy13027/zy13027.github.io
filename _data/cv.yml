@@ -40,8 +40,8 @@ cv:
         position: Application Engineer — Digital Industries
         location: Beijing, China
         url: https://www.siemens.com/cn/zh.html
-        start_date: 2022-08
-        end_date: Present
+        start_date: 2022-08-01
+        end_date: present
         summary: >
           Motion control and engineering automation for production machinery.
         highlights:
@@ -55,8 +55,8 @@ cv:
       - company: Geely Research Institute
         position: Robotics Algorithm Engineer
         location: China
-        start_date: 2022-02
-        end_date: 2022-07
+        start_date: 2022-02-01
+        end_date: 2022-07-31
         summary: >
           Navigation stack for a quadruped robot platform.
         highlights:
@@ -69,8 +69,8 @@ cv:
         position: Product Engineer
         location: Shanghai, China
         url: https://www.wartsila.com/
-        start_date: 2018-05
-        end_date: 2020-08
+        start_date: 2018-05-01
+        end_date: 2020-08-31
         highlights:
           - "<Add: what you owned and one measurable outcome.>"
 

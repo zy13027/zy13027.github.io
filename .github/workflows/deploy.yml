@@ -1,6 +1,7 @@
 name: Build and deploy to GitHub Pages
 
-# Builds the Jekyll site and publishes it to GitHub Pages.
+# Mirrors al-folio v1's own build recipe (Ruby + Node/Tailwind + Python/nbconvert),
+# then publishes through GitHub Pages' artifact deploy rather than a gh-pages branch.
 #
 # The China half is NOT deployed from here yet — that job gets added once
 # ICP 备案 clears and an SSH deploy key is in place. Until the filing is
@@ -30,19 +31,40 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.3'
+          ruby-version: '3.3.5'
           bundler-cache: true
 
-      # al-folio uses imagemagick for responsive image generation
-      - name: Install system dependencies
+      # al-folio v1 builds its stylesheet with Tailwind via Node at build time
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      # jekyll-jupyter-notebook (in the Gemfile) shells out to nbconvert
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install system and Python dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y imagemagick webp
+          sudo apt-get install -y imagemagick
+          pip3 install --upgrade nbconvert
 
       - name: Build site
         run: bundle exec jekyll build
         env:
           JEKYLL_ENV: production
+
+      - name: Purge unused CSS
+        run: |
+          npm install -g purgecss
+          purgecss -c purgecss.config.js
 
       - name: Verify build output
         run: |
