@@ -10,3 +10,7 @@ node_modules/
 .DS_Store
 Thumbs.db
 .idea/
+
+# 阿里云 console exports — these contain AccessKey secrets. Never commit.
+创建用户结果*.csv
+*AccessKey*.csv

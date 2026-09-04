@@ -86,3 +86,46 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  # -------------------------------------------------------------------------
+  # China half: rsync the same build to the 阿里云 ECS over SSH.
+  # Runs in parallel with the GitHub Pages deploy, from the same artefact.
+  # Needs three repository secrets: ECS_HOST, ECS_USER, ECS_SSH_KEY.
+  # -------------------------------------------------------------------------
+  deploy-ecs:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download built site
+        uses: actions/download-artifact@v4
+        with:
+          name: github-pages
+          path: pages-artifact
+
+      - name: Unpack
+        run: |
+          mkdir -p _site
+          tar -xf pages-artifact/artifact.tar -C _site
+          test -f _site/index.html || { echo "::error::unpacked site has no index.html"; exit 1; }
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "${{ secrets.ECS_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -t ed25519 -H "${{ secrets.ECS_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      # --chmod forces world-readable files regardless of the server's umask,
+      # which on this 等保 image is 027 and would otherwise 404 every page.
+      - name: rsync to ECS
+        run: |
+          rsync -az --delete \
+            --chmod=D755,F644 \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes" \
+            _site/ "${{ secrets.ECS_USER }}@${{ secrets.ECS_HOST }}:/var/www/zinanyang/"
+
+      - name: Verify
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "http://${{ secrets.ECS_HOST }}/" || echo "000")
+          echo "ECS responded HTTP $code"
+          test "$code" = "200" || echo "::warning::ECS returned $code — is port 80 open in the security group?"
