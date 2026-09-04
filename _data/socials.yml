@@ -1,11 +1,8 @@
-# Social links shown on the about page, in the order defined here.
-# Delete any line you do not want displayed.
-
+# Social links, rendered by the jekyll-socials plugin, in the order defined here.
+# Uncomment / add entries as you acquire them.
 email: yangzinan95@163.com
 github_username: zy13027
-# linkedin_username:                # uncomment and add your slug if you have one
-
-# cv_pdf: /assets/pdf/zinan-yang-cv.pdf   # uncomment once you drop your CV PDF in assets/pdf/
-# wechat_qr: wechat-qr.png                # uncomment once you add assets/img/wechat-qr.png
-
+# linkedin_username:  # your LinkedIn slug
+# cv_pdf: /assets/pdf/zinan-yang-cv.pdf   # drop the PDF in assets/pdf/ first
+# wechat_qr: wechat-qr.png                # save the image to assets/img/
 rss_icon: false
