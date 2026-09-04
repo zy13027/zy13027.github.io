@@ -1,0 +1,136 @@
+# -----------------------------------------------------------------------------
+# Site settings  --  REPLACE every <ANGLE BRACKET> placeholder before deploying
+# -----------------------------------------------------------------------------
+
+title: Zinan Yang                    # navbar title (short)
+first_name: Zinan
+middle_name:
+last_name: Yang
+
+email: yangzinan95@163.com
+description: >
+  Robotics and motion control engineer. Quadruped navigation, servo motion
+  systems, and the control software between an algorithm and a moving machine.
+footer_text: >
+  Built with <a href="https://github.com/alshedivat/al-folio">al-folio</a>.
+keywords: robotics, motion control, ROS 2, nav2, EKF, SLAM, SINAMICS, servo, SCL, quadruped, AGV
+
+lang: en
+icon: ⚙️                            # emoji favicon
+
+# -----------------------------------------------------------------------------
+# Site URL  --  IMPORTANT for the dual deploy
+# -----------------------------------------------------------------------------
+# Leave `url` EMPTY and `baseurl` EMPTY. Both GitHub Pages and EdgeOne then
+# serve the same build from the root of their own domain, so one artefact
+# works on both. Setting an absolute `url` here would hard-code one of them
+# into every canonical link and sitemap entry.
+
+url:
+baseurl:
+
+# -----------------------------------------------------------------------------
+# Profile (the sidebar card, like the photo on the reference sites)
+# -----------------------------------------------------------------------------
+profile:
+  align: right
+  image: prof_pic.jpg               # put this in assets/img/
+  image_circular: false             # true = circular crop (the Shihao Cao look)
+  more_info: >
+    <p>Beijing, China</p>
+    <p>Motion control &rarr; robotics</p>
+
+# -----------------------------------------------------------------------------
+# Sections shown on the about page
+# -----------------------------------------------------------------------------
+news: true                          # the "live status" feed — see _news/
+latest_posts: false                 # turn on if you start a blog
+selected_papers: false              # you have projects, not papers
+social: true
+
+# -----------------------------------------------------------------------------
+# Blog / collections
+# -----------------------------------------------------------------------------
+blog_name: Notes
+blog_nav_title: Notes
+blog_description: Field notes on TIA Portal, WinCC Unified and commissioning.
+permalink: /blog/:year/:title/
+
+news_limit: 6                       # how many status items on the about page
+
+collections:
+  news:
+    defaults:
+      layout: post
+    output: true
+    permalink: /news/:path/
+  projects:
+    output: true
+    permalink: /projects/:path/
+
+# -----------------------------------------------------------------------------
+# Social links  --  delete any line you do not use
+# -----------------------------------------------------------------------------
+github_username: <your-github-username>
+linkedin_username: <your-linkedin-slug>
+scholar_userid:
+x_username:
+wechat_qr:                          # e.g. assets/img/wechat.jpg
+email_address: yangzinan95@163.com
+
+# -----------------------------------------------------------------------------
+# Features
+# -----------------------------------------------------------------------------
+enable_darkmode: true               # the sun/moon toggle on albertboai.com
+enable_navbar_social: false
+enable_project_categories: true
+enable_medium_zoom: true
+enable_math: false                  # MathJax — off, you do not need it
+enable_progressbar: true
+
+search_enabled: true
+
+# -----------------------------------------------------------------------------
+# Analytics  --  Google Analytics is unreliable from mainland China.
+# Leave blank, or use Baidu Tongji / Umami if you want domestic numbers.
+# -----------------------------------------------------------------------------
+google_analytics:
+baidu_site_verification:
+
+# -----------------------------------------------------------------------------
+# Fonts  --  CRITICAL for China. al-folio pulls Google Fonts by default,
+# which is blocked in the mainland and will hang page load for ~10 s.
+# Set this to false and the theme falls back to system fonts.
+# -----------------------------------------------------------------------------
+enable_google_fonts: false
+
+# -----------------------------------------------------------------------------
+# Build
+# -----------------------------------------------------------------------------
+include: ["_pages"]
+exclude:
+  - vendor
+  - Gemfile
+  - Gemfile.lock
+  - SETUP.md
+  - README.md
+
+plugins:
+  - jekyll-archives
+  - jekyll-feed
+  - jekyll-imagemagick
+  - jekyll-link-attributes
+  - jekyll-minifier
+  - jekyll-paginate-v2
+  - jekyll/scholar
+  - jekyll-sitemap
+  - jekyll-toc
+  - jemoji
+
+sass:
+  style: compressed
+
+jekyll-minifier:
+  exclude: ["robots.txt"]
+  compress_javascript: true
+  compress_css: true

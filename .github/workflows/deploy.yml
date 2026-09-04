@@ -1,0 +1,81 @@
+name: Build and deploy (GitHub Pages + EdgeOne)
+
+# Build the Jekyll site ONCE, then publish the same artefact to two places:
+#   1. GitHub Pages          -> the overseas link
+#   2. Tencent EdgeOne Pages -> the China link
+#
+# EdgeOne Pages has no Ruby runtime and cannot build Jekyll itself, so it must
+# receive pre-built static files. That is the whole reason this workflow exists
+# rather than just pointing EdgeOne at the repo.
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write        # needed to push the built site to the deploy branch
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true      # caches gems between runs
+
+      # al-folio uses imagemagick for responsive image generation
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick webp
+
+      - name: Build site
+        run: bundle exec jekyll build
+        env:
+          JEKYLL_ENV: production
+
+      # ---- Sanity check: fail loudly rather than deploying a broken site ----
+      - name: Verify build output
+        run: |
+          test -f _site/index.html || { echo "::error::_site/index.html missing"; exit 1; }
+          echo "Built $(find _site -type f | wc -l) files"
+
+      - name: Upload artifact for GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      # ---- Push the built site to a branch EdgeOne can serve ----
+      # EdgeOne Pages watches `deploy-cn` with NO build command and an output
+      # directory of `.` — it just serves what it finds there.
+      - name: Push built site to deploy-cn branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          publish_branch: deploy-cn
+          force_orphan: true       # keeps the branch a single flat commit, no history bloat
+          commit_message: 'build: ${{ github.event.head_commit.message }}'
+
+  deploy-github-pages:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
