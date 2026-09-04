@@ -71,8 +71,8 @@ collections:
 # -----------------------------------------------------------------------------
 # Social links  --  delete any line you do not use
 # -----------------------------------------------------------------------------
-github_username: <your-github-username>
-linkedin_username: <your-linkedin-slug>
+github_username: zy13027
+linkedin_username:                  # add your LinkedIn slug if you have one
 scholar_userid:
 x_username:
 wechat_qr:                          # e.g. assets/img/wechat.jpg

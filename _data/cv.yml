@@ -11,9 +11,7 @@ cv:
 
   social_networks:
     - network: GitHub
-      username: <your-github-username>
-    - network: LinkedIn
-      username: <your-linkedin-slug>
+      username: zy13027
 
   sections:
     Education:

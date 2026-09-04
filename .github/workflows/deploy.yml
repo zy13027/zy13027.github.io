@@ -1,20 +1,18 @@
-name: Build and deploy (GitHub Pages + EdgeOne)
+name: Build and deploy to GitHub Pages
 
-# Build the Jekyll site ONCE, then publish the same artefact to two places:
-#   1. GitHub Pages          -> the overseas link
-#   2. Tencent EdgeOne Pages -> the China link
+# Builds the Jekyll site and publishes it to GitHub Pages.
 #
-# EdgeOne Pages has no Ruby runtime and cannot build Jekyll itself, so it must
-# receive pre-built static files. That is the whole reason this workflow exists
-# rather than just pointing EdgeOne at the repo.
+# The China half (阿里云 ECS, 101.200.176.111) is NOT deployed from here yet —
+# that job gets added once ICP 备案 clears and an SSH deploy key is in place.
+# Until the filing is approved, nothing may legally serve on that server.
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: write        # needed to push the built site to the deploy branch
+  contents: read
   pages: write
   id-token: write
 
@@ -33,7 +31,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.3'
-          bundler-cache: true      # caches gems between runs
+          bundler-cache: true
 
       # al-folio uses imagemagick for responsive image generation
       - name: Install system dependencies
@@ -46,30 +44,17 @@ jobs:
         env:
           JEKYLL_ENV: production
 
-      # ---- Sanity check: fail loudly rather than deploying a broken site ----
       - name: Verify build output
         run: |
           test -f _site/index.html || { echo "::error::_site/index.html missing"; exit 1; }
           echo "Built $(find _site -type f | wc -l) files"
 
-      - name: Upload artifact for GitHub Pages
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
 
-      # ---- Push the built site to a branch EdgeOne can serve ----
-      # EdgeOne Pages watches `deploy-cn` with NO build command and an output
-      # directory of `.` — it just serves what it finds there.
-      - name: Push built site to deploy-cn branch
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_site
-          publish_branch: deploy-cn
-          force_orphan: true       # keeps the branch a single flat commit, no history bloat
-          commit_message: 'build: ${{ github.event.head_commit.message }}'
-
-  deploy-github-pages:
+  deploy:
     needs: build
     runs-on: ubuntu-latest
     environment:
