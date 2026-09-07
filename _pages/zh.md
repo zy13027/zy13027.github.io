@@ -1,5 +1,8 @@
 ---
-layout: page
+# layout: default, not page — the page layout prints title + description as its
+# own header, which duplicated the 杨子楠 heading below. title still drives the
+# navbar label either way.
+layout: default
 title: 中文
 permalink: /zh/
 description: 机器人与运动控制工程师。

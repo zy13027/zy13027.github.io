@@ -2,7 +2,9 @@
 layout: page
 title: Differential-drive AGV navigation stack
 description: EKF localisation and nav2 autonomy on a differential-drive platform. ROS 2 Jazzy, in progress.
-img: assets/img/projects/agv-stack.png # architecture diagram; SVG twin alongside
+img: assets/img/projects/agv-stack.png # raster fallback / social preview
+diagram: assets/img/projects/agv-stack.svg # served directly: a vector stays sharp at any width
+diagram_alt: "Architecture of the AGV navigation stack: simulated wheel encoders, IMU and 2D LiDAR feed an EKF and SLAM/AMCL, which publish the TF tree into global and local costmaps; nav2's planner, controller and behaviour servers produce cmd_vel, which ros2_control's diff_drive_controller turns into wheel velocities through a hardware interface to the motors, with joint states fed back to odometry."
 importance: 1
 category: robotics
 featured: true

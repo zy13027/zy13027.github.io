@@ -266,13 +266,28 @@ code, kbd, pre, .zy-mono {
 .zy-featured { border-radius: 10px; }
 .zy-featured-top { display: flex; flex-wrap: wrap; }
 .zy-featured-text { flex: 1 1 320px; min-width: 0; padding: 28px 28px 24px; .zy-muted { margin: 0 0 14px; text-wrap: pretty; } }
-.zy-featured-media {
-  flex: 1 1 300px; min-width: 0; min-height: 260px;
-  border-left: 1px solid var(--zy-border);
+
+// Architecture diagram: a full-width band across the card, so the drawing gets
+// the whole content column rather than a 440px sliver. .zy-figure-scroll keeps
+// any overflow inside itself — the page body must never scroll sideways.
+.zy-featured-figure {
+  margin: 0;
+  border-top: 1px solid var(--zy-border-2);
   background: var(--zy-card-alt);
-  display: flex; align-items: center; justify-content: center; padding: 20px;
-  figure { margin: 0; width: 100%; }
-  img { display: block; width: 100%; height: auto; }
+  padding: 22px 28px 18px;
+}
+.zy-figure-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  img, figure { display: block; margin: 0 auto; }
+  img { width: 100%; height: auto; max-width: 1000px; }
+}
+.zy-figcap {
+  display: flex; flex-wrap: wrap; gap: 4px 16px; justify-content: space-between;
+  margin-top: 12px; font-size: 11.5px; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--zy-muted-2);
+  a { color: var(--zy-teal); white-space: nowrap; }
 }
 .zy-featured-bottom {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -295,6 +310,18 @@ code, kbd, pre, .zy-mono {
 .zy-row-body { min-width: 0; .zy-muted { margin: 0 0 10px; font-size: 15px; text-wrap: pretty; } }
 .zy-row-stack { font-size: 12px; color: var(--zy-muted-2); }
 
+// ---- diagram below desktop --------------------------------------------------
+// Under ~1000px the card is narrower than the drawing needs, so instead of
+// shrinking the labels past legibility the figure keeps a readable minimum and
+// pans inside its own scroller. 860px puts the 1200px canvas at 0.72x — body
+// labels land around 11px, which reads on a phone.
+@media (max-width: 991.98px) {
+  .zy-featured-figure { padding: 20px 20px 16px; }
+  .zy-figure-scroll img { min-width: 860px; }
+  .zy-figcap-hint { display: inline; }
+}
+.zy-figcap-hint { display: none; }
+
 // ---- small screens ----------------------------------------------------------
 @media (max-width: 575.98px) {
   .zy-h1 { font-size: 34px; }
@@ -305,7 +332,6 @@ code, kbd, pre, .zy-mono {
   .zy-log-row { grid-template-columns: 76px 12px minmax(0, 1fr); .zy-log-state { display: none; } }
   .zy-list-row { grid-template-columns: 80px minmax(0, 1fr); gap: 10px; }
   .zy-row { grid-template-columns: 1fr; gap: 6px; padding: 18px 0; }
-  .zy-featured-media { border-left: 0; border-top: 1px solid var(--zy-border); min-height: 0; }
   .zy-featured-cell-alt { border-left: 0; border-top: 1px solid var(--zy-border-2); }
 }
 

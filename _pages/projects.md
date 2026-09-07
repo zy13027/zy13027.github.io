@@ -31,12 +31,32 @@ nav_order: 2
         <p class="zy-muted">{{ featured.description }}</p>
         {% if featured.stack_line %}<div class="zy-mono zy-stackline"><span class="zy-faint">stack</span>&nbsp; {{ featured.stack_line }}</div>{% endif %}
       </div>
-      <div class="zy-featured-media">
-        {% if featured.img %}
-          {% include figure.liquid loading="eager" path=featured.img class="zy-hero-img" sizes="(min-width: 700px) 440px, 95vw" alt=featured.title %}
-        {% endif %}
-      </div>
     </div>
+
+    {%- comment -%}
+      Full-width band, not a side column. The diagram is authored on a 1200px
+      canvas; in a ~440px column its labels render at 4px and it reads as a grey
+      smudge. Served as SVG so it stays sharp at any size, and given its own
+      horizontal scroll on phones so it can be swiped at a legible scale rather
+      than shrunk to nothing.
+    {%- endcomment -%}
+    {% if featured.diagram %}
+      <figure class="zy-featured-figure">
+        <div class="zy-figure-scroll">
+          <img src="{{ featured.diagram | relative_url }}"
+               alt="{{ featured.diagram_alt | default: featured.title }}"
+               width="1200" height="960" loading="lazy" decoding="async">
+        </div>
+        <figcaption class="zy-mono zy-figcap">
+          <span>Planned architecture<span class="zy-figcap-hint"> — swipe to pan</span></span>
+          <a href="{{ featured.diagram | relative_url }}" target="_blank" rel="noopener">open full size&nbsp;↗</a>
+        </figcaption>
+      </figure>
+    {% elsif featured.img %}
+      <div class="zy-featured-figure">
+        {% include figure.liquid loading="eager" path=featured.img class="zy-hero-img" sizes="(min-width: 992px) 880px, 95vw" alt=featured.title %}
+      </div>
+    {% endif %}
 
     <div class="zy-featured-bottom">
       <div class="zy-featured-cell">
