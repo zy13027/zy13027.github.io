@@ -8,7 +8,9 @@
 // =============================================================================
 
 // ---- tokens -----------------------------------------------------------------
-html {
+// Must be :root, not html: the gem declares these on :root (specificity 0,1,0)
+// and an `html` selector (0,0,1) loses to it no matter how late it loads.
+:root {
   --global-theme-color: #0f766e;
   --global-hover-color: #0b5c56;
   --global-bg-color: #fcfcfb;
@@ -28,6 +30,13 @@ html {
   --zy-teal-soft: #e6f2f0;
   --zy-code-bg: #f1f2f0;
   --zy-planned-dot: #b9bdb9;
+
+  // other theme tokens that read the accent
+  --global-divider-color: rgba(0, 0, 0, 0.08);
+  --global-footer-bg-color: #f7f7f6;
+  --global-footer-text-color: #4b5055;
+  --global-footer-link-color: #1a1c1e;
+  --global-back-to-top-bg-color: rgba(15, 118, 110, 0.9);
 }
 
 html[data-theme="dark"] {
@@ -50,6 +59,12 @@ html[data-theme="dark"] {
   --zy-teal-soft: #0f3d38;
   --zy-code-bg: #23272a;
   --zy-planned-dot: #4b5055;
+
+  --global-divider-color: #2a2d30;
+  --global-footer-bg-color: #151719;
+  --global-footer-text-color: #a7acb1;
+  --global-footer-link-color: #e6e7e5;
+  --global-back-to-top-bg-color: rgba(45, 212, 191, 0.85);
 }
 
 // ---- typography -------------------------------------------------------------

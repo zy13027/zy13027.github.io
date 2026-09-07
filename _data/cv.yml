@@ -23,7 +23,7 @@ cv:
         start_date: 2020
         end_date: 2022
         highlights:
-          - "<Add: dissertation topic and result.>"
+          - "Robotics specialisation: kinematics, state estimation, planning and control"
 
       - institution: University of Bristol
         location: Bristol, United Kingdom
@@ -33,7 +33,7 @@ cv:
         start_date: 2013
         end_date: 2017
         highlights:
-          - "<Add: final-year project — the ADAS work, 2017.01–2017.06.>"
+          - "Final-year project: driver-assistance system design and evaluation"
 
     Experience:
       - company: Siemens Ltd., China
@@ -50,7 +50,6 @@ cv:
           - "WinCC Unified HMI engineering: screen design, Openness export/import tooling, runtime scripting, faceplates"
           - "PLCSIM Advanced test rigs for verifying control logic before hardware exists"
           - "Customer-facing consulting — requirements analysis, solution architecture, demos, pre-commissioning design reviews, training"
-          - "<Add a quantified result here. This is the single strongest improvement available to this CV.>"
 
       - company: Geely Research Institute
         position: Robotics Algorithm Engineer
@@ -71,8 +70,8 @@ cv:
         url: https://www.wartsila.com/
         start_date: 2018-05-01
         end_date: 2020-08-31
-        highlights:
-          - "<Add: what you owned and one measurable outcome.>"
+        summary: >
+          Product engineering for marine power systems.
 
     Projects:
       - name: Differential-drive AGV navigation stack
