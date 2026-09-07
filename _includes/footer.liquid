@@ -1,34 +1,38 @@
 {%- comment -%}
   Shadows al_folio_core's _includes/footer.liquid.
-  Two-column layout: copyright left, mono meta line right, wrapping to a stack
-  on narrow screens. The ICP / 公安 filing numbers go in site.icp_beian and
-  site.gongan_beian once issued — Chinese law requires both to be displayed in
-  the footer of a mainland-served site, each linked to its own portal.
+
+  Uses the theme's own .container so the footer aligns exactly with the content
+  column above it, rather than re-deriving that width and drifting out of step.
+
+  ICP / 公安 filing numbers come from site.icp_beian and site.gongan_beian and
+  render only once set — Chinese law requires both in the footer of a
+  mainland-served site, each linked to its own portal.
 {%- endcomment -%}
 
 <footer class="zy-footer" role="contentinfo">
-  <div class="zy-footer-inner">
-    <span class="zy-footer-copy">&copy; {{ site.time | date: '%Y' }} {{ site.first_name }} {{ site.middle_name }} {{ site.last_name }}</span>
+  <div class="container">
+    <div class="zy-footer-row">
+      <span>&copy; {{ site.time | date: '%Y' }} {{ site.first_name }} {{ site.middle_name }} {{ site.last_name }}</span>
 
-    <span class="zy-mono zy-footer-meta">
-      {%- if site.domain_label %}{{ site.domain_label }} &middot; {% endif -%}
-      <a href="{{ '/zh/' | relative_url }}" lang="zh">中文</a> &middot;
-      Built with <a href="https://github.com/alshedivat/al-folio">al-folio</a>
-      {%- if site.last_updated %} &middot; updated {{ 'now' | date: '%b %Y' }}{% endif -%}
-    </span>
-  </div>
-
-  {%- if site.icp_beian or site.gongan_beian %}
-    <div class="zy-footer-inner zy-footer-beian">
-      <span class="zy-mono">
-        {%- if site.icp_beian -%}
-          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">{{ site.icp_beian }}</a>
-        {%- endif -%}
-        {%- if site.icp_beian and site.gongan_beian %} &middot; {% endif -%}
-        {%- if site.gongan_beian -%}
-          <a href="https://beian.mps.gov.cn/" target="_blank" rel="noopener">{{ site.gongan_beian }}</a>
-        {%- endif -%}
+      <span class="zy-mono zy-footer-meta">
+        {%- if site.domain_label %}{{ site.domain_label }} <span class="zy-footer-sep">&middot;</span> {% endif -%}
+        <a href="{{ '/zh/' | relative_url }}" lang="zh">中文</a> <span class="zy-footer-sep">&middot;</span>
+        Built with <a href="https://github.com/alshedivat/al-folio">al-folio</a>
       </span>
     </div>
-  {%- endif %}
+
+    {%- if site.icp_beian or site.gongan_beian %}
+      <div class="zy-footer-row zy-footer-beian">
+        <span class="zy-mono">
+          {%- if site.icp_beian -%}
+            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">{{ site.icp_beian }}</a>
+          {%- endif -%}
+          {%- if site.icp_beian and site.gongan_beian %} <span class="zy-footer-sep">&middot;</span> {% endif -%}
+          {%- if site.gongan_beian -%}
+            <a href="https://beian.mps.gov.cn/" target="_blank" rel="noopener">{{ site.gongan_beian }}</a>
+          {%- endif -%}
+        </span>
+      </div>
+    {%- endif %}
+  </div>
 </footer>
