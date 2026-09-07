@@ -2,11 +2,13 @@
 layout: page
 title: Engineering automation platform
 description: Generating and validating control projects programmatically — TIA Openness, PLC↔HMI tag handoff, simulated test rigs.
-# img: assets/img/projects/openness.jpg
-# ^ uncomment once you have added the image at that path.
-#   A missing img file makes the al-folio build fail, so it stays off by default.
+
 importance: 4
 category: engineering automation
+org: Siemens Ltd., China
+period: 2022 – present
+stack_line: TIA Openness (C# / PowerShell) · WinCC Unified · PLCSIM Advanced · TIA VCI
+blurb: "Control projects as generated, testable artefacts: screens, tags and blocks created from a specification; an automated PLC↔HMI tag contract; static analysis over SCL and SimaticML; PLCSIM Advanced rigs driven from PowerShell; machine software under real version control. Virtual commissioning and CI for control software."
 ---
 
 **Stack:** TIA Openness (C# / PowerShell) · WinCC Unified · PLCSIM Advanced · TIA VCI

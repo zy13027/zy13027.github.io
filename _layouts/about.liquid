@@ -1,0 +1,121 @@
+---
+layout: default
+---
+{%- comment -%}
+  Front page. Shadows al_folio_core's _layouts/about.liquid.
+  Content model:
+    page.eyebrow / page.subtitle / page.zh_note  — front matter of _pages/about.md
+    {{ content }}                                 — the bio paragraphs from about.md
+    site.data.buildlog                            — the "Now building" card
+    site.data.previously                          — the timeline column
+    site.news                                     — news column (newest first)
+    site.data.stack                               — chips
+{%- endcomment -%}
+
+<div class="zy-home">
+
+  <header class="zy-hero">
+    <div class="zy-hero-text">
+      {% if page.eyebrow %}<div class="zy-eyebrow">{{ page.eyebrow }}</div>{% endif %}
+      <h1 class="zy-h1">
+        {% if site.title == 'blank' %}{{ site.first_name }} {{ site.middle_name }} {{ site.last_name }}{% else %}{{ site.title }}{% endif %}
+      </h1>
+      {% if page.subtitle %}<p class="zy-lede">{{ page.subtitle }}</p>{% endif %}
+
+      <div class="zy-bio">{{ content }}</div>
+
+      {% if page.zh_note %}
+        <p class="zy-zh-note" lang="zh">
+          <span class="zy-mono zy-tag">ZH</span>
+          <span>{{ page.zh_note }} <a href="{{ '/zh/' | relative_url }}" class="zy-nowrap">阅读中文版 →</a></span>
+        </p>
+      {% endif %}
+    </div>
+
+    <aside class="zy-hero-aside">
+      {% if page.profile and page.profile.image %}
+        {% assign profile_image_path = page.profile.image | prepend: 'assets/img/' %}
+        {% include figure.liquid loading="eager" path=profile_image_path class="zy-portrait" sizes="(min-width: 700px) 260px, 60vw" alt="Zinan Yang" cache_bust=true %}
+      {% endif %}
+      <div class="zy-mono zy-contact">
+        {% if page.profile and page.profile.more_info %}{{ page.profile.more_info }}{% endif %}
+        <div class="zy-contact-links">
+          {% if site.email %}<div><a href="mailto:{{ site.email }}">{{ site.email }}</a></div>{% endif %}
+          {% if site.data.socials.github_username %}<div><a href="https://github.com/{{ site.data.socials.github_username }}">github.com/{{ site.data.socials.github_username }}</a></div>{% endif %}
+        </div>
+      </div>
+    </aside>
+  </header>
+
+  {% assign bl = site.data.buildlog %}
+  {% if bl %}
+    <section class="zy-card zy-building" aria-labelledby="zy-building-title">
+      <div class="zy-building-head">
+        <div class="zy-building-lead">
+          <div class="zy-meta-row">
+            <span class="zy-mono zy-kicker">Now building</span>
+            <span class="zy-pill"><span class="zy-dot"></span>{{ bl.status }}</span>
+          </div>
+          <h2 id="zy-building-title" class="zy-h2"><a href="{{ bl.url | relative_url }}">{{ bl.title }}</a></h2>
+          <p class="zy-muted">{{ bl.summary }}</p>
+        </div>
+        <div class="zy-mono zy-stackline">{{ bl.stack }}</div>
+      </div>
+      <ol class="zy-log">
+        {% for s in bl.steps %}
+          <li class="zy-log-row is-{{ s.state }}">
+            <span class="zy-mono zy-log-when">{{ s.when }}</span>
+            <span class="zy-log-dot" aria-hidden="true"></span>
+            <span class="zy-log-what">{{ s.what }}</span>
+            <span class="zy-mono zy-log-state">{{ s.state }}</span>
+          </li>
+        {% endfor %}
+      </ol>
+    </section>
+  {% endif %}
+
+  <section class="zy-cols">
+    <div>
+      <h2 class="zy-mono zy-label">Previously</h2>
+      <ul class="zy-list">
+        {% for p in site.data.previously %}
+          <li class="zy-list-row">
+            <span class="zy-mono zy-list-when">{{ p.when }}</span>
+            <span><strong>{{ p.where }}</strong> — {{ p.what }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+      <p class="zy-muted zy-small">Mandarin (native) · English (fluent) · German (conversational). Based in Beijing, open to relocation. <a href="{{ '/cv/' | relative_url }}">Full CV →</a></p>
+    </div>
+
+    <div>
+      {% if page.announcements and page.announcements.enabled and site.news != blank %}
+        <h2 class="zy-mono zy-label"><a href="{{ '/news/' | relative_url }}">News</a></h2>
+        <ul class="zy-list">
+          {% assign news = site.news | reverse %}
+          {% assign news_limit = page.announcements.limit | default: 5 %}
+          {% for item in news limit: news_limit %}
+            <li class="zy-list-row">
+              <span class="zy-mono zy-list-when">{{ item.date | date: '%d %b %y' }}</span>
+              <span>
+                {% if item.inline %}{{ item.content | remove: '<p>' | remove: '</p>' | emojify }}{% else %}<a href="{{ item.url | relative_url }}">{{ item.title }}</a>{% endif %}
+              </span>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      {% if site.data.stack %}
+        <h2 class="zy-mono zy-label zy-label-gap">Stack</h2>
+        <div class="zy-chips">
+          {% for chip in site.data.stack %}<span class="zy-mono zy-chip">{{ chip }}</span>{% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </section>
+
+  {% if page.social %}
+    <div class="zy-social">{% social_links %}</div>
+  {% endif %}
+
+</div>

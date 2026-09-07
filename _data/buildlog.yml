@@ -1,0 +1,27 @@
+# Build log for the featured (AGV) project. Shown on the front page and the
+# projects page. Keep exactly one entry with state: current. Move it forward as
+# work lands — a checkpoint that hasn't moved in two months reads worse than none.
+#
+# state: current | planned | done | milestone
+title: Differential-drive AGV navigation stack
+url: /projects/1_agv_nav_stack/
+status: In progress · repo public Nov 2026
+summary: EKF localisation and nav2 autonomy on a differential-drive base, built end to end and rebuilt in public with the current toolchain.
+stack: ROS 2 Jazzy · nav2 · robot_localization · ros2_control
+
+steps:
+  - when: Sep 2026
+    what: Dev environment — WSL2, ROS 2 Jazzy, ros2_control
+    state: current
+  - when: Sep 2026
+    what: URDF + ros2_control hardware interface
+    state: planned
+  - when: Oct 2026
+    what: EKF wheel-odometry / IMU fusion
+    state: planned
+  - when: Oct–Nov
+    what: Costmaps + nav2 planner / controller tuning
+    state: planned
+  - when: Nov 2026
+    what: Repository public
+    state: milestone

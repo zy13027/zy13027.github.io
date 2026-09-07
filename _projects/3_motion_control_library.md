@@ -2,11 +2,13 @@
 layout: page
 title: Servo motion control library
 description: Reusable axis-control blocks — homing, cam profiles, diagnostics — across S120, S200 and V90 drive systems.
-# img: assets/img/projects/motion.jpg
-# ^ uncomment once you have added the image at that path.
-#   A missing img file makes the al-folio build fail, so it stays off by default.
+
 importance: 3
 category: motion control
+org: Siemens Ltd., China
+period: 2022 – present
+stack_line: SCL · S7-1500T Motion Control · SINAMICS S120 / S200 / V90 · SIMOTICS 1FL6
+blurb: Reusable axis-control blocks — a uniform interface over <code>MC_Power</code> / <code>MC_Home</code> / <code>MC_Move*</code>, interruption-safe homing, cam profiles for cyclic machinery, fault classification an operator can act on, and one-click axis bring-up. Trajectory generation and closed-loop position control in industrial vocabulary.
 ---
 
 **Stack:** SCL · S7-1500T Motion Control · SINAMICS S120 / S200 / V90 · SIMOTICS 1FL6

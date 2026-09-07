@@ -1,0 +1,295 @@
+// =============================================================================
+// Site overrides — design tokens + the zy-* components used by
+// _layouts/about.liquid and _pages/projects.md.
+//
+// Works with al-folio's own theme variables so the dark-mode toggle keeps
+// working: we set --global-theme-color (teal) in both modes and define our own
+// --zy-* tokens alongside.
+// =============================================================================
+
+// ---- tokens -----------------------------------------------------------------
+html {
+  --global-theme-color: #0f766e;
+  --global-hover-color: #0b5c56;
+  --global-bg-color: #fcfcfb;
+  --global-text-color: #1a1c1e;
+
+  --zy-text: #1a1c1e;
+  --zy-muted: #4b5055;
+  --zy-muted-2: #6b7075;
+  --zy-faint: #9a9ea0;
+  --zy-border: #e6e7e5;
+  --zy-border-2: #eef0ed;
+  --zy-chip-border: #dcdedb;
+  --zy-card: #ffffff;
+  --zy-card-alt: #fcfcfb;
+  --zy-teal: #0f766e;
+  --zy-teal-hover: #0b5c56;
+  --zy-teal-soft: #e6f2f0;
+  --zy-code-bg: #f1f2f0;
+  --zy-planned-dot: #b9bdb9;
+}
+
+html[data-theme="dark"] {
+  --global-theme-color: #2dd4bf;
+  --global-hover-color: #5eead4;
+  --global-bg-color: #121416;
+  --global-text-color: #e6e7e5;
+
+  --zy-text: #e6e7e5;
+  --zy-muted: #a7acb1;
+  --zy-muted-2: #858a8f;
+  --zy-faint: #6b7075;
+  --zy-border: #2a2d30;
+  --zy-border-2: #232628;
+  --zy-chip-border: #3a3e42;
+  --zy-card: #1a1c1f;
+  --zy-card-alt: #151719;
+  --zy-teal: #2dd4bf;
+  --zy-teal-hover: #5eead4;
+  --zy-teal-soft: #0f3d38;
+  --zy-code-bg: #23272a;
+  --zy-planned-dot: #4b5055;
+}
+
+// ---- typography -------------------------------------------------------------
+// IBM Plex is self-hosted at build time via third_party_libraries.google_fonts;
+// the system stacks behind it mean nothing breaks if that download ever fails.
+$zy-sans: "IBM Plex Sans", -apple-system, "Segoe UI", Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+$zy-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+body {
+  font-family: $zy-sans;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--zy-text);
+}
+
+h1, h2, h3, h4, .navbar-brand {
+  font-family: $zy-sans;
+}
+
+code, kbd, pre, .zy-mono {
+  font-family: $zy-mono;
+}
+
+.zy-home code, .zy-projects code {
+  font-size: 0.9em;
+  background: var(--zy-code-bg);
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: inherit;
+}
+
+// navbar: a touch tighter, teal active state
+#navbar {
+  font-size: 14.5px;
+  border-bottom: 1px solid var(--zy-border);
+  .nav-link { line-height: 1; }
+  .nav-item.active .nav-link { color: var(--zy-teal); font-weight: 500; }
+}
+
+// ---- shared primitives ------------------------------------------------------
+.zy-home, .zy-projects {
+  a { color: var(--zy-teal); text-decoration: none; }
+  a:hover { color: var(--zy-teal-hover); text-decoration: underline; }
+  h1 a, h2 a, h3 a, .zy-row { color: inherit; }
+  h2 a:hover, h3 a:hover { color: var(--zy-teal); text-decoration: none; }
+  strong { font-weight: 600; }
+}
+
+.zy-eyebrow {
+  font-family: $zy-mono;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--zy-teal);
+  margin-bottom: 14px;
+}
+.zy-h1 {
+  margin: 0 0 14px;
+  font-size: 44px;
+  line-height: 1.08;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+.zy-h1-page { font-size: 36px; line-height: 1.1; margin-bottom: 10px; }
+.zy-lede {
+  margin: 0 0 22px;
+  font-size: 21px;
+  line-height: 1.4;
+  color: var(--zy-muted);
+  text-wrap: pretty;
+}
+.zy-lede-page { font-size: 17px; max-width: 640px; margin-bottom: 0; }
+.zy-h2 { margin: 0; font-size: 22px; line-height: 1.25; font-weight: 600; letter-spacing: -0.015em; }
+.zy-h2-featured { font-size: 28px; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 10px; text-wrap: balance; }
+.zy-h3 { margin: 0 0 6px; font-size: 20px; line-height: 1.25; font-weight: 600; letter-spacing: -0.015em; }
+.zy-label {
+  margin: 0 0 16px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--zy-muted-2);
+  a { color: inherit; }
+  a:hover { color: var(--zy-teal); text-decoration: none; }
+}
+.zy-label-gap { margin-top: 36px; margin-bottom: 12px; }
+.zy-kicker { font-size: 11.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--zy-muted-2); white-space: nowrap; }
+.zy-muted { color: var(--zy-muted); }
+.zy-faint { color: var(--zy-faint); }
+.zy-small { font-size: 13.5px; margin: 14px 0 0; text-wrap: pretty; }
+.zy-nowrap { white-space: nowrap; }
+.zy-tag { font-size: 11.5px; letter-spacing: 0.06em; color: var(--zy-teal); }
+
+.zy-card {
+  border: 1px solid var(--zy-border);
+  border-radius: 8px;
+  background: var(--zy-card);
+  overflow: hidden;
+}
+.zy-meta-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+.zy-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: $zy-mono; font-size: 11.5px; letter-spacing: 0.04em;
+  color: var(--zy-teal); background: var(--zy-teal-soft);
+  border-radius: 999px; padding: 3px 9px; white-space: nowrap;
+}
+.zy-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--zy-teal); }
+.zy-stackline { font-size: 12.5px; color: var(--zy-muted); line-height: 1.8; }
+
+// ---- home: hero -------------------------------------------------------------
+.zy-home { padding-top: 24px; padding-bottom: 24px; }
+.zy-hero { display: flex; flex-wrap: wrap; gap: 32px 40px; align-items: flex-start; }
+.zy-hero-text { flex: 3 1 380px; min-width: 0; }
+.zy-hero-aside { flex: 1 1 200px; max-width: 260px; }
+.zy-bio p { margin: 0 0 16px; text-wrap: pretty; }
+.zy-zh-note {
+  margin: 4px 0 0;
+  padding: 10px 14px;
+  border: 1px solid var(--zy-border);
+  border-radius: 6px;
+  background: var(--zy-card);
+  font-size: 14.5px;
+  color: var(--zy-muted);
+  display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap;
+}
+.zy-portrait,
+.zy-hero-aside figure { margin: 0; }
+.zy-hero-aside img { display: block; width: 100%; height: auto; border-radius: 6px; border: 1px solid var(--zy-border); }
+.zy-contact {
+  margin-top: 12px; font-size: 12.5px; line-height: 1.7; color: var(--zy-muted);
+  a { color: var(--zy-text); }
+  a:hover { color: var(--zy-teal); }
+}
+.zy-contact-links { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--zy-border); }
+
+// ---- home: "now building" card ---------------------------------------------
+.zy-building { margin-top: 56px; }
+.zy-building-head {
+  padding: 22px 24px 18px;
+  display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: baseline; justify-content: space-between;
+  border-bottom: 1px solid var(--zy-border-2);
+  .zy-muted { margin: 6px 0 0; font-size: 15px; }
+}
+.zy-building-lead { min-width: 0; }
+.zy-building-head .zy-stackline { font-size: 12px; white-space: nowrap; }
+
+// ---- build log (shared: home card + projects page) --------------------------
+.zy-log { list-style: none; margin: 0; padding: 14px 24px 18px; }
+.zy-log-row {
+  display: grid;
+  grid-template-columns: 96px 14px minmax(0, 1fr) auto;
+  gap: 0 14px; align-items: baseline; padding: 7px 0;
+}
+.zy-log-when { font-size: 12.5px; color: var(--zy-muted-2); }
+.zy-log-what { font-size: 15px; color: var(--zy-muted); }
+.zy-log-state { font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--zy-faint); }
+.zy-log-state-inline { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--zy-faint); margin-left: 6px; }
+.zy-log-dot { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--zy-planned-dot); align-self: center; margin-left: 1px; }
+.zy-log-row.is-current {
+  .zy-log-when { color: var(--zy-text); }
+  .zy-log-what { color: var(--zy-text); }
+  .zy-log-state, .zy-log-state-inline { color: var(--zy-teal); }
+  .zy-log-dot { width: 10px; height: 10px; border: 0; background: var(--zy-teal); box-shadow: 0 0 0 3px var(--zy-teal-soft); margin-left: 0; }
+}
+.zy-log-row.is-done .zy-log-dot { background: var(--zy-planned-dot); border-color: var(--zy-planned-dot); }
+.zy-log-compact {
+  padding: 0;
+  .zy-log-row { grid-template-columns: 78px 14px minmax(0, 1fr); gap: 0 12px; padding: 6px 0; }
+  .zy-log-what { font-size: 14.5px; }
+}
+
+// ---- home: two columns ------------------------------------------------------
+.zy-cols {
+  margin-top: 56px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 40px 56px;
+}
+.zy-list { list-style: none; margin: 0; padding: 0; }
+.zy-list-row {
+  display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 14px;
+  padding: 10px 0; border-top: 1px solid var(--zy-border); font-size: 15px;
+  &:last-child { border-bottom: 1px solid var(--zy-border); }
+}
+.zy-list-when { font-size: 12.5px; color: var(--zy-muted-2); padding-top: 2px; }
+.zy-cols .zy-small { font-size: 14.5px; margin-top: 16px; }
+.zy-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.zy-chip {
+  font-size: 12px; color: var(--zy-text);
+  border: 1px solid var(--zy-chip-border); border-radius: 4px;
+  padding: 3px 8px; background: var(--zy-card);
+}
+.zy-social { margin-top: 40px; }
+
+// ---- projects page ----------------------------------------------------------
+.zy-projects { padding-top: 24px; padding-bottom: 24px; }
+.zy-page-head { margin-bottom: 40px; }
+.zy-featured { border-radius: 10px; }
+.zy-featured-top { display: flex; flex-wrap: wrap; }
+.zy-featured-text { flex: 1 1 320px; min-width: 0; padding: 28px 28px 24px; .zy-muted { margin: 0 0 14px; text-wrap: pretty; } }
+.zy-featured-media {
+  flex: 1 1 300px; min-width: 0; min-height: 260px;
+  border-left: 1px solid var(--zy-border);
+  background: var(--zy-card-alt);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+  figure { margin: 0; width: 100%; }
+  img { display: block; width: 100%; height: auto; }
+}
+.zy-featured-bottom {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  border-top: 1px solid var(--zy-border-2);
+}
+.zy-featured-cell { padding: 22px 28px; .zy-label { margin-bottom: 12px; } }
+.zy-featured-cell-alt { border-left: 1px solid var(--zy-border-2); background: var(--zy-card-alt); }
+.zy-plain { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; font-size: 15px; li { text-wrap: pretty; } }
+
+.zy-shipped { margin-top: 48px; .zy-label { margin-bottom: 8px; } }
+.zy-rows { border-top: 1px solid var(--zy-border); }
+.zy-row {
+  display: grid; grid-template-columns: minmax(140px, 180px) minmax(0, 1fr);
+  gap: 12px 28px; padding: 22px 0; border-bottom: 1px solid var(--zy-border);
+  color: inherit;
+  &:hover { text-decoration: none; .zy-h3 { color: var(--zy-teal); } }
+}
+.zy-row-meta { font-size: 12px; line-height: 1.8; color: var(--zy-muted-2); }
+.zy-row-cat { color: var(--zy-teal); letter-spacing: 0.06em; text-transform: uppercase; }
+.zy-row-body { min-width: 0; .zy-muted { margin: 0 0 10px; font-size: 15px; text-wrap: pretty; } }
+.zy-row-stack { font-size: 12px; color: var(--zy-muted-2); }
+
+// ---- small screens ----------------------------------------------------------
+@media (max-width: 575.98px) {
+  .zy-h1 { font-size: 34px; }
+  .zy-h1-page { font-size: 28px; }
+  .zy-lede { font-size: 18px; }
+  .zy-hero-aside { max-width: 220px; }
+  .zy-building-head .zy-stackline { white-space: normal; }
+  .zy-log-row { grid-template-columns: 76px 12px minmax(0, 1fr); .zy-log-state { display: none; } }
+  .zy-list-row { grid-template-columns: 80px minmax(0, 1fr); gap: 10px; }
+  .zy-row { grid-template-columns: 1fr; gap: 6px; padding: 18px 0; }
+  .zy-featured-media { border-left: 0; border-top: 1px solid var(--zy-border); min-height: 0; }
+  .zy-featured-cell-alt { border-left: 0; border-top: 1px solid var(--zy-border-2); }
+}

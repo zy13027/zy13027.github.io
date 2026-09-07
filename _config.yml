@@ -94,7 +94,7 @@ al_folio:
 # -----------------------------------------------------------------------------
 
 navbar_fixed: true
-footer_fixed: true
+footer_fixed: false # design has an in-flow footer; fixed one ate phone screens
 search_enabled: true
 socials_in_search: true
 posts_in_search: true
@@ -534,7 +534,7 @@ third_party_libraries:
     version: "5.5.0"
   google_fonts:
     url:
-      fonts: "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons&display=swap"
+      fonts: "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Material+Icons&display=swap" # vendored at build time by third_party_libraries.download — nothing is fetched from Google by visitors
   highlightjs:
     integrity:
       css:

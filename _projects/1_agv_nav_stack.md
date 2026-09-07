@@ -5,6 +5,16 @@ description: EKF localisation and nav2 autonomy on a differential-drive platform
 img: assets/img/projects/agv-stack.png # architecture diagram; SVG twin alongside
 importance: 1
 category: robotics
+featured: true
+status: In progress · repo public Nov 2026
+org: Personal project
+period: 2026
+stack_line: ROS 2 Jazzy · nav2 · robot_localization (EKF) · ros2_control · Gazebo / MuJoCo
+demonstrates:
+  - "<strong>State estimation</strong> — EKF fusion of wheel odometry and IMU, and what actually degrades it: wheel slip, unmodelled latency, covariance that is guessed rather than measured."
+  - "<strong>Planning and control</strong> — global planner and local controller behaviour on a non-holonomic base, and the recovery behaviours that decide whether a robot is usable or merely demonstrable."
+  - "<strong><code>ros2_control</code> integration</strong> — the same hardware-interface problem as an industrial servo axis, expressed in ROS vocabulary."
+  - "<strong>Reproducibility</strong> — one command to bring the simulation up; anyone can run it."
 ---
 
 **Stack:** ROS 2 Jazzy · nav2 · robot_localization (EKF) · ros2_control · Gazebo / MuJoCo

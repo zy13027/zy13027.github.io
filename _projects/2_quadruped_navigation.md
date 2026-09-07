@@ -2,11 +2,13 @@
 layout: page
 title: Quadruped robot navigation
 description: EKF state estimation, A* planning and LiDAR processing for a legged platform at Geely Research Institute.
-# img: assets/img/projects/quadruped.jpg
-# ^ uncomment once you have added the image at that path.
-#   A missing img file makes the al-folio build fail, so it stays off by default.
+
 importance: 2
 category: robotics
+org: Geely Research Institute
+period: "2022"
+stack_line: ROS · EKF · A* · LiDAR · C++ / Python
+blurb: EKF fusing leg odometry with IMU on a body that pitches with every step; A* over a traversability costmap; ground segmentation from a LiDAR that is never level; ROS integration and the timing behaviour that decides whether a stack works on hardware or only in simulation.
 ---
 
 **Stack:** ROS · EKF · A\* · LiDAR · C++ / Python
