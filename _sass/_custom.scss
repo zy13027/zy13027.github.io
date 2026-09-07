@@ -368,3 +368,39 @@ code, kbd, pre, .zy-mono {
   .zy-doc .zy-list-row { grid-template-columns: 84px minmax(0, 1fr); }
   .zy-zh-skills { grid-template-columns: 1fr; gap: 4px 0; dd { margin-bottom: 10px; } }
 }
+
+// ---- footer -----------------------------------------------------------------
+// Shadowed _includes/footer.liquid: copyright left, mono meta right.
+.zy-footer {
+  border-top: 1px solid var(--zy-border);
+  margin-top: 64px;
+  padding: 20px 0 28px;
+  font-size: 13px;
+  color: var(--zy-muted-2);
+
+  a { color: var(--zy-muted-2); text-decoration: none; }
+  a:hover { color: var(--zy-teal); text-decoration: none; }
+}
+.zy-footer-inner {
+  max-width: var(--max-content-width, 930px);
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 24px;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.zy-footer-meta { font-size: 12px; }
+.zy-footer-beian {
+  margin-top: 8px;
+  justify-content: center;
+  font-size: 11.5px;
+  color: var(--zy-faint);
+  a { color: var(--zy-faint); }
+}
+
+@media (max-width: 575.98px) {
+  .zy-footer-inner { justify-content: flex-start; }
+  .zy-footer-meta { font-size: 11.5px; }
+}

@@ -23,6 +23,13 @@ last_updated: false # set to true if you want to display last updated in the foo
 impressum_path: # set to path to include impressum link in the footer, use the same path as permalink in a page, helps to conform with EU GDPR
 back_to_top: true # set to false to disable the back to top button
 
+# Footer meta. domain_label is what the footer shows as the site's name.
+# icp_beian / gongan_beian: fill in once 备案 is approved — Chinese law requires
+# both numbers in the footer of a mainland-served site, each linked to its portal.
+domain_label: zinanyang.com
+icp_beian: # e.g. 京ICP备XXXXXXXX号-1
+gongan_beian: # e.g. 京公网安备 XXXXXXXXXXXX号
+
 # -----------------------------------------------------------------------------
 # Theme
 # -----------------------------------------------------------------------------
