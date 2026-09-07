@@ -308,3 +308,63 @@ code, kbd, pre, .zy-mono {
   .zy-featured-media { border-left: 0; border-top: 1px solid var(--zy-border); min-height: 0; }
   .zy-featured-cell-alt { border-left: 0; border-top: 1px solid var(--zy-border-2); }
 }
+
+// ---- Chinese page -----------------------------------------------------------
+// Same tokens and rhythm as the English pages. CJK gets a slightly looser
+// line-height and a font stack that puts a real Chinese face first, since
+// IBM Plex has no CJK coverage and the browser would otherwise pick anything.
+.zy-doc {
+  padding-top: 24px;
+  padding-bottom: 24px;
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", $zy-sans;
+  line-height: 1.8;
+  max-width: 760px;
+
+  a { color: var(--zy-teal); text-decoration: none; }
+  a:hover { color: var(--zy-teal-hover); text-decoration: underline; }
+  strong { font-weight: 600; }
+  p { margin: 0 0 16px; }
+  code {
+    font-family: $zy-mono;
+    font-size: 0.88em;
+    background: var(--zy-code-bg);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  // mono runs read tighter than Latin prose at CJK line-height
+  .zy-mono { line-height: 1.7; }
+  .zy-label { margin-top: 40px; }
+  .zy-h1-page { line-height: 1.25; }
+  .zy-lede { line-height: 1.55; }
+  .zy-list-row { grid-template-columns: 104px minmax(0, 1fr); }
+}
+
+.zy-zh-card { margin-bottom: 8px; }
+.zy-zh-card-head {
+  padding: 20px 22px;
+  .zy-h3 { margin: 12px 0 8px; }
+  .zy-muted { margin: 0 0 12px; }
+}
+
+.zy-zh-projects { display: grid; gap: 0; border-top: 1px solid var(--zy-border); }
+.zy-zh-project {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--zy-border);
+  .zy-h3 { margin: 6px 0 8px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; }
+  .zy-muted { margin: 0; }
+}
+.zy-zh-org { font-size: 12px; font-weight: 400; color: var(--zy-muted-2); }
+
+.zy-zh-skills {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 12px 20px;
+  dt { font-weight: 600; font-size: 15px; }
+  dd { margin: 0; font-size: 13px; color: var(--zy-muted); }
+}
+
+@media (max-width: 575.98px) {
+  .zy-doc .zy-list-row { grid-template-columns: 84px minmax(0, 1fr); }
+  .zy-zh-skills { grid-template-columns: 1fr; gap: 4px 0; dd { margin-bottom: 10px; } }
+}
