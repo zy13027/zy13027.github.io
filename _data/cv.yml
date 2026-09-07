@@ -92,45 +92,30 @@ cv:
         url: ""
 
     Skills:
-      - category: Robotics
-        skills:
-          - ROS 2 / ROS
-          - nav2
-          - EKF / sensor fusion
-          - SLAM and localisation
-          - Path planning
-          - MuJoCo
-          - Isaac Sim
+      - name: Robotics
+        level: Working
+        icon: fa-solid fa-robot
+        keywords: ROS 2 / ROS, nav2, ros2_control, EKF and sensor fusion, SLAM and localisation, path planning, MuJoCo, Isaac Sim
 
-      - category: Motion control
-        skills:
-          - S7-1500T Motion Control
-          - SINAMICS S120 / S200 / V90
-          - Trajectory generation
-          - Cam profiles
-          - Servo commissioning
+      - name: Motion control
+        level: Expert
+        icon: fa-solid fa-gears
+        keywords: SIMATIC S7-1500T technology objects, SINAMICS S120 / S200 / V90, SIMOTICS S-1FL6, trajectory generation, cam synchronisation, homing, servo commissioning and tuning
 
-      - category: Programming
-        skills:
-          - SCL / structured text
-          - Python
-          - C++
-          - C#
-          - PowerShell
-          - MySQL
+      - name: Programming
+        level: Working
+        icon: fa-solid fa-code
+        keywords: SCL (structured text), Python, C++, C#, PowerShell, MySQL
 
-      - category: Engineering automation
-        skills:
-          - TIA Openness
-          - WinCC Unified
-          - PLCSIM Advanced
-          - TIA VCI
-          - Virtual commissioning
+      - name: Engineering automation
+        level: Expert
+        icon: fa-solid fa-diagram-project
+        keywords: TIA Portal Openness, WinCC Unified, PLCSIM Advanced, TIA Portal VCI, virtual commissioning, static analysis of SCL and SimaticML
 
     Languages:
-      - language: Mandarin Chinese
-        fluency: Native
-      - language: English
-        fluency: Fluent
-      - language: German
-        fluency: Conversational
+      - name: Mandarin Chinese
+        summary: Native
+      - name: English
+        summary: Fluent
+      - name: German
+        summary: Conversational
