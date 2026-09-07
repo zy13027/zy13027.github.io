@@ -2,9 +2,7 @@
 layout: page
 title: Differential-drive AGV navigation stack
 description: EKF localisation and nav2 autonomy on a differential-drive platform. ROS 2 Jazzy, in progress.
-# img: assets/img/projects/agv.jpg
-# ^ uncomment once you have added the image at that path.
-#   A missing img file makes the al-folio build fail, so it stays off by default.
+img: assets/img/projects/agv-stack.png # architecture diagram; SVG twin alongside
 importance: 1
 category: robotics
 ---

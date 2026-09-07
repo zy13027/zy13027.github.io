@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 960" width="1200" height="960" role="img" aria-labelledby="t d">
+  <title id="t">Differential-drive AGV navigation stack — architecture</title>
+  <desc id="d">Data flow from simulated sensors through EKF state estimation and costmaps into the nav2 planner, controller and behaviour servers, then out through ros2_control to the drive motors, with encoder feedback closing the loop.</desc>
+  <defs>
+    <style>
+      text { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; fill: #334155; }
+      .cap { font-size: 15px; fill: #64748b; letter-spacing: .08em; }
+      .lbl { font-size: 21px; fill: #1e293b; }
+      .sub { font-size: 15px; fill: #64748b; }
+      .box { fill: #f1f5f9; stroke: #cbd5e1; stroke-width: 1.5; rx: 8; }
+      .key { fill: #ccfbf1; stroke: #0f766e; stroke-width: 2; rx: 8; }
+      .flow { stroke: #94a3b8; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .flowk { stroke: #0f766e; stroke-width: 2.2; fill: none; marker-end: url(#arrowk); }
+      .fb { stroke: #b45309; stroke-width: 2; fill: none; stroke-dasharray: 7 6; marker-end: url(#arrowa); }
+      .tf { font-size: 14px; fill: #0f766e; }
+      .sim { fill: none; stroke: #94a3b8; stroke-width: 1.5; stroke-dasharray: 5 6; rx: 12; }
+      @media (prefers-color-scheme: dark) {
+        text { fill: #e2e8f0; }
+        .cap, .sub { fill: #94a3b8; }
+        .lbl { fill: #f1f5f9; }
+        .box { fill: #1e293b; stroke: #334155; }
+        .key { fill: #134e4a; stroke: #2dd4bf; }
+        .flow { stroke: #64748b; }
+        .flowk, .tf { stroke: #2dd4bf; }
+        .tf { fill: #2dd4bf; }
+        .sim { stroke: #475569; }
+      }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/></marker>
+    <marker id="arrowk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0f766e"/></marker>
+    <marker id="arrowa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b45309"/></marker>
+  </defs>
+
+  <!-- header -->
+  <text x="60" y="52" class="cap">AGV NAVIGATION STACK · ROS 2 JAZZY</text>
+  <text x="1140" y="52" class="cap" text-anchor="end">PLANNED ARCHITECTURE · SEP 2026</text>
+
+  <!-- simulated sensor group -->
+  <rect x="60" y="92" width="1080" height="118" class="sim"/>
+  <text x="80" y="118" class="cap">SIMULATED IN GAZEBO / MUJOCO</text>
+
+  <g transform="translate(110,136)">
+    <rect width="260" height="56" class="box"/>
+    <text x="130" y="35" class="lbl" text-anchor="middle">wheel encoders</text>
+  </g>
+  <g transform="translate(470,136)">
+    <rect width="260" height="56" class="box"/>
+    <text x="130" y="35" class="lbl" text-anchor="middle">IMU</text>
+  </g>
+  <g transform="translate(830,136)">
+    <rect width="260" height="56" class="box"/>
+    <text x="130" y="35" class="lbl" text-anchor="middle">2D LiDAR</text>
+  </g>
+
+  <!-- state estimation row -->
+  <g transform="translate(110,290)">
+    <rect width="620" height="72" class="key"/>
+    <text x="310" y="31" class="lbl" text-anchor="middle">EKF · robot_localization</text>
+    <text x="310" y="55" class="sub" text-anchor="middle">fuses odometry + IMU → odom → base_link</text>
+  </g>
+  <g transform="translate(830,290)">
+    <rect width="260" height="72" class="box"/>
+    <text x="130" y="31" class="lbl" text-anchor="middle">SLAM / AMCL</text>
+    <text x="130" y="55" class="sub" text-anchor="middle">map → odom</text>
+  </g>
+
+  <!-- sensors → estimation -->
+  <path d="M240,192 V290" class="flow"/>
+  <path d="M600,192 V290" class="flow"/>
+  <path d="M960,192 V290" class="flow"/>
+
+  <!-- costmaps -->
+  <g transform="translate(330,442)">
+    <rect width="540" height="72" class="box"/>
+    <text x="270" y="31" class="lbl" text-anchor="middle">costmaps · global + local</text>
+    <text x="270" y="55" class="sub" text-anchor="middle">occupancy from LiDAR · inflation · TF from both estimators</text>
+  </g>
+  <path d="M420,362 V442" class="flow"/>
+  <path d="M960,362 V402 H780 V442" class="flow"/>
+  <text x="440" y="392" class="tf">odom → base_link</text>
+  <text x="975" y="392" class="tf">map → odom</text>
+
+  <!-- nav2 row -->
+  <text x="60" y="580" class="cap">NAV2</text>
+  <g transform="translate(110,596)">
+    <rect width="300" height="84" class="key"/>
+    <text x="150" y="33" class="lbl" text-anchor="middle">planner server</text>
+    <text x="150" y="58" class="sub" text-anchor="middle">global path</text>
+  </g>
+  <g transform="translate(450,596)">
+    <rect width="300" height="84" class="key"/>
+    <text x="150" y="33" class="lbl" text-anchor="middle">controller server</text>
+    <text x="150" y="58" class="sub" text-anchor="middle">local plan → cmd_vel</text>
+  </g>
+  <g transform="translate(790,596)">
+    <rect width="300" height="84" class="key"/>
+    <text x="150" y="33" class="lbl" text-anchor="middle">behaviour server</text>
+    <text x="150" y="58" class="sub" text-anchor="middle">recoveries · spin · back up</text>
+  </g>
+  <!-- costmaps → nav2 -->
+  <path d="M600,514 V556 H260 V596" class="flow"/>
+  <path d="M600,514 V596" class="flow"/>
+  <path d="M600,514 V556 H940 V596" class="flow"/>
+  <!-- planner → controller -->
+  <path d="M410,638 H450" class="flowk"/>
+
+  <!-- ros2_control row -->
+  <text x="60" y="748" class="cap">ROS2_CONTROL</text>
+  <g transform="translate(110,764)">
+    <rect width="400" height="72" class="box"/>
+    <text x="200" y="31" class="lbl" text-anchor="middle">diff_drive_controller</text>
+    <text x="200" y="55" class="sub" text-anchor="middle">cmd_vel → wheel velocities</text>
+  </g>
+  <g transform="translate(550,764)">
+    <rect width="300" height="72" class="box"/>
+    <text x="150" y="31" class="lbl" text-anchor="middle">hardware interface</text>
+    <text x="150" y="55" class="sub" text-anchor="middle">sim plugin · later: real drive</text>
+  </g>
+  <g transform="translate(890,764)">
+    <rect width="200" height="72" class="box"/>
+    <text x="100" y="31" class="lbl" text-anchor="middle">motors</text>
+    <text x="100" y="55" class="sub" text-anchor="middle">L · R</text>
+  </g>
+  <!-- controller → ros2_control chain -->
+  <path d="M600,680 V722 H310 V764" class="flowk"/>
+  <text x="615" y="712" class="tf">cmd_vel</text>
+  <path d="M510,800 H550" class="flow"/>
+  <path d="M850,800 H890" class="flow"/>
+
+  <!-- encoder feedback loop -->
+  <path d="M1090,800 H1168 V76 H240 V136" class="fb"/>
+  <text x="1178" y="470" class="sub" transform="rotate(90 1178 470)" text-anchor="middle">joint states → odometry (feedback)</text>
+
+  <!-- footer -->
+  <text x="60" y="920" class="sub">The same problem as an industrial servo axis — closed-loop position control, trajectory following, fault recovery — expressed in ROS vocabulary.</text>
+</svg>
