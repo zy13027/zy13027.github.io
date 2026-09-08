@@ -1,7 +1,7 @@
 cv:
   name: Zinan Yang
   label: Robotics and Motion Control Engineer
-  email: yangzinan95@163.com
+  email: nanyoung521@gmail.com
   location: Beijing, China
   image: ""
   summary: >
@@ -21,7 +21,7 @@ cv:
         area: Robotics
         studyType: MSc
         start_date: 2020
-        end_date: 2022
+        end_date: 2021
         highlights:
           - "Robotics specialisation: kinematics, state estimation, planning and control"
 
@@ -29,7 +29,7 @@ cv:
         location: Bristol, United Kingdom
         url: https://www.bristol.ac.uk/
         area: Mechanical Engineering
-        studyType: BEng
+        studyType: MEng
         start_date: 2013
         end_date: 2017
         highlights:
@@ -54,7 +54,7 @@ cv:
       - company: Geely Research Institute
         position: Robotics Algorithm Engineer
         location: China
-        start_date: 2022-02-01
+        start_date: 2021-12-01
         end_date: 2022-07-31
         summary: >
           Navigation stack for a quadruped robot platform.

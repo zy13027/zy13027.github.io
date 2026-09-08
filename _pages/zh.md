@@ -39,10 +39,10 @@ nav_order: 4
 
 <ul class="zy-list">
   <li class="zy-list-row"><span class="zy-mono zy-list-when">2022 — 至今</span><span><strong>西门子（中国）有限公司</strong> — 应用工程师（数字化工业集团）。运动控制库、驱动调试、TIA 博途 Openness 工程自动化。</span></li>
-  <li class="zy-list-row"><span class="zy-mono zy-list-when">2022</span><span><strong>吉利研究院</strong> — 机器人算法工程师。四足机器人导航：EKF、A*、激光雷达、ROS。</span></li>
-  <li class="zy-list-row"><span class="zy-mono zy-list-when">2020 — 22</span><span><strong>机器人学 硕士</strong>，伦敦国王学院。</span></li>
+  <li class="zy-list-row"><span class="zy-mono zy-list-when">2021 — 22</span><span><strong>吉利研究院</strong> — 机器人算法工程师。四足机器人导航：EKF、A*、激光雷达、ROS。</span></li>
+  <li class="zy-list-row"><span class="zy-mono zy-list-when">2020 — 21</span><span><strong>机器人学 硕士</strong>，伦敦国王学院。</span></li>
   <li class="zy-list-row"><span class="zy-mono zy-list-when">2018 — 20</span><span><strong>瓦锡兰</strong>（上海）— 产品工程师。</span></li>
-  <li class="zy-list-row"><span class="zy-mono zy-list-when">2013 — 17</span><span><strong>机械工程 学士</strong>，布里斯托大学。</span></li>
+  <li class="zy-list-row"><span class="zy-mono zy-list-when">2013 — 17</span><span><strong>机械工程 MEng（本硕连读）</strong>，布里斯托大学。</span></li>
 </ul>
 
 <h2 class="zy-mono zy-label zy-label-gap">主要工作</h2>
@@ -77,7 +77,7 @@ nav_order: 4
 
 <h2 class="zy-mono zy-label zy-label-gap">联系</h2>
 
-<p>邮箱：<a href="mailto:yangzinan95@163.com">yangzinan95@163.com</a></p>
+<p>邮箱：<a href="mailto:nanyoung521@gmail.com">nanyoung521@gmail.com</a></p>
 
 <p class="zy-muted zy-small">英文版本见 <a href="{{ '/' | relative_url }}">首页</a>。本站为个人学习记录，内容不涉及任何客户项目文件、源代码或现场资料。</p>
 
