@@ -33,8 +33,8 @@ back_to_top: true # set to false to disable the back to top button
 # both numbers in the footer of a mainland-served site, each linked to its portal.
 domain_label: zinanyang.com
 site_name_zh: 杨子楠的学习记录 # the filed 网站名称 — must appear on the homepage
-icp_beian: # e.g. 京ICP备XXXXXXXX号-1
-gongan_beian: # e.g. 京公网安备 XXXXXXXXXXXX号
+icp_beian: 京ICP备2025113281号-2 # approved 2026-09-20 by 北京市通信管理局
+gongan_beian: # 公安联网备案 — file within 30 days of launch at beian.mps.gov.cn
 
 # -----------------------------------------------------------------------------
 # Theme
