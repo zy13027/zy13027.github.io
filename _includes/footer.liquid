@@ -21,9 +21,19 @@
       </span>
     </div>
 
-    {%- if site.icp_beian or site.gongan_beian %}
+    {%- comment -%}
+      site_name_zh is the 网站名称 as filed with 管局. ICP 专项核查 compares the
+      filed name against the name displayed prominently on the homepage, and the
+      footer is the conventional place for it on a mainland-served site. It
+      renders whether or not the filing numbers are set yet.
+    {%- endcomment -%}
+    {%- if site.site_name_zh or site.icp_beian or site.gongan_beian %}
       <div class="zy-footer-row zy-footer-beian">
         <span class="zy-mono">
+          {%- if site.site_name_zh -%}
+            <span lang="zh" class="zy-footer-sitename">{{ site.site_name_zh }}</span>
+            {%- if site.icp_beian or site.gongan_beian %} <span class="zy-footer-sep">&middot;</span> {% endif -%}
+          {%- endif -%}
           {%- if site.icp_beian -%}
             <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">{{ site.icp_beian }}</a>
           {%- endif -%}

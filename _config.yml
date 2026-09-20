@@ -2,7 +2,12 @@
 # Site settings
 # -----------------------------------------------------------------------------
 
-title: blank # the website title (if blank, full name will be used instead)
+# Bilingual on purpose. 阿里云's ICP 专项核查 compares the filed 网站名称 against
+# the browser tab title and the name shown prominently on the homepage; the
+# filing says 杨子楠的学习记录, so that string has to appear in both. The
+# homepage <h1> is pinned to the Latin name in _layouts/about.liquid so the
+# page itself still reads as a portfolio.
+title: Zinan Yang · 杨子楠的学习记录 # the website title (if blank, full name will be used instead)
 first_name: Zinan
 middle_name:
 last_name: Yang
@@ -27,6 +32,7 @@ back_to_top: true # set to false to disable the back to top button
 # icp_beian / gongan_beian: fill in once 备案 is approved — Chinese law requires
 # both numbers in the footer of a mainland-served site, each linked to its portal.
 domain_label: zinanyang.com
+site_name_zh: 杨子楠的学习记录 # the filed 网站名称 — must appear on the homepage
 icp_beian: # e.g. 京ICP备XXXXXXXX号-1
 gongan_beian: # e.g. 京公网安备 XXXXXXXXXXXX号
 

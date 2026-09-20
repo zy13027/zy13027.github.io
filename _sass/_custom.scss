@@ -426,6 +426,13 @@ code, kbd, pre, .zy-mono {
   color: var(--zy-faint);
   a { color: var(--zy-faint); }
 }
+// The filed 网站名称. Legibly present rather than hidden in the faint row —
+// ICP 核查 looks for it, and a name a human can't read is not "displayed".
+.zy-footer-sitename {
+  color: var(--zy-muted-2);
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  font-size: 12px;
+}
 
 @media (max-width: 575.98px) {
   .zy-footer { margin-top: 48px; padding: 18px 0 26px; }

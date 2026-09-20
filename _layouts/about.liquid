@@ -17,9 +17,12 @@ layout: default
   <header class="zy-hero">
     <div class="zy-hero-text">
       {% if page.eyebrow %}<div class="zy-eyebrow">{{ page.eyebrow }}</div>{% endif %}
-      <h1 class="zy-h1">
-        {% if site.title == 'blank' %}{{ site.first_name }} {{ site.middle_name }} {{ site.last_name }}{% else %}{{ site.title }}{% endif %}
-      </h1>
+      {%- comment -%}
+        Deliberately NOT {{ site.title }}: that now carries the bilingual
+        string for ICP 核查 (see _config.yml). The visible heading stays the
+        Latin name; the filed 网站名称 appears in the tab title and the footer.
+      {%- endcomment -%}
+      <h1 class="zy-h1">{{ site.first_name }} {{ site.middle_name }} {{ site.last_name }}</h1>
       {% if page.subtitle %}<p class="zy-lede">{{ page.subtitle }}</p>{% endif %}
 
       <div class="zy-bio">{{ content }}</div>
