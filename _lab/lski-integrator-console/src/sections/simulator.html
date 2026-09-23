@@ -1,0 +1,112 @@
+<section class="sec" id="simulator"><div class="wrap">
+  <header>
+    <div class="eyebrow">Sections 1.2.5&ndash;1.2.6 &amp; 4.1 &middot; Interpreter, motion pointer, LSKI_Core outputs</div>
+    <h2>Watch the interpreter run</h2>
+    <p class="lede">A real 19&#8209;command LSKI program, driving a simulated Cartesian portal 3D+A. The <b>black</b> arrow is the interpreter pointer, the <b>green</b> arrow is the motion pointer &mdash; watch them separate whenever a move is queued with <span class="tag">Next cycle</span>, and snap back together the moment a command holds for <span class="tag">When command done</span>. The corner the gantry actually draws follows the same rule.</p>
+  </header>
+
+  <div class="sim-controls card pad" id="sim-controls" role="group" aria-label="Program execution controls">
+    <div class="sim-cgroup">
+      <span class="sim-cgroup-label">Execution</span>
+      <div class="sim-btnrow">
+        <button type="button" class="sim-btn" id="sim-btn-init">Initialize</button>
+        <button type="button" class="sim-btn sim-btn--go" id="sim-btn-start">Start</button>
+        <button type="button" class="sim-btn" id="sim-btn-interrupt">Interrupt</button>
+        <button type="button" class="sim-btn" id="sim-btn-continue">Continue</button>
+        <button type="button" class="sim-btn sim-btn--warn" id="sim-btn-stop">Stop</button>
+        <button type="button" class="sim-btn sim-btn--warn" id="sim-btn-cyclestop">Cycle stop</button>
+        <button type="button" class="sim-btn sim-btn--danger" id="sim-btn-faststop">Fast stop</button>
+        <button type="button" class="sim-btn" id="sim-btn-step">Next step</button>
+      </div>
+    </div>
+    <div class="sim-cgroup">
+      <span class="sim-cgroup-label">Program mode</span>
+      <div class="sim-btnrow">
+        <button type="button" class="pill on" id="sim-mode-auto" aria-pressed="true">Automatic</button>
+        <button type="button" class="pill" id="sim-mode-single" aria-pressed="false">Single step</button>
+      </div>
+    </div>
+    <div class="sim-cgroup">
+      <span class="sim-cgroup-label">Operation mode</span>
+      <select id="sim-opmode" class="sim-select">
+        <option value="full">Full operation</option>
+        <option value="automatic" selected>Automatic</option>
+        <option value="manual">Manual</option>
+        <option value="testrun">Test run</option>
+        <option value="nooperation">No operation</option>
+      </select>
+    </div>
+    <div class="sim-cgroup">
+      <span class="sim-cgroup-label">Motion enable</span>
+      <button type="button" class="pill" id="sim-me-toggle" aria-pressed="false">OFF</button>
+    </div>
+    <div class="sim-cgroup sim-cgroup--override">
+      <label class="sim-cgroup-label" for="sim-override">Program override</label>
+      <div class="sim-btnrow">
+        <input type="range" id="sim-override" min="0" max="100" step="5" value="100">
+        <span class="sim-override-value mono num" id="sim-override-value">100%</span>
+      </div>
+    </div>
+  </div>
+
+  <p class="sim-singlestep-note box caution" id="sim-singlestep-note" hidden>
+    <b>Single step active</b>
+    Every transition is forced to &ldquo;When command done&rdquo;. Blending is off, so the kinematics path changes from the automatic one and collisions can occur &mdash; only single&#8209;step with the workspace clear.
+  </p>
+
+  <div class="sim-console">
+    <div class="card pad sim-pane sim-pane--program">
+      <h3 class="sim-pane-title">Programming &middot; slot 0</h3>
+      <div class="sim-proglist" id="sim-proglist" role="list" aria-label="LSKI program table, slot 0"></div>
+    </div>
+
+    <div class="card pad sim-pane sim-pane--machine">
+      <h3 class="sim-pane-title">Cartesian portal 3D+A</h3>
+      <div class="sim-canvas-wrap">
+        <canvas id="sim-canvas" class="sim-canvas" width="800" height="420" role="img" aria-label="Animated elevation of the portal robot executing the program"></canvas>
+      </div>
+      <div class="sim-readout">
+        <div class="sim-readout-tile"><span class="sim-readout-label">X</span><span class="sim-readout-value mono num" id="sim-axis-x">250.0 mm</span></div>
+        <div class="sim-readout-tile"><span class="sim-readout-label">Y/Z</span><span class="sim-readout-value mono num" id="sim-axis-z">260.0 mm</span></div>
+        <div class="sim-readout-tile"><span class="sim-readout-label">A</span><span class="sim-readout-value mono num" id="sim-axis-a">0.0&deg;</span></div>
+        <div class="sim-readout-tile"><span class="sim-readout-label">Gripper</span><span class="pill" id="sim-gripper-pill">Open</span></div>
+      </div>
+    </div>
+
+    <div class="card pad sim-pane sim-pane--core">
+      <h3 class="sim-pane-title">LSKI_Core outputs</h3>
+      <div class="sim-status-grid">
+        <div class="sim-status-row"><span class="sim-status-key">actualProgramState</span><span class="sim-status-value" id="sim-out-state">Not initialised</span></div>
+        <div class="sim-status-row"><span class="sim-status-key">actualProgramMode</span><span class="sim-status-value" id="sim-out-progmode">Automatic (1)</span></div>
+        <div class="sim-status-row"><span class="sim-status-key">actualOperationMode</span><span class="sim-status-value" id="sim-out-opmode">Automatic</span></div>
+        <div class="sim-status-row"><span class="sim-status-key">actualProgramOverride</span><span class="sim-status-value mono num" id="sim-out-override">100%</span></div>
+        <div class="sim-status-row"><span class="sim-status-key">programActive</span><span class="sim-status-value" id="sim-out-active">FALSE</span></div>
+        <div class="sim-status-row"><span class="sim-status-key">programInitialized</span><span class="sim-status-value" id="sim-out-init">FALSE</span></div>
+        <div class="sim-status-row"><span class="sim-status-key">fastStopActive</span><span class="sim-status-value" id="sim-out-faststop">FALSE</span></div>
+        <div class="sim-status-row"><span class="sim-status-key">cycleStopRequested</span><span class="sim-status-value" id="sim-out-cyclestop">FALSE</span></div>
+        <div class="sim-status-row"><span class="sim-status-key">status</span><span class="sim-status-value mono num" id="sim-out-status">16#7000</span></div>
+      </div>
+      <div class="sim-subsection">
+        <h4 class="sim-subtitle">Motion queue</h4>
+        <div class="sim-queue" id="sim-queue"><p class="sim-empty">Empty</p></div>
+      </div>
+      <div class="sim-subsection">
+        <h4 class="sim-subtitle">Error buffer</h4>
+        <div class="sim-errbuf" id="sim-errbuf"><p class="sim-empty">No entries</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sim-legend">
+    <div class="sim-legend-item"><span class="sim-arrow-i sim-arrow--static" aria-hidden="true"></span>Interpreter pointer &mdash; <code class="mono">actualSequenceData</code>, the command being interpreted</div>
+    <div class="sim-legend-item"><span class="sim-arrow-m sim-arrow--static" aria-hidden="true"></span>Motion pointer &mdash; <code class="mono">activeSequenceData</code>, the command the kinematics is executing</div>
+    <div class="sim-legend-item"><span class="sim-corner-swatch sim-corner-swatch--blend" aria-hidden="true"></span>Blended corner &mdash; the outgoing move was <span class="tag">Next cycle</span>, so the next queued move rounds through it</div>
+    <div class="sim-legend-item"><span class="sim-corner-swatch sim-corner-swatch--sharp" aria-hidden="true"></span>Sharp corner &mdash; the outgoing move was <span class="tag">When command done</span>, the machine parks fully before continuing</div>
+  </div>
+  <p class="sim-cap-note">Commands 12&ndash;14 and 15&ndash;16 show the interpreter consuming several <span class="tag">Immediately</span> commands in a single PLC cycle &mdash; capped, as in the real interpreter, at 10 commands per sequence per cycle.</p>
+
+  <div class="box">
+    <b>Model, not the library</b>
+    This pane is a browser re&#8209;implementation of LSKI V4.1&rsquo;s documented interpreter, pointer and blending behaviour for teaching purposes. It is not the SIMATIC Kinematics Integrator library itself, and it is not a substitute for the manuals or for commissioning against real axis technology objects.
+  </div>
+</div></section>

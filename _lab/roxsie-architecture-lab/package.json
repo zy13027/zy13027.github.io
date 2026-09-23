@@ -1,0 +1,18 @@
+{
+  "name": "roxsie-architecture-lab",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Interactive teardown of Siemens ROXSIE and the Realtime Information Backbone: stack schematic, live lifetime-buffer simulator and interface budget calculator.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "devDependencies": {
+    "vite": "^8.3.0"
+  }
+}

@@ -1,0 +1,2002 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>SIMATIC Target for Simulink</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* ============================================================
+   Tokens — dark-first, per the Siemens Design System:
+   Deep Blue #000028 is the default background across all media.
+   Bare :root carries the complete DARK palette; the light
+   palette is swapped in consistently under both light triggers.
+   Corner radii are zero throughout: Siemens surfaces are square.
+   ============================================================ */
+:root{
+  --deep-blue:#000028;
+  --base-0:#000028;
+  --base-1:#23233c;
+  --base-2:#23233c;
+  --base-2-alt:#12122e;
+  --overlay:#2d2d45;
+  --hover:#333353;
+  --selected:#40405e;
+  --stroke:#4c4c68;
+  --stroke-soft:#333353;
+
+  --ink:#ffffff;
+  --ink-soft:#ccccd4;
+  --ink-mute:#9999a9;
+  --ink-faint:#737389;
+
+  --accent:#00c1b6;          /* Light Petrol — highlight on dark */
+  --interactive:#00cccc;     /* Interactive Coral — dark appearance */
+  --interactive-ink:#000028;
+  --grad-a:#00ffb9;          /* Bold Green */
+  --grad-b:#00e6dc;          /* Bold Blue  */
+  --focus:#199fff;
+
+  /* technical data colours — reserved for charts and signals */
+  --sig-setpoint:#ffd732;    /* Yellow  — setpoint      */
+  --sig-process:#ef0137;     /* Red     — processValue  */
+  --sig-out:#00bedc;         /* Soft Blue — outPID      */
+  --warn:#ff9000;
+  --grid:#2a2a46;
+
+  --shadow-float:0 12px 32px rgba(0,0,0,.55);
+
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:"Siemens Sans",Arial,"Helvetica Neue",Helvetica,sans-serif;
+
+  --col:1170px;
+  --gut:16px;
+}
+@media (prefers-color-scheme:light){
+  :root:not([data-theme="dark"]){
+    --base-0:#f5f5f5;
+    --base-1:#ffffff;
+    --base-2:#ffffff;
+    --base-2-alt:#e8e8e8;
+    --overlay:#ffffff;
+    --hover:#ededed;
+    --selected:#e0e0de;
+    --stroke:#d6d6d6;
+    --stroke-soft:#e5e5e9;
+
+    --ink:#000028;
+    --ink-soft:#333353;
+    --ink-mute:#66667e;
+    --ink-faint:#7d8099;
+
+    --accent:#009999;        /* Siemens Petrol — highlight on light */
+    --interactive:#007993;   /* Interactive Blue — light appearance */
+    --interactive-ink:#ffffff;
+    --focus:#1491eb;
+
+    --sig-setpoint:#b88c00;
+    --sig-process:#c60029;
+    --sig-out:#00557c;
+    --warn:#ec6602;
+    --grid:#dcdcdc;
+
+    --shadow-float:0 10px 28px rgba(0,0,40,.14);
+  }
+}
+:root[data-theme="light"]{
+  --base-0:#f5f5f5;
+  --base-1:#ffffff;
+  --base-2:#ffffff;
+  --base-2-alt:#e8e8e8;
+  --overlay:#ffffff;
+  --hover:#ededed;
+  --selected:#e0e0de;
+  --stroke:#d6d6d6;
+  --stroke-soft:#e5e5e9;
+  --ink:#000028;
+  --ink-soft:#333353;
+  --ink-mute:#66667e;
+  --ink-faint:#7d8099;
+  --accent:#009999;
+  --interactive:#007993;
+  --interactive-ink:#ffffff;
+  --focus:#1491eb;
+  --sig-setpoint:#b88c00;
+  --sig-process:#c60029;
+  --sig-out:#00557c;
+  --warn:#ec6602;
+  --grid:#dcdcdc;
+  --shadow-float:0 10px 28px rgba(0,0,40,.14);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--base-0);color:var(--ink);
+  font-family:var(--sans);font-size:17px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{margin:0;text-wrap:balance;letter-spacing:-.005em;font-weight:700}
+p{margin:0}
+a{color:var(--interactive)}
+code,kbd,.mono{font-family:var(--mono);font-variant-ligatures:none}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+.wrap{max-width:var(--col);margin:0 auto;padding-left:var(--gut);padding-right:var(--gut)}
+@media(min-width:700px){:root{--gut:24px}}
+@media(min-width:1000px){:root{--gut:40px}}
+@media(min-width:1280px){:root{--gut:64px}}
+
+section{padding-block:clamp(48px,6vw,88px);border-top:1px solid var(--stroke-soft)}
+section:first-of-type{border-top:0}
+
+.topline{
+  font-size:13px;line-height:1.4;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--accent);font-weight:700;margin:0 0 14px
+}
+.h2{font-size:clamp(26px,3.3vw,38px);line-height:1.2}
+.h3{font-size:clamp(19px,2vw,23px);line-height:1.3}
+.lede{font-size:clamp(17px,1.45vw,19px);line-height:1.62;color:var(--ink-soft);max-width:66ch}
+.small{font-size:14px;line-height:1.55;color:var(--ink-mute)}
+.xs{font-size:12.5px;line-height:1.5;color:var(--ink-faint)}
+.sechead{margin-bottom:clamp(20px,2.4vw,32px)}
+.sechead .h2{margin-bottom:12px}
+
+/* ---------------- hero ---------------- */
+.hero{position:relative;overflow:hidden;background:var(--deep-blue);color:#fff;border-top:0;padding-block:0}
+.hero .wrap{position:relative;z-index:2;padding-block:clamp(56px,8vw,104px)}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;opacity:.85}
+.hero::after{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(90deg,rgba(0,0,40,.94) 0%,rgba(0,0,40,.82) 46%,rgba(0,0,40,.30) 100%);
+}
+.hero .topline{color:var(--grad-a)}
+.hero h1{
+  font-size:clamp(34px,5.6vw,60px);line-height:1.08;letter-spacing:-.02em;
+  max-width:24ch;margin-bottom:.5em
+}
+.hero h1 em{
+  font-style:normal;
+  background:linear-gradient(92deg,var(--grad-a),var(--grad-b));
+  -webkit-background-clip:text;background-clip:text;color:transparent
+}
+.hero .lede{color:#ccccd4;max-width:60ch}
+.heroline{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px}
+.chip{
+  font-family:var(--mono);font-size:12px;letter-spacing:.02em;
+  padding:6px 10px;border:1px solid rgba(0,204,204,.45);color:#7ff;background:rgba(0,204,204,.07)
+}
+.hero .chip{white-space:nowrap}
+
+/* ---------------- generic surfaces ---------------- */
+.panel{background:var(--base-1);border:1px solid var(--stroke);padding:clamp(16px,2vw,24px)}
+.panel-alt{background:var(--base-2-alt);border:1px solid var(--stroke)}
+.grid{display:grid;gap:16px}
+.g3{grid-template-columns:repeat(auto-fit,minmax(248px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:14px}
+.kv dt{color:var(--ink-faint);font-family:var(--mono);font-size:12.5px}
+.kv dd{margin:0;color:var(--ink-soft)}
+.num{font-variant-numeric:tabular-nums}
+
+.stack{display:flex;flex-direction:column;gap:12px}
+.role{
+  font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;
+  color:var(--ink-faint)
+}
+.tag{
+  display:inline-block;font-family:var(--mono);font-size:11.5px;
+  padding:3px 7px;border:1px solid var(--stroke);color:var(--ink-mute);background:var(--base-0)
+}
+.tag.opt{border-color:var(--warn);color:var(--warn)}
+.tag.on{border-color:var(--interactive);color:var(--interactive)}
+
+pre{
+  margin:0;overflow-x:auto;background:var(--base-2-alt);border:1px solid var(--stroke);
+  padding:14px 16px;font-family:var(--mono);font-size:12.5px;line-height:1.65;color:var(--ink-soft)
+}
+pre b{color:var(--accent);font-weight:600}
+pre i{color:var(--ink-faint);font-style:normal}
+pre u{color:var(--sig-setpoint);text-decoration:none}
+
+/* ---------------- command-line builder ---------------- */
+.cbform{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));margin-top:14px}
+.cbfield{display:flex;flex-direction:column;gap:4px;min-width:0}
+.cbfield label{font-size:11.5px;color:var(--ink-mute);font-family:var(--mono);line-height:1.35}
+.cbfield input[type=text],.cbfield input[type=number],.cbfield select{
+  background:var(--base-0);border:1px solid var(--stroke);color:var(--ink);
+  padding:7px 9px;font-family:var(--mono);font-size:13px;width:100%
+}
+.cbfield input:focus,.cbfield select:focus{border-color:var(--focus);outline:none}
+.cbfield.err input{border-color:var(--sig-process)}
+.cbfield .errmsg{font-size:11px;color:var(--sig-process);display:none}
+.cbfield.err .errmsg{display:block}
+.cbcheck{display:flex;align-items:center;gap:8px;grid-column:1/-1}
+.cbcheck input[type=checkbox]{width:16px;height:16px;accent-color:var(--interactive)}
+.cbcheck label{font-size:13px;color:var(--ink);font-family:var(--sans)}
+#cbout{min-height:220px;max-height:420px;overflow:auto}
+
+/* ---------------- buttons ---------------- */
+button{font-family:inherit;font-size:15px;cursor:pointer;border-radius:0}
+.btn{
+  border:1px solid transparent;background:var(--interactive);color:var(--interactive-ink);
+  padding:8px 20px;font-weight:700;transition:background .16s ease,color .16s ease
+}
+.btn:hover{background:var(--grad-a);color:#000028}
+.btn.sec{background:transparent;border-color:var(--interactive);color:var(--interactive)}
+.btn.sec:hover{background:var(--hover);color:var(--interactive)}
+.btn.sm{padding:6px 12px;font-size:13px}
+
+/* ---------------- pipeline ---------------- */
+.pipe{display:grid;gap:10px;grid-template-columns:1fr}
+@media(min-width:880px){.pipe{grid-template-columns:repeat(5,1fr);gap:0}}
+.stage{
+  position:relative;text-align:left;background:var(--base-1);border:1px solid var(--stroke);
+  padding:16px 14px 18px;color:var(--ink);display:flex;flex-direction:column;gap:10px;
+  transition:background .18s ease,border-color .18s ease,transform .18s ease
+}
+@media(min-width:880px){.stage+.stage{border-left:0}}
+.stage:hover{background:var(--hover)}
+.stage[aria-selected="true"]{background:var(--base-2-alt);border-color:var(--interactive);z-index:2}
+.stage[aria-selected="true"]::before{
+  content:"";position:absolute;left:-1px;right:-1px;top:-1px;height:3px;
+  background:linear-gradient(90deg,var(--grad-a),var(--grad-b))
+}
+.stage .n{
+  font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);
+  display:flex;align-items:center;gap:8px
+}
+.stage .n span.dot{width:7px;height:7px;background:var(--stroke);border-radius:50%;flex:0 0 auto}
+.stage[data-live="1"] .n span.dot{background:var(--grad-a);box-shadow:0 0 0 4px rgba(0,255,185,.16)}
+.stage h4{font-size:15.5px;line-height:1.28}
+.stage .who{font-size:12.5px;color:var(--accent);font-weight:700;letter-spacing:.02em}
+.stage .arts{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto}
+.art{
+  font-family:var(--mono);font-size:11px;padding:2px 6px;border:1px solid var(--stroke);
+  color:var(--ink-mute);transition:border-color .2s,color .2s,background .2s
+}
+.art[data-hot="1"]{border-color:var(--grad-b);color:var(--grad-b);background:rgba(0,230,220,.08)}
+
+.flowrail{height:34px;position:relative;margin:2px 0 14px;overflow:hidden}
+.flowrail svg{position:absolute;inset:0;width:100%;height:100%}
+.detail{margin-top:14px}
+.detail .h3{margin-bottom:10px}
+.pipebar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-bottom:16px}
+.seg{display:inline-flex;border:1px solid var(--stroke);flex-wrap:wrap}
+.seg button{
+  background:var(--base-1);color:var(--ink-mute);border:0;border-right:1px solid var(--stroke);
+  padding:8px 14px;font-size:12.5px;font-weight:700;letter-spacing:.01em;white-space:nowrap;
+  transition:background .16s ease,color .16s ease
+}
+.seg button:last-child{border-right:0}
+.seg button:hover{background:var(--hover)}
+.seg button[aria-checked="true"]{background:var(--interactive);color:var(--interactive-ink)}
+
+/* ---------------- simulator ---------------- */
+.sim{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:960px){.sim{grid-template-columns:minmax(0,1fr) 316px}}
+.scopewrap{background:var(--base-2-alt);border:1px solid var(--stroke);padding:12px}
+.scopehead{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:baseline;margin-bottom:8px}
+.scopehead .t{font-size:13px;font-weight:700;letter-spacing:.02em}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-left:auto;font-size:12px}
+.legend i{display:inline-block;width:14px;height:3px;margin-right:6px;vertical-align:middle}
+canvas#scope{display:block;width:100%;height:340px;max-width:100%}
+@media(max-width:640px){canvas#scope{height:250px}}
+.simbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:1px;background:var(--stroke);margin-top:12px}
+.ro{background:var(--base-1);padding:9px 11px}
+.ro .l{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+.ro .v{font-family:var(--mono);font-size:17px;font-variant-numeric:tabular-nums;margin-top:2px}
+
+.ctrls{display:flex;flex-direction:column;gap:14px}
+.ctrl{display:block}
+.ctrl .row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctrl .nm{font-family:var(--mono);font-size:11.5px;color:var(--ink-mute);word-break:break-all}
+.ctrl .val{font-family:var(--mono);font-size:14px;font-variant-numeric:tabular-nums;color:var(--ink)}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent;margin:2px 0 0
+}
+input[type=range]::-webkit-slider-runnable-track{height:3px;background:var(--stroke)}
+input[type=range]::-moz-range-track{height:3px;background:var(--stroke)}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;background:var(--interactive);
+  border-radius:50%;margin-top:-5.5px;border:0
+}
+input[type=range]::-moz-range-thumb{
+  width:14px;height:14px;background:var(--interactive);border-radius:50%;border:0
+}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+
+/* ---------------- block anatomy ---------------- */
+.blocks{display:grid;gap:14px;grid-template-columns:1fr}
+@media(min-width:900px){.blocks{grid-template-columns:300px minmax(0,1fr)}}
+.blist{display:flex;flex-direction:column;gap:1px;background:var(--stroke)}
+.bitem{
+  text-align:left;background:var(--base-1);border:0;padding:11px 13px;color:var(--ink);
+  display:flex;gap:10px;align-items:baseline;transition:background .15s
+}
+.bitem:hover{background:var(--hover)}
+.bitem[aria-selected="true"]{background:var(--base-2-alt);box-shadow:inset 3px 0 0 var(--interactive)}
+.bitem .k{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);flex:0 0 26px}
+.bitem .nm{font-family:var(--mono);font-size:12.5px;line-height:1.4;word-break:break-all}
+.bitem em{display:block;font-style:normal;font-size:11px;color:var(--ink-faint);margin-top:2px}
+.bpane{display:flex;flex-direction:column;gap:14px;min-width:0}
+.where{display:flex;flex-wrap:wrap;gap:8px}
+
+/* ---------------- MQTT diagram ---------------- */
+.mqttwrap{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:960px){.mqttwrap{grid-template-columns:minmax(0,1fr) 300px}}
+.mqtt{display:flex;flex-direction:column;gap:0;align-items:stretch}
+@media(min-width:700px){.mqtt{flex-direction:row;align-items:center}}
+.mqttnode{
+  flex:1 1 0;background:var(--base-1);border:1px solid var(--stroke);padding:14px 12px;text-align:center;
+  display:flex;flex-direction:column;gap:3px;justify-content:center;min-height:64px;
+  transition:background .18s ease,border-color .18s ease
+}
+.mqttnode .t{font-size:13.5px;font-weight:700}
+.mqttnode .s{font-size:11px;color:var(--ink-faint)}
+.mqttnode.active{border-color:var(--interactive);background:var(--base-2-alt)}
+.mqttedge{
+  flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  padding:8px 4px;min-height:28px
+}
+@media(min-width:700px){.mqttedge{width:96px;padding:0 4px}}
+.mqttedge .line{position:relative;width:70%;height:3px;background:var(--stroke)}
+@media(min-width:700px){.mqttedge .line{width:100%}}
+.mqttedge .topic{font-family:var(--mono);font-size:10px;color:var(--ink-faint);white-space:nowrap}
+.mqttedge .arrow{font-family:var(--mono);font-size:14px;color:var(--ink-faint);line-height:1}
+.mqttedge.active .line{background:var(--grad-b)}
+.mqttedge.active .topic{color:var(--accent);font-weight:700}
+.mqttedge.active .arrow{color:var(--grad-b)}
+.mqttedge .pkt{
+  position:absolute;top:-3.5px;left:2%;width:8px;height:8px;border-radius:50%;background:var(--grad-a);opacity:0
+}
+.mqttedge.active .pkt{opacity:1;animation:mqttflow 1.15s ease-in-out infinite}
+.mqttedge.active.rev .pkt{animation-direction:reverse}
+@keyframes mqttflow{0%{left:2%}100%{left:88%}}
+#mqttsteps button{
+  background:var(--base-1);border:1px solid var(--stroke);color:var(--ink-mute);font-family:var(--mono);
+  font-size:12px;font-weight:700;padding:6px 0;transition:background .15s,color .15s,border-color .15s
+}
+#mqttsteps button:hover{background:var(--hover)}
+#mqttsteps button[aria-selected="true"]{background:var(--interactive);color:var(--interactive-ink);border-color:var(--interactive)}
+
+/* ---------------- tables ---------------- */
+.danger{border:1px solid var(--warn);background:var(--base-1);padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+.danger .ic{font-family:var(--mono);font-size:10.5px;font-weight:700;color:var(--warn);border:1px solid var(--warn);padding:2px 6px;flex:0 0 auto;white-space:nowrap;letter-spacing:.02em}
+
+.dtrow{cursor:pointer}
+.dtrow:hover{background:var(--hover)}
+.dtrow[aria-selected="true"]{background:var(--base-2-alt);box-shadow:inset 3px 0 0 var(--interactive)}
+
+.tbox{overflow-x:auto;border:1px solid var(--stroke);background:var(--base-1)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:560px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--stroke-soft);vertical-align:top}
+thead th{
+  background:var(--base-2-alt);font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-mute);white-space:nowrap
+}
+tbody tr:last-child td{border-bottom:0}
+td .mono{font-size:12.5px}
+td.ok{color:var(--accent);font-weight:700}
+td.no{color:var(--ink-faint)}
+
+/* ---------------- traps ---------------- */
+.traps{display:grid;gap:1px;background:var(--stroke)}
+.trap{background:var(--base-1);padding:16px 18px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px}
+.trap .ic{
+  width:26px;height:26px;flex:0 0 26px;display:grid;place-items:center;
+  border:1px solid var(--warn);color:var(--warn);font-family:var(--mono);font-size:13px;font-weight:700
+}
+.trap h4{font-size:15px;margin-bottom:5px}
+.trap p{font-size:14px;color:var(--ink-soft);overflow-wrap:anywhere}
+.trap .src{font-size:11.5px;color:var(--ink-faint);font-family:var(--mono);margin-top:6px}
+#alarmlist .trap .ic{width:auto;min-width:26px;flex:0 0 auto;padding:0 4px;font-size:11px}
+.trap .ic.type-info{border-color:var(--accent);color:var(--accent)}
+.trap .ic.type-warning{border-color:var(--warn);color:var(--warn)}
+.trap .ic.type-error{border-color:var(--sig-process);color:var(--sig-process)}
+.achip{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.04em;padding:2px 6px;margin-right:8px;border:1px solid currentColor;white-space:nowrap}
+.achip.type-info{color:var(--accent)}
+.achip.type-warning{color:var(--warn)}
+.achip.type-error{color:var(--sig-process)}
+.trap.no-src .src{display:none}
+#alarmq::placeholder{color:var(--ink-faint)}
+
+footer{background:var(--base-2-alt);border-top:1px solid var(--stroke);padding-block:40px}
+footer h4{font-size:13px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:12px}
+footer ul{margin:0;padding:0;list-style:none;display:grid;gap:8px;font-size:13.5px}
+footer li span{color:var(--ink-faint);font-family:var(--mono);font-size:12px}
+
+.themetoggle{
+  position:fixed;right:12px;z-index:60;top:calc(12px + env(safe-area-inset-top,0px));
+  background:var(--overlay);border:1px solid var(--stroke);color:var(--ink);
+  padding:7px 11px;font-size:12px;box-shadow:var(--shadow-float)
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001s!important;transition-duration:.001s!important}
+}
+</style>
+
+<button class="themetoggle" id="themebtn" type="button" aria-label="Switch colour theme">Light / dark</button>
+
+<!-- ============================ HERO ============================ -->
+<section class="hero">
+  <canvas id="herocanvas" aria-hidden="true"></canvas>
+  <div class="wrap">
+    <p class="topline">Unofficial notes &middot; SIMATIC Target for Simulink &middot; V6.0 SP3 &middot; Manual A5E38915112&#8209;AR, 01/2026</p>
+    <h1>Your Simulink model, <em>compiled and running inside</em> an S7&#8209;1500 CPU &mdash; or on the Edge.</h1>
+    <p class="lede">SIMATIC Target is a Simulink system target file: two TLC files,
+      <code>_grt</code> for Simulink&nbsp;Coder and <code>_ert</code> for Embedded&nbsp;Coder, that tell the Coder
+      what machine to build for. For an ODK&#8209;enabled S7&#8209;1500 controller it turns the model into C/C++,
+      builds that against ODK&nbsp;1500S into a shared object, and writes the SCL blocks your S7 program calls it
+      from. For the Siemens Industrial Edge Runtime it instead packages the binaries and hands them to LiveTwin.
+      Either way, the block keeps the model's own interface.</p>
+    <p class="small" style="margin-top:10px">Personal study notes &mdash; not a Siemens publication. The manuals on Siemens Industry Online Support are authoritative.</p>
+    <div class="heroline">
+      <span class="chip">Simulink&nbsp;model</span>
+      <span class="chip">&rarr;&nbsp;C/C++</span>
+      <span class="chip">&rarr;&nbsp;.so&nbsp;(realtime)</span>
+      <span class="chip">&rarr;&nbsp;SCL&nbsp;FBs</span>
+      <span class="chip">&rarr;&nbsp;OB&nbsp;CyclicInterrupt</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ WHAT ============================ -->
+<section>
+  <div class="wrap">
+    <div class="sechead">
+      <p class="topline">What it actually is</p>
+      <h2 class="h2">Not a code exporter. A target.</h2>
+      <p class="lede">"Target" is the MathWorks word: a system target file that tells the Coder what kind of
+        machine it is generating for. There are two — <code>Simatic_Target_V6_0_grt.tlc</code> for
+        Simulink&nbsp;Coder, <code>Simatic_Target_V6_0_ert.tlc</code> for Embedded&nbsp;Coder — and either one lets
+        you pick a runtime: an S7&#8209;1500 Software Controller (ODK) or LiveTwin on an Industrial Edge device.
+        Pressing Build in Simulink then produces loadable artefacts for whichever you chose, rather than generic
+        C. <span class="xs mono">Manual p.15, p.26</span></p>
+    </div>
+
+    <div class="grid g3">
+      <div class="panel stack">
+        <p class="role">The compile chain</p>
+        <h3 class="h3">Simulink Coder, or Embedded Coder</h3>
+        <p class="small">Either Coder emits C/C++ from the model. For the ODK runtime, the ODK&nbsp;1500S compiler
+          turns that into a shared object and SIMATIC Target writes the SCL wrapper so the S7 program has
+          something to call. Build with <i>Code &gt; C/C++ Code &gt; Build Model</i> or the <b>Build</b> button on
+          the SIMATIC Target toolstrip tab — <code>Ctrl+B</code> is the shortcut for the menu item. The toolstrip
+          also holds Model Settings, Target Options, Monitor &amp; Tune, Control Panel, Tune Parameters and
+          Online Support. <span class="xs mono">Manual p.26, p.75, p.84</span></p>
+      </div>
+      <div class="panel stack">
+        <p class="role">Where the model runs</p>
+        <h3 class="h3">Inside the CPU, not beside it — or on the Edge</h3>
+        <p class="small">The compiled SO file runs on an S7&#8209;1500 Software Controller, an ET&nbsp;200SP Open
+          Controller, a CPU&nbsp;1518&nbsp;MFP/ODK, or S7&#8209;PLCSIM&nbsp;Advanced V3.0 or higher — the model
+          executes there, one model step per FB call. The other runtime is LiveTwin on an Industrial Edge device,
+          which runs the model as a 1D simulation package instead of an SO file.
+          <span class="xs mono">Manual p.15, p.77, p.17, p.110</span></p>
+      </div>
+      <div class="panel stack">
+        <p class="role">What you get to call</p>
+        <h3 class="h3">The interface survives</h3>
+        <p class="small">The generated FB carries the model's own inputs and outputs — the temperature example's
+          <code>setpoint</code> and <code>processValue</code> in, <code>outPID</code> out — plus
+          <code>EN</code>/<code>ENO</code> and a <code>STATUS</code> output for diagnostics. It reads like a
+          library block, not like generated code.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ PIPELINE ============================ -->
+<section>
+  <div class="wrap">
+    <div class="sechead">
+      <p class="topline">The workflow</p>
+      <h2 class="h2" id="pipehead">Five steps — and the runtime you pick decides where they lead.</h2>
+      <p class="lede" id="pipelede">The build drops two things in the output folder, and they reach the CPU by
+        separate routes: the <b>SCL source</b> goes into the TIA Portal project and becomes blocks, while the
+        <b>.so file</b> goes onto the CPU's web server and is pulled into RAM at startup. Missing either one
+        is the most common reason a first attempt does nothing.</p>
+    </div>
+
+    <div class="pipebar">
+      <div class="seg" id="rtseg" role="radiogroup" aria-label="Runtime">
+        <button type="button" role="radio" aria-checked="true" data-rt="odk">S7&#8209;1500 PLC (ODK)</button>
+        <button type="button" role="radio" aria-checked="false" data-rt="livetwin">LiveTwin for Industrial Edge</button>
+      </div>
+      <button class="btn sm" id="pipeplay" type="button">Pause flow</button>
+      <span class="small">Select a step for detail.</span>
+    </div>
+
+    <div class="pipe" id="pipe" role="tablist" aria-label="Workflow steps"></div>
+    <div class="flowrail" aria-hidden="true">
+      <svg id="rail" viewBox="0 0 1000 34" preserveAspectRatio="none"></svg>
+    </div>
+    <div class="panel detail" id="pipedetail" role="region" aria-live="polite"></div>
+  </div>
+</section>
+
+<!-- ============================ COMMAND LINE ============================ -->
+<section>
+  <div class="wrap">
+    <div class="sechead">
+      <p class="topline">Or skip the dialogs</p>
+      <h2 class="h2">Set every option from a script.</h2>
+      <p class="lede"><span class="mono">set_SIMATICparam(model, name, value)</span> and
+        <span class="mono">get_SIMATICparam</span> mirror MATLAB's own <span class="mono">set_param</span> /
+        <span class="mono">get_param</span> — nearly every Target option has a command-line name. Siemens recommends
+        the user interface for consistency; three fields have <b>no command-line parameter at all, by design</b>:
+        username, password and the TLS private-key passphrase. <span class="xs mono">Manual p.67</span></p>
+    </div>
+
+    <div class="grid" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px" id="cbgrid">
+      <div class="panel stack">
+        <div class="cbfield">
+          <label for="cbModelName">Model name</label>
+          <input type="text" id="cbModelName" value="Model_PID">
+        </div>
+        <div class="cbform" id="cbform"></div>
+      </div>
+      <div class="stack">
+        <div class="panel stack" style="gap:8px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+            <p class="role" style="margin:0">Generated script</p>
+            <span>
+              <button class="btn sec sm" id="cbcopy" type="button">Copy script</button>
+              <span class="xs" id="cbcopystatus" role="status" style="margin-left:8px"></span>
+            </span>
+          </div>
+          <pre id="cbout"></pre>
+        </div>
+        <p class="xs">Values are strings in single quotes, exactly as the manual's option table shows them — even
+          the numeric ones. A quote inside a text field is doubled, MATLAB's own escaping rule.
+          <span class="xs mono">Manual p.67–72</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ SIMULATOR ============================ -->
+<section>
+  <div class="wrap">
+    <div class="sechead">
+      <p class="topline">The worked example, live</p>
+      <h2 class="h2">The temperature loop from the application example, running here.</h2>
+      <p class="lede">A discrete PID built in Simulink drives a PT3 temperature process (three PT1 lags,
+        10&nbsp;s / 10&nbsp;s / 5&nbsp;s). In the real system the PID is the compiled model inside the CPU and
+        the process is the <code>LSim_PT3</code> block in the S7 program, both called from
+        <code>OB&nbsp;CyclicInterrupt</code> every 100&nbsp;ms. The gains below are the values the shipped
+        example was generated with. Move them and you are doing exactly what External Mode or a watch table
+        does to a running CPU.</p>
+    </div>
+
+    <div class="sim">
+      <div>
+        <div class="scopewrap">
+          <div class="scopehead">
+            <span class="t">Scope &mdash; Temperature value</span>
+            <span class="legend">
+              <span><i style="background:var(--sig-setpoint)"></i>setpoint</span>
+              <span><i style="background:var(--sig-process)"></i>processValue</span>
+              <span><i style="background:var(--sig-out)"></i>outPID</span>
+            </span>
+          </div>
+          <canvas id="scope" width="900" height="340" role="img"
+                  aria-label="Live scope of setpoint, process value and PID output against time"></canvas>
+        </div>
+
+        <div class="simbar">
+          <button class="btn" id="runbtn" type="button">Pause</button>
+          <button class="btn sec" id="resetbtn" type="button">Restart run</button>
+          <label class="small" style="display:flex;gap:8px;align-items:center">
+            Speed
+            <input type="range" id="speed" min="1" max="30" step="1" value="10" style="width:104px">
+            <span class="mono num" id="speedv">10&times;</span>
+          </label>
+        </div>
+
+        <div class="readouts">
+          <div class="ro"><div class="l">Model time</div><div class="v num" id="ro-t">0.0 s</div></div>
+          <div class="ro"><div class="l">processValue</div><div class="v num" id="ro-pv">0.00</div></div>
+          <div class="ro"><div class="l">outPID</div><div class="v num" id="ro-u">0.00</div></div>
+          <div class="ro"><div class="l">OneStep calls</div><div class="v num" id="ro-n">0</div></div>
+          <div class="ro"><div class="l">Overshoot</div><div class="v num" id="ro-os">&mdash;</div></div>
+        </div>
+        <p class="xs" style="margin-top:10px">Solved at the model's own step size,
+          <span class="mono">Ts&nbsp;=&nbsp;0.1&nbsp;s</span> — forward-Euler integrator and derivative filter,
+          output clamped to the saturation limits, exactly as the generated
+          <span class="mono">Model_PIDOneStep</span> does one step per call.</p>
+      </div>
+
+      <div class="panel ctrls">
+        <div>
+          <p class="role" style="margin-bottom:4px">Writable model parameters</p>
+          <p class="xs">Names as they appear in the generated
+            <span class="mono">Model_PIDParams</span> structure.</p>
+        </div>
+        <div id="ctrlhost" class="ctrls"></div>
+        <div>
+          <p class="role" style="margin-bottom:6px">Presets</p>
+          <div class="presets">
+            <button class="btn sec sm" data-preset="stock" type="button">As generated</button>
+            <button class="btn sec sm" data-preset="sat20" type="button">Upper limit&nbsp;20</button>
+            <button class="btn sec sm" data-preset="hot" type="button">P&nbsp;=&nbsp;4.5</button>
+            <button class="btn sec sm" data-preset="noi" type="button">I&nbsp;=&nbsp;0</button>
+          </div>
+          <p class="xs" style="margin-top:10px">Upper&nbsp;limit&nbsp;20 reproduces the manual's External Mode
+            demonstration: <span class="mono">outPID</span> clamps at 20 and the process settles there
+            instead of at 50.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ BLOCKS ============================ -->
+<section>
+  <div class="wrap">
+    <div class="sechead">
+      <p class="topline">What lands in your project</p>
+      <h2 class="h2">The generated blocks, and where each one is called.</h2>
+      <p class="lede">Importing the SCL source and choosing <i>Generate blocks from source</i> produces this
+        set. Which optional objects appear depends on what you ticked before the build. The interfaces below
+        are read from the SCL that ships with the example — model name <code>Model_PID</code>, so every
+        object is prefixed <code>Model_PID</code>.</p>
+    </div>
+    <div class="blocks">
+      <div class="blist" id="blist" role="tablist" aria-label="Generated blocks"></div>
+      <div class="bpane" id="bpane"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ DATA TYPES ============================ -->
+<section>
+  <div class="wrap">
+    <div class="sechead">
+      <p class="topline">What crosses the boundary</p>
+      <h2 class="h2">Signals, parameters and types that survive the trip.</h2>
+      <p class="lede">Every basic Simulink type maps to one ODK type, one C++ type and one STEP&nbsp;7 type — click
+        a row for the SCL declaration it produces. <span class="xs mono">Manual p.127</span></p>
+    </div>
+
+    <div class="tbox" style="margin-bottom:8px">
+      <table>
+        <thead><tr><th>Simulink</th><th>ODK</th><th>C++</th><th>STEP 7</th></tr></thead>
+        <tbody id="dtypebody"></tbody>
+      </table>
+    </div>
+    <div class="tbox" style="margin-bottom:22px">
+      <pre id="dtypeex" style="border:0"></pre>
+    </div>
+
+    <div class="grid g2" style="margin-bottom:22px">
+      <div>
+        <p class="role" style="margin-bottom:8px">STEP 7 access — complex types</p>
+        <div class="tbox">
+          <table>
+            <thead><tr><th>Contents</th><th>Arrays</th><th>Bus objects</th><th>Enumerations</th><th>Complex numbers</th></tr></thead>
+            <tbody>
+              <tr><td>Inputs/outputs</td><td class="ok">&#10003;</td><td class="ok">&#10003;</td><td class="ok">&#10003;</td><td class="ok">&#10003;</td></tr>
+              <tr><td>Parameters</td><td class="ok">&#10003;</td><td class="ok">&#10003;</td><td class="ok">&#10003;</td><td class="ok">&#10003;</td></tr>
+              <tr><td>Internal signals</td><td class="ok">&#10003;</td><td class="ok">&#10003;</td><td class="ok">&#10003;</td><td class="ok">&#10003;</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <p class="role" style="margin-bottom:8px">Web server access — complex types</p>
+        <div class="tbox">
+          <table>
+            <thead><tr><th>Contents</th><th>Arrays</th><th>Bus objects</th><th>Enumerations</th><th>Complex numbers</th></tr></thead>
+            <tbody>
+              <tr><td>Parameters</td><td class="ok">&#10003;</td><td class="ok">&#10003;</td><td class="no">&#10007;</td><td class="ok">&#10003;</td></tr>
+              <tr><td>Internal signals</td><td class="no">&#10007;</td><td class="no">&#10007;</td><td class="no">&#10007;</td><td class="no">&#10007;</td></tr>
+              <tr><td>Scoping</td><td class="no">&#10007;</td><td class="no">&#10007;</td><td class="no">&#10007;</td><td class="no">&#10007;</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <p class="xs" style="margin-bottom:22px">Bus objects compile into PLC data types for the S7 program.
+      <span class="xs mono">Manual p.127–128</span></p>
+
+    <div class="tbox" style="margin-bottom:8px">
+      <table>
+        <thead><tr><th>Storage class</th><th>Parameter access</th><th>Internal signals</th></tr></thead>
+        <tbody>
+          <tr><td>Auto</td><td class="ok">Yes, if cast to a supported class</td><td class="ok">Yes, if cast to a supported class</td></tr>
+          <tr><td>Model default</td><td class="ok">&#10003;</td><td class="ok">&#10003;</td></tr>
+          <tr><td>ExportedGlobal</td><td class="ok">&#10003;</td><td class="ok">&#10003;</td></tr>
+          <tr><td>ImportedExtern</td><td class="ok">&#10003;</td><td class="ok">&#10003;</td></tr>
+          <tr><td>ImportedExternPointer</td><td class="no">&#10007; — build error 31 for tunable params</td><td class="no">&#10007;</td></tr>
+          <tr><td>Custom storage class</td><td class="ok">&#10003; (static-variable CSCs ignored — warning 60; &gt;64 classes lose grouping — warning 62)</td><td class="ok">&#10003; (localizable signals not accessible — warning 61)</td></tr>
+          <tr><td>Reusable / Localizable</td><td class="no">&mdash;</td><td class="no">&#10007; — not supported for internal signals</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="xs" style="margin-bottom:22px">The storage-class selection mask — <i>All</i> or <i>Customized</i> — is
+      changeable at runtime through <span class="mono">ReadWriteParameters</span>' <span class="mono">storageClasses</span>
+      input. <span class="xs mono">Manual p.100, p.104, p.47–48</span></p>
+
+    <div class="panel stack">
+      <p class="role">Stateflow</p>
+      <p class="small">STEP&nbsp;7 gets read access to active states through <span class="mono">chartStates</span>.
+        The web view goes further: charts, Simulink functions and states inside charts, graphical functions,
+        hierarchies, atomic subcharts, boxes and state transition tables (shown as a chart) all display. It does
+        <b>not</b> show MATLAB functions in charts, truth tables, or subcharts nested inside subcharts — and
+        transitions, parallel states and Moore charts are not shown as activities. Embedded Coder's <i>Use bitsets
+        for storing state configuration</i> (<span class="mono">StateBitsets</span>) must be off for Stateflow
+        access, or STEP&nbsp;7 and web access to states is blocked (warning 21).
+        <span class="xs mono">Manual p.123–126, p.133</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ SEVERAL MODELS ============================ -->
+<section>
+  <div class="wrap">
+    <div class="sechead">
+      <p class="topline">More than one loop on the CPU</p>
+      <h2 class="h2">Several models, one CPU.</h2>
+      <p class="lede">Since V6.0&nbsp;SP1, several Simulink models can be built into different software units and
+        run on the same CPU; since <b>V6.0&nbsp;SP2</b>, those units can carry namespaces, with TIA Portal
+        V19&nbsp;or&nbsp;later. <span class="xs mono">Manual p.84–88</span></p>
+    </div>
+
+    <div class="panel" id="multidiag" aria-hidden="true" style="margin-bottom:18px;overflow:hidden">
+      <svg viewBox="0 0 640 190" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block" role="img" aria-label="Two Simulink models build into two namespaced software units, both running on one CPU">
+        <g font-family="var(--mono)">
+          <rect x="20" y="16" width="150" height="46" fill="none" stroke="var(--stroke)"></rect>
+          <text x="95" y="44" text-anchor="middle" fill="var(--ink-soft)" font-size="13">Model A</text>
+          <rect x="20" y="128" width="150" height="46" fill="none" stroke="var(--stroke)"></rect>
+          <text x="95" y="156" text-anchor="middle" fill="var(--ink-soft)" font-size="13">Model B</text>
+
+          <path d="M170 39 H260" stroke="var(--grad-b)" fill="none" stroke-width="1.5"></path>
+          <path d="M170 151 H260" stroke="var(--grad-a)" fill="none" stroke-width="1.5"></path>
+
+          <rect x="260" y="16" width="180" height="46" fill="none" stroke="var(--grad-b)"></rect>
+          <text x="350" y="38" text-anchor="middle" fill="var(--ink)" font-size="12">Software unit A</text>
+          <text x="350" y="53" text-anchor="middle" fill="var(--ink-faint)" font-size="10.5">namespace A</text>
+          <rect x="260" y="128" width="180" height="46" fill="none" stroke="var(--grad-a)"></rect>
+          <text x="350" y="150" text-anchor="middle" fill="var(--ink)" font-size="12">Software unit B</text>
+          <text x="350" y="165" text-anchor="middle" fill="var(--ink-faint)" font-size="10.5">namespace B</text>
+
+          <path d="M440 39 C 500 39, 500 95, 520 95" stroke="var(--grad-b)" fill="none" stroke-width="1.5"></path>
+          <path d="M440 151 C 500 151, 500 95, 520 95" stroke="var(--grad-a)" fill="none" stroke-width="1.5"></path>
+
+          <rect x="520" y="65" width="100" height="60" fill="none" stroke="var(--interactive)"></rect>
+          <text x="570" y="90" text-anchor="middle" fill="var(--ink)" font-size="12">One CPU</text>
+          <text x="570" y="106" text-anchor="middle" fill="var(--ink-faint)" font-size="10">runtime</text>
+        </g>
+      </svg>
+    </div>
+
+    <div class="grid g2">
+      <div class="panel stack">
+        <p class="role">Naming and namespaces</p>
+        <p class="small">Target prefixes every generated element with <span class="mono">&lt;ModelName&gt;</span> —
+          default OB/DB names are <span class="mono">&lt;ModelName&gt;BlockName</span> — and a unit's namespace
+          preset is applied to the program blocks and PLC data types generated into it. The <i>Published</i>
+          attribute is preserved during the build: a called FB and its instance DB must be Published at the same
+          time, or TIA Portal fails to compile. Running External Mode on several models at once needs a different
+          Port Number <i>and</i> Connection ID for each. <span class="xs mono">Manual p.86–88</span></p>
+      </div>
+      <div class="panel stack">
+        <p class="role">Referenced models</p>
+        <p class="small">Supported since V1.0&nbsp;Update&nbsp;1. Almost every setting comes from the parent
+          model only — access to parameters, internal signals and Stateflow states are the exceptions, evaluated
+          per referenced model. External Mode enabled in the parent covers its referenced models too, and a
+          referenced model's own <i>Interface</i> setting must be <span class="mono">External mode</span> or
+          <span class="mono">None</span>, or compiling fails. <span class="xs mono">Manual p.92–93</span></p>
+      </div>
+      <div class="panel stack">
+        <p class="role">PLCSIM Advanced, in the library</p>
+        <p class="small">The SIMATIC Target Simulink library ships a ready-made <b>PLCSIM Advanced block</b> for
+          software-in-the-loop coupling, alongside the OneStep/Load/Unload family.
+          <span class="xs mono">Manual p.108</span></p>
+      </div>
+      <div class="panel stack">
+        <p class="role">S-functions</p>
+        <p class="small">Supported three ways: <b>non-inlined</b> (a plain C/C++ MEX S-function, no matching
+          <span class="mono">.tlc</span>), <b>inlined</b> (with a hand-written <span class="mono">.tlc</span>), or
+          generated via the <b>S-Function Builder</b> block or the <b>Legacy Code Tool</b>, which can produce both
+          the inlined S-function and its TLC for you. <span class="xs mono">Manual p.106–107</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ RUNTIME ACCESS ============================ -->
+<section>
+  <div class="wrap">
+    <div class="sechead">
+      <p class="topline">Once it is running</p>
+      <h2 class="h2">Three ways into a live model — and none of them persist by default.</h2>
+      <p class="lede">Every route below writes to the model in RAM. Restart the CPU and the values compiled
+        into the .so come back. Making a change survive is a separate, deliberate act.</p>
+    </div>
+
+    <div class="danger" style="margin-bottom:18px">
+      <span class="ic">&#8212;warn</span>
+      <p class="small" style="color:var(--ink)"><b>Test purposes only.</b> External Mode is meant for the test
+        environment: no CPU password is required to control tags over it, so changing values while the plant is
+        operating can cause damage or injury if something goes wrong. <span class="xs mono">Manual p.94</span></p>
+    </div>
+
+    <div class="tbox" style="margin-bottom:18px">
+      <table>
+        <thead><tr>
+          <th>Route</th><th>Needs, before the build</th><th>Reaches</th><th>Sees signals</th><th>Survives restart</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td><b>Simulink External Mode</b><div class="xs">Connect from the model, TCP&nbsp;17725 (or MQTT&nbsp;9883 for LiveTwin)</div></td>
+            <td><span class="mono">Interface = External&nbsp;Mode</span>, CPU IP in MEX file arguments, stop time <span class="mono">inf</span>; optionally TLS — Secure Connection, optional Mutual TLS, certificates from the TIA Portal Certificate Manager via <span class="mono">TCON_IP_V4_SEC</span></td>
+            <td>Any block parameter, live, from its own dialog</td>
+            <td class="ok">Yes — Simulink Scope</td>
+            <td class="no">No</td>
+          </tr>
+          <tr>
+            <td><b>STEP&nbsp;7 watch table</b><div class="xs">via <span class="mono">…ReadWriteParameters</span></div></td>
+            <td><span class="mono">Enable parameter access with STEP&nbsp;7</span>; <span class="mono">Default parameter behavior = Tunable</span></td>
+            <td>The tunable parameter set, as a PLC data type</td>
+            <td class="ok">Yes — with internal-signal access ticked</td>
+            <td class="no">No — until you snapshot</td>
+          </tr>
+          <tr>
+            <td><b>User-defined website</b><div class="xs">Web server API login page on newer firmware</div></td>
+            <td><span class="mono">Generate model diagrams for PLC Web Server</span></td>
+            <td>Parameters under <i>Params</i>, <i>WorkspaceParams</i> or <i>ModelWorkspaceParams</i>, filtered by storage class</td>
+            <td class="ok">Yes — browser Scope, no MATLAB needed</td>
+            <td class="no">No</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="xs" style="margin-bottom:18px">After a simulation finishes or is cancelled, cycle the CPU STOP&nbsp;&rarr;&nbsp;RUN before connecting External Mode again, and run OneStep at least once before connecting — steps taken before the connection are lost. Scope block names must not contain blanks. <span class="xs mono">Manual p.97–98, p.119–121</span></p>
+
+    <div class="grid g2">
+      <div class="panel stack">
+        <p class="role">Do not run both</p>
+        <h3 class="h3">External Mode and the web visualisation are mutually exclusive</h3>
+        <p class="small">This rule comes from the application example, not the manual: the example project wires
+          an open contact ahead of the <span class="mono">Model_PIDCallExtMode</span> call for exactly this
+          reason. Pick one per commissioning session.</p>
+      </div>
+      <div class="panel stack">
+        <p class="role">Making it stick</p>
+        <h3 class="h3">Snapshot, then set at startup</h3>
+        <p class="small">Tune by whichever route. Monitor the <span class="mono">GlobalParameters</span> DB, take a
+          snapshot of the actual values, copy them to start values, then set
+          <span class="mono">paramAccess</span> and <span class="mono">writeActive</span> in
+          <span class="mono">OB&nbsp;Startup</span> so the write block pushes them into the model on every
+          restart. Download and restart the CPU. Alternatively, change the model and rebuild — and if the block
+          interface changed, re&#8209;import the SCL source. Either way, changes made from STEP&nbsp;7 live only in
+          work memory and reset the moment the ODK object is re-initialised. <span class="xs mono">Manual p.102</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ MQTT / LIVETWIN EXTERNAL MODE ============================ -->
+<section>
+  <div class="wrap">
+    <div class="sechead">
+      <p class="topline">The LiveTwin path, once it is running</p>
+      <h2 class="h2">Model dynamics over MQTT.</h2>
+      <p class="lede">On LiveTwin, External Mode does not open a TCP socket to the CPU — it publishes and
+        subscribes through the External Databus app, an MQTT broker on the Edge device.
+        <span class="xs mono">Manual p.98–99</span></p>
+    </div>
+
+    <div class="mqttwrap">
+      <div>
+        <div class="mqtt" id="mqttdiag" aria-hidden="true">
+          <div class="mqttnode" id="mqn-simulink"><span class="t">Simulink model</span><span class="s">MATLAB, on your PC</span></div>
+          <div class="mqttedge" id="mqe-L"><span class="topic" id="mqe-L-label">&nbsp;</span><div class="line"><span class="pkt"></span></div><span class="arrow" id="mqe-L-arrow">&#8596;</span></div>
+          <div class="mqttnode" id="mqn-broker"><span class="t">External Databus</span><span class="s">MQTT broker, on the Edge device</span></div>
+          <div class="mqttedge" id="mqe-R"><span class="topic" id="mqe-R-label">&nbsp;</span><div class="line"><span class="pkt"></span></div><span class="arrow" id="mqe-R-arrow">&#8596;</span></div>
+          <div class="mqttnode" id="mqn-livetwin"><span class="t">LiveTwin application</span><span class="s">on the Edge device</span></div>
+        </div>
+
+        <div class="pipebar" style="margin-top:16px">
+          <button class="btn sm" id="mqttplay" type="button">Pause</button>
+          <span class="small" id="mqttstepdesc" aria-live="polite">Step 1</span>
+        </div>
+        <div class="grid" id="mqttsteps" style="grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:6px;margin-top:10px" role="tablist" aria-label="MQTT process steps"></div>
+      </div>
+
+      <div class="panel stack">
+        <p class="role">Securing it</p>
+        <h3 class="h3" style="font-size:16px">End-to-end TLS, both sides</h3>
+        <p class="small">Enable end-to-end security in <b>both</b> places: the External Databus configurator in
+          Industrial Edge Management (<i>Data Connections &rarr; External Databus &rarr; Certificates</i>), and
+          SIMATIC Target's own TLS panel. It is mutual TLS — <span class="mono">.crt</span>/<span class="mono">.pem</span>
+          keys and certificates on both sides — with OpenSSL statically linked, so a local OpenSSL install never
+          interferes. Passphrase-protect the private key. <span class="xs mono">Manual p.113–114</span></p>
+        <p class="small">On the S7&#8209;1500 path, the equivalent is a plain TCP connection to port 17725 via
+          <span class="mono">TCON</span>/<span class="mono">TRCV</span>/<span class="mono">TSEND</span>, optionally
+          secured with <span class="mono">TCON_IP_V4_SEC</span>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ TRAPS ============================ -->
+<section>
+  <div class="wrap">
+    <div class="sechead">
+      <p class="topline">Before you lose an afternoon</p>
+      <h2 class="h2">The ten things that actually bite.</h2>
+    </div>
+    <div class="traps" id="traps"></div>
+  </div>
+</section>
+
+<!-- ============================ REQUIREMENTS ============================ -->
+<section>
+  <div class="wrap">
+    <div class="sechead">
+      <p class="topline">Set-up</p>
+      <h2 class="h2">What has to be installed, and in which versions.</h2>
+      <p class="lede">Two columns, because they differ. The application example was built and shipped on one
+        stack; the current V6.0&nbsp;SP3 installer is a later service pack that pins a much newer
+        MATLAB.</p>
+    </div>
+    <div class="tbox" style="margin-bottom:10px">
+      <table>
+        <thead><tr><th>Component</th><th>Example as shipped (Sept&nbsp;2024)</th><th>V6.0&nbsp;SP3 product manual</th></tr></thead>
+        <tbody>
+          <tr><td>SIMATIC Target for Simulink</td><td class="mono">V6.0 SP1 &middot; 6ES7823&#8209;1BE05&#8209;0YA5</td><td class="mono">V6.0 SP3</td></tr>
+          <tr><td>System target file</td><td class="mono">Simatic_Target_V6_0_grt.tlc</td><td class="mono">_grt.tlc (Simulink Coder) or _ert.tlc (Embedded Coder)</td></tr>
+          <tr><td>SIMATIC ODK 1500S</td><td class="mono">V2.5 SP4</td><td class="mono">V2.0 or higher</td></tr>
+          <tr><td>STEP 7 Professional <span class="xs">(optional)</span></td><td class="mono">V19 &middot; 6ES7822&#8209;1AE23&#8209;0YA5</td><td class="mono">V16 or higher, with TIA Portal Openness</td></tr>
+          <tr><td>CPU 15xx <span class="xs">(optional)</span></td><td class="mono">ET 200SP Open Controller CPU 1515SP PC2, SW controller V30.1</td><td class="mono">any CPU supporting ODK 1500S V2.0+</td></tr>
+          <tr><td>S7&#8209;PLCSIM Advanced <span class="xs">(optional)</span></td><td class="mono">V6.0 or later (example's own figure)</td><td class="mono">V3.0 or higher</td></tr>
+          <tr><td>LiveTwin <span class="xs">(optional)</span></td><td class="no">&mdash;</td><td class="mono">V2.0.0 or higher</td></tr>
+          <tr><td>MATLAB / Simulink</td><td class="mono">R2023b &mdash; 23.2</td><td class="mono">R2025b* &mdash; 25.2, 64&#8209;bit</td></tr>
+          <tr><td>Coders</td><td class="mono">MATLAB Coder + Simulink Coder 23.2</td><td class="mono">MATLAB Coder + Simulink Coder 25.2</td></tr>
+          <tr><td>Optional add-ons</td><td class="no">&mdash;</td><td class="mono">Embedded Coder, Stateflow, Simscape 25.2</td></tr>
+          <tr><td>Operating system</td><td class="mono">Windows 10 64&#8209;bit</td><td class="mono">Windows 10 or 11, 64&#8209;bit</td></tr>
+          <tr><td>Also required</td><td class="no">&mdash;</td><td class="mono">Java Runtime Environment (32&#8209;bit)</td></tr>
+          <tr><td>PC minimum</td><td class="no">&mdash;</td><td class="mono">Core i5, &ge;1.2&nbsp;GHz, 4&nbsp;GB RAM, 100&nbsp;MB free on C:\</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="xs" style="margin-bottom:18px">* R2025b is the officially compatible MATLAB version for V6.0 SP3;
+      full consistency with older MATLAB versions is not guaranteed. <span class="xs mono">Manual p.17</span></p>
+
+    <p class="role" style="margin-bottom:8px">ODK 1500S &harr; SIMATIC Target compatibility</p>
+    <div class="tbox" style="margin-bottom:18px">
+      <table>
+        <thead><tr><th>Target version</th><th>ODK V2.0</th><th>ODK V2.5</th><th>ODK V2.5 SP1/SP3</th><th>ODK V2.5 SP4</th></tr></thead>
+        <tbody>
+          <tr><td>V1.0 &amp; V1.0 Update&nbsp;1</td><td class="ok">&#10003;</td><td class="no">&ndash;</td><td class="no">&ndash;</td><td class="no">&ndash;</td></tr>
+          <tr><td>V2.0 &ndash; V6.0 Update&nbsp;1</td><td class="ok">&#10003;</td><td class="ok">&#10003;</td><td class="ok">&#10003;</td><td class="no">&ndash;</td></tr>
+          <tr><td>V6.0 SP1, SP1 Update&nbsp;1, SP2, SP3</td><td class="ok">&#10003;</td><td class="ok">&#10003;</td><td class="ok">&#10003;</td><td class="ok">&#10003;</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="xs" style="margin-bottom:18px"><span class="xs mono">Manual p.17–18</span></p>
+
+    <div class="grid g2">
+      <div class="panel-alt panel stack">
+        <p class="role">One-time Windows step</p>
+        <p class="small">The Target Options dialog drives TIA Portal through Openness, so your Windows account
+          must be a member of the local <span class="mono">Siemens TIA Openness</span> group — added in Computer
+          Management — with the operating system restarted afterwards. Without it, automatic SCL import and
+          automatic .so transfer fail. <span class="xs mono">Manual p.37</span></p>
+      </div>
+      <div class="panel-alt panel stack">
+        <p class="role">One-time CPU step</p>
+        <p class="small">Create a local user and role in the project's Security settings with runtime rights
+          <i>read files</i> and <i>write/delete files</i>, and tick <i>Activate web server on this module</i>.
+          The .so upload — manual or automatic — goes through the web server, into
+          <span class="mono">/ODK1500S</span>, and write access is mandatory.</p>
+      </div>
+      <div class="panel-alt panel stack">
+        <p class="role">Licensing</p>
+        <p class="small">A licence key transfers through the Automation License Manager. Without one you get a
+          <b>one-time 21-day trial</b>, offered at your <b>first build</b>; the clock starts at activation, and an
+          expired trial fails the build (error 1000 "License key missing", error 1001 if ALM cannot be reached).
+          A V6.0 licence key also runs older Target versions without restriction.
+          <span class="xs mono">Manual p.21–22</span></p>
+      </div>
+      <div class="panel-alt panel stack">
+        <p class="role">Installing</p>
+        <p class="small">Install older Target versions before newer ones, with all MATLAB instances closed and
+          administrator rights. <span class="mono">SilentInstall_Target_1500S.bat</span> /
+          <span class="mono">SilentUnInstall_Target_1500S.bat</span> do it unattended, into
+          <span class="mono" style="word-break:break-all">%ProgramFiles(x86)%\Siemens\Automation\Target1500S\&lt;version&gt;</span>. ODK may be
+          installed after Target — restart MATLAB afterwards. Selecting the TLC runs a file-integrity check
+          against <span class="mono">SecurityCatalog.cat</span>; trigger it by hand with
+          <span class="mono">lib_V6_0.opts.verifySecurityCatalog</span>, which returns 1 on success.
+          <span class="xs mono">Manual p.18–20</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ ODK ENVELOPE ============================ -->
+<section>
+  <div class="wrap">
+    <div class="sechead">
+      <p class="topline">The envelope you are building into</p>
+      <h2 class="h2">The numbers the generated header hands you.</h2>
+      <p class="lede">Every generated block carries a comment header stating the build settings and the ODK
+        runtime limits it was compiled against. Worth reading before blaming the model when External Mode
+        stalls or a build fails on memory.</p>
+    </div>
+    <div class="grid g3">
+      <div class="panel"><dl class="kv">
+        <dt>Step size</dt><dd>0.1 s — must equal the OB cyclic interrupt time</dd>
+        <dt>Default parameter behavior</dt><dd>Tunable — what makes STEP 7 parameter access possible</dd>
+        <dt>External Mode</dt><dd>On</dd>
+        <dt>Max identifier length</dt><dd>256 default — raise it and you risk the ODK limit <span class="xs mono">p.29</span></dd>
+      </dl></div>
+      <div class="panel"><dl class="kv">
+        <dt>Heap size</dt><dd>5012 k — raise it if External Mode is short of memory; allowed 4…available CPU memory k <span class="xs mono">p.58</span></dd>
+        <dt>Max block size</dt><dd>65536 B; allowed 8…heap size <span class="xs mono">p.58</span></dd>
+        <dt>Thread stack</dt><dd>32 k; allowed 1…1024 k per ODK call <span class="xs mono">p.58</span></dd>
+        <dt>ODK Trace</dt><dd>Optional — costs 32 KB of trace buffer <span class="xs mono">p.58</span></dd>
+      </dl></div>
+      <div class="panel"><dl class="kv">
+        <dt>SyncCallParallelCount</dt><dd>4 parallel calls into this ODK application</dd>
+        <dt>ExtMode buffers</dt><dd>2 &times; 64 KiB, in the CallExtMode instance DB — External Mode data capped at 64k <span class="xs mono">p.138</span></dd>
+        <dt>Split OB calls</dt><dd>With Ensure thread-safety, OneStep and CallExtMode may sit in different OBs — at the cost of ODK execution memory</dd>
+        <dt>SO file size</dt><dd>&le; 2 147 483 648 bytes, or the upload fails (warning 955) <span class="xs mono">p.136</span></dd>
+      </dl></div>
+      <div class="panel"><dl class="kv">
+        <dt>Flush denormalized numbers to zero</dt><dd>Optional — numbers near zero below the float type's limit are treated as zero <span class="xs mono">p.58–59</span></dd>
+        <dt>Ensure thread-safety for calls from different OBs</dt><dd>Reduces the ODK execution memory available to the application <span class="xs mono">p.58</span></dd>
+      </dl></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ ALARMS ============================ -->
+<section>
+  <div class="wrap">
+    <div class="sechead">
+      <p class="topline">When the build talks back</p>
+      <h2 class="h2">Every info, warning and error message, searchable.</h2>
+      <p class="lede">The manual numbers information, warning and error messages independently — warning&nbsp;1000
+        and error&nbsp;1000 both exist, so the type chip is what tells them apart, not the number.
+        <span class="xs mono">Manual p.129–139</span></p>
+    </div>
+
+    <div class="pipebar" style="margin-bottom:10px">
+      <label class="small" for="alarmq" style="display:flex;gap:8px;align-items:center;flex:1 1 220px">
+        Search
+        <input type="text" id="alarmq" placeholder="e.g. 953, storage class, licence" style="flex:1 1 auto;min-width:0;background:var(--base-0);border:1px solid var(--stroke);color:var(--ink);padding:7px 10px;font-family:var(--sans);font-size:14px">
+      </label>
+      <div class="seg" id="alarmtypeseg" role="radiogroup" aria-label="Alarm type">
+        <button type="button" data-type="all" aria-checked="true">All</button>
+        <button type="button" data-type="info" aria-checked="false">Info</button>
+        <button type="button" data-type="warning" aria-checked="false">Warning</button>
+        <button type="button" data-type="error" aria-checked="false">Error</button>
+      </div>
+    </div>
+    <p class="xs" id="alarmcount" style="margin-bottom:10px" aria-live="polite"></p>
+    <div class="traps" id="alarmlist"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="grid g2">
+      <div>
+        <h4>Read from</h4>
+        <ul>
+          <li>SIMATIC Target for Simulink V6.0 SP3 — Programming Manual, 01/2026, 137 pp.
+            <span>A5E38915112-AR</span></li>
+          <li>SIMATIC Target: Calling Simulink Models — application example, 68 pp., V1.3, 09/2024
+            <span>109482830_SIMATIC_Target_DOC_V13_en.pdf</span></li>
+          <li>Example project — Simulink model, generated Target output, TIA V19 projects in SCL and LAD
+            <span>109482830_SIMATIC_Target_CODE_V13.zip</span></li>
+          <li>SIMATIC Target for Simulink V6.0 SP3 — Readme, installation and usage notes
+            <span>SIMATIC_Target_V6_SP3.iso</span></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Referenced, not covered here</h4>
+        <ul>
+          <li>SIMATIC S7-1500 ODK 1500S manual <span>109783714</span></li>
+          <li>LSim library — simulated controlled systems <span>79047707</span></li>
+        </ul>
+        <p class="xs" style="margin-top:14px">Block interfaces are read from the generated SCL in the example
+          archive, so they show what a V6.0&nbsp;SP1 build actually emits; behaviour, ranges and alarms come from
+          the V6.0&nbsp;SP3 Programming Manual.</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  /* ---------------- theme ---------------- */
+  var tb = document.getElementById('themebtn');
+  try{ var saved = localStorage.getItem('st-theme'); if(saved) document.documentElement.setAttribute('data-theme', saved); }catch(e){}
+  tb.addEventListener('click', function(){
+    var cur = document.documentElement.getAttribute('data-theme');
+    var isDark = cur ? cur === 'dark'
+      : !(window.matchMedia && window.matchMedia('(prefers-color-scheme:light)').matches);
+    var next = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try{ localStorage.setItem('st-theme', next); }catch(e){}
+    paint.flush(); railPaint();
+  });
+
+  /* cached theme colours */
+  var paint = (function(){
+    var c = null;
+    function read(){
+      var s = getComputedStyle(document.documentElement);
+      return {
+        grid:  s.getPropertyValue('--grid').trim(),
+        ink:   s.getPropertyValue('--ink').trim(),
+        mute:  s.getPropertyValue('--ink-mute').trim(),
+        faint: s.getPropertyValue('--ink-faint').trim(),
+        sp:    s.getPropertyValue('--sig-setpoint').trim(),
+        pv:    s.getPropertyValue('--sig-process').trim(),
+        u:     s.getPropertyValue('--sig-out').trim(),
+        stroke:s.getPropertyValue('--stroke').trim(),
+        ga:    s.getPropertyValue('--grad-a').trim(),
+        gb:    s.getPropertyValue('--grad-b').trim(),
+        acc:   s.getPropertyValue('--accent').trim()
+      };
+    }
+    return { get: function(){ if(!c) c = read(); return c; }, flush: function(){ c = null; } };
+  })();
+  if(window.matchMedia){
+    var mq = window.matchMedia('(prefers-color-scheme:dark)');
+    if(mq.addEventListener) mq.addEventListener('change', function(){ paint.flush(); railPaint(); });
+  }
+
+  function hexA(hex, a){
+    hex = (hex||'').replace('#','');
+    if(hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+    var n = parseInt(hex,16);
+    if(isNaN(n)) return 'rgba(0,0,0,'+a+')';
+    return 'rgba('+((n>>16)&255)+','+((n>>8)&255)+','+(n&255)+','+a+')';
+  }
+  function fitCanvas(cv){
+    var r = cv.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var w = Math.max(1, Math.round(r.width)), h = Math.max(1, Math.round(r.height));
+    if(cv.width !== w*dpr || cv.height !== h*dpr){ cv.width = w*dpr; cv.height = h*dpr; }
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    return { ctx: ctx, w: w, h: h };
+  }
+
+  /* ============================================================
+     HERO — ambient signal field
+     ============================================================ */
+  (function(){
+    var cv = document.getElementById('herocanvas');
+    if(!cv) return;
+    var t = 0;
+    function draw(){
+      var f = fitCanvas(cv), ctx = f.ctx, w = f.w, h = f.h;
+      ctx.clearRect(0,0,w,h);
+      var g = ctx.createLinearGradient(0,0,w,h);
+      g.addColorStop(0,'rgba(0,255,185,0.00)');
+      g.addColorStop(1,'rgba(0,230,220,0.16)');
+      ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+
+      /* faint square grid — Siemens surfaces are square */
+      ctx.strokeStyle = 'rgba(0,204,204,0.09)'; ctx.lineWidth = 1;
+      var step = 44;
+      for(var x=(t*0.18)%step; x<w; x+=step){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
+      for(var y=0; y<h; y+=step){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+
+      /* step responses climbing to setpoint — the subject's own shape */
+      var lanes = [
+        {k:0.0100, amp:0.34, off:0.30, col:'rgba(0,255,185,0.55)', lw:2.0, ph:0.0},
+        {k:0.0062, amp:0.24, off:0.55, col:'rgba(0,230,220,0.40)', lw:1.5, ph:130},
+        {k:0.0040, amp:0.17, off:0.76, col:'rgba(0,193,182,0.28)', lw:1.2, ph:300}
+      ];
+      for(var i=0;i<lanes.length;i++){
+        var L = lanes[i];
+        ctx.beginPath();
+        for(var px=0; px<=w; px+=3){
+          var s = px + L.ph + t*0.55;
+          var cyc = 900;
+          var local = ((s % cyc) + cyc) % cyc;
+          var v = 1 - Math.exp(-L.k*local) * (1 + L.k*local*0.9);
+          var py = h*(L.off+L.amp) - v*(L.amp*h);
+          if(px === 0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+        }
+        ctx.strokeStyle = L.col; ctx.lineWidth = L.lw; ctx.lineJoin='round'; ctx.stroke();
+      }
+      if(!reduce){ t += 1; requestAnimationFrame(draw); }
+    }
+    draw();
+    window.addEventListener('resize', function(){ if(reduce) draw(); });
+  })();
+
+  /* ============================================================
+     PIPELINE
+     ============================================================ */
+  var ODK_STAGES = [
+    { who:'MATLAB & Simulink', title:'Build the model',
+      arts:[],
+      body:'<p class="small">Create or open the model — in the example, a <span class="mono">Discrete PID Controller</span> with sample time <span class="mono">ts = 0.1</span>, a sum block for the error, saturation limits 0…100 and named, test-pointed internal signals. Choose the runtime here — <i>S7-1500 PLC (ODK)</i> or <i>LiveTwin for Industrial Edge</i> — then set <span class="mono">Default parameter behavior = Tunable</span> and the SIMATIC Target Options accessibility boxes for STEP 7 parameter access, internal-signal access and web-server model diagrams.</p><p class="small" style="margin-top:10px">For the ODK runtime several settings are fixed rather than chosen: a fixed-step solver, single-tasking — <i>Treat each discrete rate as a separate task</i> stays off, or the build fails with error 30 — language C++ at the fixed standard C++03, <i>Generate code only</i> on, Nonreusable-function code interface packaging and a single output/update function. Every option, fixed or chosen, is written to <span class="mono">&lt;modelName&gt;_SIMATIC_configuration.json</span> next to the model. <span class="xs mono">Manual p.26–28, p.33, p.137</span></p><p class="small" style="margin-top:10px">Signal names only reach STEP 7 if you resolve them to model workspace signal objects and tick <i>Test Point</i>. Do that before the build or <span class="mono">…InternalModelSignals</span> comes back empty.</p>' },
+
+    { who:'SIMATIC Target', title:'Build — Ctrl+B',
+      arts:['ModelPID_ODK.scl','ModelPID_ODK.so','ModelPID_SC_TagTable.xml'],
+      body:'<p class="small">Simulink is blocked while this runs, and it runs faster if TIA Portal is already open (Manual p.75). The Coders emit C/C++ from the model; SIMATIC Target creates a new ODK Eclipse project under <span class="mono">C:\\ProgramData\\Siemens\\Automation\\ODK1500S\\&lt;ODK version&gt;\\workspace</span>, and the ODK 1500S compiler builds the shared object there; SIMATIC Target also writes the SCL wrapper and, if asked, the web-server files. <span class="xs mono">Manual p.75</span></p><p class="small" style="margin-top:10px">Everything lands in the <span class="mono">outputs</span> subfolder: <span class="mono">&lt;model&gt;_ODK.scl</span>, <span class="mono">&lt;model&gt;_ODK.so</span> and <span class="mono">&lt;model&gt;_SC_TagTable.xml</span>, plus <span class="mono">home.html</span> under <span class="mono">…\\website</span> if you asked for web diagrams. If you enabled the post-build and engineering-integration options, this one keystroke also imports the SCL into the TIA project and pushes the .so to the CPU — watch the Diagnostic Viewer for the two success messages. <span class="xs mono">Manual p.129</span></p>' },
+
+    { who:'STEP 7 / TIA Portal', title:'Import SCL, generate blocks',
+      arts:['ModelPID_ODK.scl','ModelPID_SC_TagTable.xml'],
+      body:'<p class="small">Add the .scl under <i>External source files</i> and <i>Generate blocks from source</i> — or let engineering integration do it: pick Device, PROFINET interface, software unit, and the OB for OneStep (<i>Create a new OB</i> makes a fresh cyclic interrupt OB), with its cycle time in µs set by <b>Set to recommended value</b> to the model\'s own fixed-step size. Automatic program-block operations are SCL only — LAD and FBD still mean placing every call by hand. <span class="xs mono">Manual p.35, p.37, p.77</span></p><p class="small" style="margin-top:10px">The storage-class tag table XML imports alongside, as User Constants. If an FB still carries an instance-DB call from a previous build, automatic integration cannot edit it and the CPU may fail to compile — remove or edit that call by hand first. A parameter-only change needs no re-import; a changed interface does. <span class="xs mono">Manual p.76, p.80</span></p>' },
+
+    { who:'S7-1500 Software Controller', title:'Download the program',
+      arts:['blocks','website/'],
+      body:'<p class="small">Point the CPU\'s <i>User-defined pages</i> at the generated <span class="mono">website</span> folder with <span class="mono">home.html</span> as the default page, then <i>Generate blocks</i> and download — on TIA Portal V16 and later this is configured automatically. If you are not using the web server API, interconnect <span class="mono">DB333</span> at the <span class="mono">…WebReadWrite</span> call instead (DB333 per the application example). <span class="xs mono">Manual p.118</span></p><p class="small" style="margin-top:10px">An optional post-build step, <i>Download TIA Portal project to device</i>, can push the whole project for you — except to a fail-safe CPU, for an initial download, or after changing the communication certificate on a V21.9 software controller; do those manually. Or skip the hardware entirely and download to an S7-PLCSIM Advanced instance. <span class="xs mono">Manual p.54</span></p>' },
+
+    { who:'CPU load memory', title:'Get the .so into RAM',
+      arts:['ModelPID_ODK.so'],
+      body:'<p class="small">The shared object is not part of the program download. During the build it transfers to the CPU\'s <span class="mono">ODK1500S</span> folder — through the Web server API once the CPU firmware is &ge;&nbsp;V30.0 (software) or &ge;&nbsp;V3.0 (hardware), through the file browser below that; write access is mandatory. <span class="xs mono">Manual p.78</span></p><p class="small" style="margin-top:10px">Uploading is not loading: a modified SO is not executed until the old one is unloaded and the new one loaded, and an SO that is <i>never</i> unloaded stays in work memory and eats it until the system is shut down and restarted. With <i>Automated</i> unload/load, SIMATIC Target generates OB <span class="mono">Main_AutoLoad</span> and FB <span class="mono">&lt;modelName&gt;AutoLoad</span> — holding multi-instances of <span class="mono">…_Load</span> and <span class="mono">…_Unload</span> — called from Main_AutoLoad; the unload&rarr;load runs once, after a download that follows a new build or a STOP&rarr;RUN change. <span class="xs mono">Manual p.38, p.82–83</span></p><p class="small" style="margin-top:10px">The Load FB cannot be called in a cyclic interrupt OB — the drop-down for Unload/Load lists program cycle OBs, not cyclic ones, and for automated operation that OB must be SCL. Choose <i>Advanced</i> instead and you place <span class="mono">…_Unload</span> and <span class="mono">…_Load</span> yourself, <span class="mono">REQ</span> tied to TRUE. <span class="xs mono">Manual p.38, p.82</span></p>' }
+  ];
+
+  var LT_STAGES = [
+    { who:'MATLAB & Simulink', title:'Build the model',
+      arts:[],
+      body:'<p class="small">Build the model exactly as for ODK, but choose <i>LiveTwin for Industrial Edge</i> as the runtime. Either system target file works — Simulink Coder\'s grt or Embedded Coder\'s ert — and the Hardware Implementation pane switches to one MATLAB itself provides, in place of the ODK one. <span class="xs mono">Manual p.15, p.26–27</span></p><p class="small" style="margin-top:10px">C++03 is not forced here: LiveTwin lets you change the language standard, unlike the fixed C++03 the ODK runtime requires. Tunable parameters and test-pointed signals carry over unchanged. <span class="xs mono">Manual p.27</span></p>' },
+
+    { who:'SIMATIC Target', title:'Connect & configure',
+      arts:[],
+      body:'<p class="small">On the Runtime tab, give the <b>Edge Server Name</b> and, if login is required, a username and password, then press <b>Connect to LiveTwin application</b> to read its properties back into the dialog. <span class="xs mono">Manual p.60–61</span></p><p class="small" style="margin-top:10px">Engineering Integration names the <b>Template</b> that will be created — tick <i>Create new version for existing template</i> to version one, and <i>Update all projects using this template</i> to refresh every project built from it that has no running instance. <b>Create a quick project</b> adds a project type (LiveTwin for Industrial Edge or Simatic Flow Creator), a project name, a <b>Project cyclic time</b> in ms — <i>Set to recommended value</i> matches the model\'s fixed-step size, or leave it <span class="mono">auto</span> to use the build\'s <span class="mono">CompiledStepSize</span> — and a number of instances from 1 to 20. <span class="xs mono">Manual p.62–63</span></p>' },
+
+    { who:'SIMATIC Target', title:'Build — pack the model',
+      arts:['pack_of_Model_PID.zip','Modeldescription.json','Model.json','svg/'],
+      body:'<p class="small">Build Model now packs everything LiveTwin needs into <span class="mono">pack_of_&lt;modelname&gt;.zip</span>, written next to the build directory: <span class="mono">Modeldescription.json</span> (model name, Simulink version, inputs, outputs, parameters), <span class="mono">Model.json</span> (the model hierarchy), an <span class="mono">svg/</span> view per model, submodel and referenced model, and the Coder\'s own <span class="mono">.h</span>/<span class="mono">.cpp</span> sources. <span class="xs mono">Manual p.110</span></p>' },
+
+    { who:'Industrial Edge', title:'Transfer the package',
+      arts:['pack_of_Model_PID.zip'],
+      body:'<p class="small">Give a valid Edge server address with credentials and the package transfers automatically; otherwise upload it yourself at <span class="mono">https://&lt;edge-ip&gt;/livetwin</span> (Industrial Edge Management &rarr; Apps &rarr; LiveTwin). Either way, LiveTwin turns the package into a template, then a project, then the requested instances. <span class="xs mono">Manual p.110–111</span></p><p class="small" style="margin-top:10px">Signals, parameters and block descriptions must not contain a quotation mark — one anywhere in the model and project creation fails outright. <span class="xs mono">Manual p.111</span></p>' },
+
+    { who:'LiveTwin', title:'Run & monitor',
+      arts:[],
+      body:'<p class="small">External Mode now runs over MQTT through the External Databus app on the Edge device, default port <span class="mono">9883</span>, rather than TCP&nbsp;17725 — see the diagram below. <span class="xs mono">Manual p.65, p.98</span></p><p class="small" style="margin-top:10px">Tick <i>Enable parameter access with LiveTwin</i> to let LiveTwin tune the model\'s tunable parameters; with model referencing this reaches only the current model\'s own parameters. Diagnostic Viewer messages 1301–1310 report progress, 1201–1213 are warnings, and 1210 is the one error among them. <span class="xs mono">Manual p.66, p.111–112</span></p>' }
+  ];
+
+  var RUNTIMES = {
+    odk: { stages: ODK_STAGES,
+      head: 'Five steps — and the runtime you pick decides where they lead.',
+      lede: 'The build drops two things in the output folder, and they reach the CPU by separate routes: the <b>SCL source</b> goes into the TIA Portal project and becomes blocks, while the <b>.so file</b> goes onto the CPU\'s web server and is pulled into RAM at startup. Missing either one is the most common reason a first attempt does nothing.' },
+    livetwin: { stages: LT_STAGES,
+      head: 'Five steps — and this time the runtime is LiveTwin, not a CPU.',
+      lede: 'The build drops one thing next to the model: <b>pack_of_&lt;model&gt;.zip</b>. It travels a single road onto the Edge device — automatically if you gave LiveTwin credentials, by hand otherwise — where it becomes a template, a project, then running instances.' }
+  };
+
+  var pipe = document.getElementById('pipe');
+  var pdet = document.getElementById('pipedetail');
+  var pipehead = document.getElementById('pipehead');
+  var pipelede = document.getElementById('pipelede');
+  var STAGES = ODK_STAGES, currentRT = 'odk';
+  var sel = 0, live = 0, flowing = !reduce;
+  var stageEls = [];
+
+  function renderStages(){
+    pipe.innerHTML = '';
+    STAGES.forEach(function(s, i){
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'stage'; b.setAttribute('role','tab');
+      b.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+      b.innerHTML = '<span class="n"><span class="dot"></span>STEP ' + (i+1) + '</span>' +
+        '<span class="who">' + s.who + '</span>' +
+        '<h4>' + s.title + '</h4>' +
+        '<span class="arts">' + s.arts.map(function(a){
+          return '<span class="art" data-art="' + a + '">' + a + '</span>'; }).join('') + '</span>';
+      b.addEventListener('click', function(){ select(i); flowing = false; playbtn.textContent = 'Resume flow'; });
+      pipe.appendChild(b);
+    });
+    stageEls = pipe.querySelectorAll('.stage');
+    select(0);
+  }
+
+  function select(i){
+    sel = i; live = i;
+    for(var k=0;k<stageEls.length;k++){
+      stageEls[k].setAttribute('aria-selected', k === i ? 'true' : 'false');
+      stageEls[k].setAttribute('data-live', k === i ? '1' : '0');
+      var arts = stageEls[k].querySelectorAll('.art');
+      for(var j=0;j<arts.length;j++) arts[j].setAttribute('data-hot', k === i ? '1' : '0');
+    }
+    var s = STAGES[i];
+    pdet.innerHTML = '<p class="role">' + s.who + '</p><h3 class="h3">Step ' + (i+1) + ' &mdash; ' + s.title + '</h3>' + s.body;
+  }
+
+  var rtseg = document.getElementById('rtseg');
+  Array.prototype.forEach.call(rtseg.querySelectorAll('[data-rt]'), function(btn){
+    btn.addEventListener('click', function(){
+      var rt = btn.getAttribute('data-rt');
+      if(rt === currentRT) return;
+      currentRT = rt;
+      Array.prototype.forEach.call(rtseg.querySelectorAll('[data-rt]'), function(o){
+        o.setAttribute('aria-checked', o === btn ? 'true' : 'false');
+      });
+      STAGES = RUNTIMES[rt].stages;
+      pipehead.textContent = RUNTIMES[rt].head;
+      pipelede.innerHTML = RUNTIMES[rt].lede;
+      renderStages();
+      railPaint();
+    });
+  });
+
+  renderStages();
+
+  var playbtn = document.getElementById('pipeplay');
+  playbtn.textContent = flowing ? 'Pause flow' : 'Resume flow';
+  playbtn.addEventListener('click', function(){
+    flowing = !flowing;
+    playbtn.textContent = flowing ? 'Pause flow' : 'Resume flow';
+  });
+  setInterval(function(){ if(flowing) select((sel + 1) % STAGES.length); }, 3200);
+
+  /* rail — two lanes for ODK (SCL source, shared object); one lane for LiveTwin (package -> Edge) */
+  var rail = document.getElementById('rail');
+  var railDots = [];
+  function railPaint(){
+    if(!rail) return;
+    var w = rail.clientWidth || 1000, h = 34;
+    var c = paint.get();
+    rail.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+    var ns = 'http://www.w3.org/2000/svg';
+    rail.textContent = '';
+    railDots = [];
+    var lanes = currentRT === 'livetwin'
+      ? [ { y: 18, col: c.ga, to: 1.00, n: 5 } ]                 /* package -> Edge */
+      : [ { y: 11, col: c.gb, to: 0.62, n: 4 },                   /* SCL source -> TIA Portal -> blocks */
+          { y: 25, col: c.ga, to: 1.00, n: 4 } ];                 /* .so -> web server -> RAM */
+    lanes.forEach(function(L, li){
+      var ln = document.createElementNS(ns,'line');
+      ln.setAttribute('x1', 8); ln.setAttribute('x2', Math.max(10, w*L.to - 8));
+      ln.setAttribute('y1', L.y); ln.setAttribute('y2', L.y);
+      ln.setAttribute('stroke', hexA(L.col, .28)); ln.setAttribute('stroke-width', 1);
+      ln.setAttribute('stroke-dasharray','3 5');
+      rail.appendChild(ln);
+      for(var i=0;i<L.n;i++){
+        var d = document.createElementNS(ns,'circle');
+        d.setAttribute('r', li === 0 ? 2.6 : 2.2);
+        d.setAttribute('cy', L.y);
+        d.setAttribute('fill', L.col);
+        rail.appendChild(d);
+        railDots.push({ el:d, p:(i/L.n), span:w*L.to, sp: li===0 ? 0.0024 : 0.0017 });
+      }
+    });
+  }
+  railPaint();
+  window.addEventListener('resize', railPaint);
+  (function railTick(){
+    if(flowing){
+      for(var i=0;i<railDots.length;i++){
+        var d = railDots[i];
+        d.p += d.sp; if(d.p > 1) d.p -= 1;
+        d.el.setAttribute('cx', (8 + d.p * Math.max(4, d.span - 16)).toFixed(1));
+        d.el.setAttribute('opacity', (0.25 + 0.75*Math.sin(Math.PI*d.p)).toFixed(2));
+      }
+    }
+    requestAnimationFrame(railTick);
+  })();
+
+  /* ============================================================
+     COMMAND-LINE BUILDER — set_SIMATICparam script, ODK runtime
+     ============================================================ */
+  var CB_FIELDS = [
+    { id:'TiaPortalProject', label:'TIA Portal project (TiaPortalProject)', type:'text', def:'' },
+    { id:'CpuName', label:'Device (CpuName)', type:'text', def:'Software PLC_1' },
+    { id:'ImportScl', label:'Import the generated SCL file to STEP 7 (ImportScl)', type:'bool', def:true },
+    { id:'CyclicOB', label:'Organization block (CyclicOB)', type:'text', def:'CyclicInterrupt', dep:'ImportScl' },
+    { id:'CyclicOBTime', label:'Cyclic time, µs — 100…60000000 (CyclicOBTime)', type:'range', def:'100000', min:100, max:60000000, dep:'ImportScl' },
+    { id:'AutoLoad', label:'Automated / Advanced (AutoLoad)', type:'select', def:'Automated', opts:['Automated','Advanced'], dep:'ImportScl' },
+    { id:'ExtMode', label:'Enable External Mode (ExtMode)', type:'bool', def:true },
+    { id:'ExtMode_PortNumber', label:'Port number (ExtMode_PortNumber)', type:'text', def:'17725', dep:'ExtMode' },
+    { id:'InterfaceID', label:'Hardware interface ID (InterfaceID)', type:'text', def:'64', dep:'ExtMode' },
+    { id:'ConnectionID', label:'Connection ID — 1…4095 (ConnectionID)', type:'range', def:'2048', min:1, max:4095, dep:'ExtMode' },
+    { id:'Control_Parameters', label:'Enable parameter access with STEP 7 (Control_Parameters)', type:'bool', def:true },
+    { id:'GenerateCodeForInternalSignals', label:'Enable STEP 7 access to internal model signals', type:'bool', def:true },
+    { id:'InternalSignalSelection', label:'Internal signal selection', type:'select', def:'Only test points',
+      opts:['All measurement points including test points','All measurement points excluding test points','Only test points'],
+      dep:'GenerateCodeForInternalSignals' },
+    { id:'GenerateCodeForWebPage', label:'Generate model diagrams for PLC Web server', type:'bool', def:true },
+    { id:'UploadObject', label:'Transfer the generated SO file to the CPU (UploadObject)', type:'bool', def:true },
+    { id:'ODK_Versiontype', label:'ODK 1500S version', type:'select', def:'V2.5', opts:['V2.0','V2.5'] },
+    { id:'EnsureThreadSafety', label:'Ensure thread-safety for calls from different OBs', type:'bool', def:true }
+  ];
+
+  var cbform = document.getElementById('cbform');
+  var cbState = {};
+
+  function cbMxQuote(s){ return String(s).replace(/'/g, "''"); }
+
+  CB_FIELDS.forEach(function(f){
+    var wrap = document.createElement('div');
+    wrap.className = (f.type === 'bool') ? 'cbcheck' : 'cbfield';
+    wrap.setAttribute('data-field', f.id);
+    if(f.dep) wrap.setAttribute('data-dep', f.dep);
+    var ctl;
+    if(f.type === 'bool'){
+      ctl = document.createElement('input');
+      ctl.type = 'checkbox'; ctl.id = 'cb-' + f.id; ctl.checked = !!f.def;
+      var lab = document.createElement('label'); lab.setAttribute('for', ctl.id); lab.textContent = f.label;
+      wrap.appendChild(ctl); wrap.appendChild(lab);
+    } else if(f.type === 'select'){
+      var lab2 = document.createElement('label'); lab2.setAttribute('for','cb-' + f.id); lab2.textContent = f.label;
+      ctl = document.createElement('select'); ctl.id = 'cb-' + f.id;
+      f.opts.forEach(function(o){ var op = document.createElement('option'); op.value = o; op.textContent = o; if(o === f.def) op.selected = true; ctl.appendChild(op); });
+      wrap.appendChild(lab2); wrap.appendChild(ctl);
+    } else {
+      var lab3 = document.createElement('label'); lab3.setAttribute('for','cb-' + f.id); lab3.textContent = f.label;
+      ctl = document.createElement('input');
+      ctl.type = (f.type === 'range') ? 'number' : 'text';
+      if(f.type === 'range'){ ctl.min = f.min; ctl.max = f.max; }
+      ctl.id = 'cb-' + f.id; ctl.value = f.def;
+      var err = document.createElement('span'); err.className = 'errmsg';
+      err.textContent = f.type === 'range' ? ('Out of range (' + f.min + '…' + f.max + ') — line omitted') : '';
+      wrap.appendChild(lab3); wrap.appendChild(ctl); wrap.appendChild(err);
+    }
+    ctl.addEventListener('input', renderScript);
+    ctl.addEventListener('change', renderScript);
+    cbform.appendChild(wrap);
+    cbState[f.id] = ctl;
+  });
+
+  function cbDepVisible(f){
+    if(!f.dep) return true;
+    var dctl = cbState[f.dep];
+    return dctl && dctl.type === 'checkbox' ? dctl.checked : true;
+  }
+
+  function renderScript(){
+    var modelEl = document.getElementById('cbModelName');
+    var model = modelEl.value || 'Model_PID';
+    var modelQ = esc(cbMxQuote(model));
+    var lines = [];
+    lines.push('<i>% ' + esc(model) + ' — SIMATIC Target configuration, generated by this page</i>');
+
+    Array.prototype.forEach.call(cbform.children, function(wrap){
+      var id = wrap.getAttribute('data-field');
+      var f = null;
+      for(var i=0;i<CB_FIELDS.length;i++){ if(CB_FIELDS[i].id === id){ f = CB_FIELDS[i]; break; } }
+      var visible = cbDepVisible(f);
+      wrap.style.display = visible ? '' : 'none';
+      wrap.classList.remove('err');
+      if(!visible) return;
+      var ctl = cbState[id], val = null;
+      if(f.type === 'bool'){ val = ctl.checked ? 'on' : 'off'; }
+      else if(f.type === 'select'){ val = ctl.value; }
+      else if(f.type === 'range'){
+        var n = parseFloat(ctl.value);
+        if(isNaN(n) || n < f.min || n > f.max){ wrap.classList.add('err'); val = null; }
+        else { val = String(Math.round(n)); }
+      } else {
+        val = ctl.value;
+        if(val === '') val = null;
+      }
+      if(val === null) return;
+      lines.push('set_SIMATICparam(<u>\'' + modelQ + '\'</u>,\'' + id + '\',\'' + esc(cbMxQuote(val)) + '\');');
+    });
+
+    lines.push('<i>% read back — same shape for every option</i>');
+    lines.push('get_SIMATICparam(<u>\'' + modelQ + '\'</u>,\'ExtMode\')');
+
+    document.getElementById('cbout').innerHTML = lines.map(function(l){
+      return l.replace(/set_SIMATICparam|get_SIMATICparam/g, '<b>$&</b>');
+    }).join('\n');
+  }
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  document.getElementById('cbModelName').addEventListener('input', renderScript);
+  renderScript();
+
+  var cbcopy = document.getElementById('cbcopy'), cbstatus = document.getElementById('cbcopystatus');
+  cbcopy.addEventListener('click', function(){
+    var text = document.getElementById('cbout').textContent;
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(function(){
+          cbstatus.textContent = 'Copied';
+        }, function(){ cbstatus.textContent = 'Copy failed — select the text'; });
+      } else { cbstatus.textContent = 'Copy failed — select the text'; }
+    }catch(e){ cbstatus.textContent = 'Copy failed — select the text'; }
+    setTimeout(function(){ cbstatus.textContent = ''; }, 2600);
+  });
+
+  /* ============================================================
+     SIMULATOR — discrete PID on a PT3 process, Ts = 0.1 s
+     ============================================================ */
+  var TS = 0.1, TSPAN = 150;
+  var P = {
+    P:        { v:1.9,   min:0,   max:5,   step:0.05, label:'Proportional gain',        tag:'Model_PID_PIDController_P' },
+    I:        { v:0.065, min:0,   max:0.3, step:0.005,label:'Integral gain',            tag:'Model_PID_PIDController_I' },
+    D:        { v:8.5,   min:0,   max:20,  step:0.1,  label:'Derivative gain',          tag:'Model_PID_PIDController_D' },
+    N:        { v:5,     min:1,   max:20,  step:0.5,  label:'Filter coefficient',       tag:'Model_PID_PIDController_N' },
+    hi:       { v:100,   min:0,   max:100, step:1,    label:'Upper saturation limit',   tag:'Model_PID_PIDController_UpperSaturationLimit' },
+    setpoint: { v:50,    min:0,   max:100, step:1,    label:'Setpoint (watch table)',   tag:'GlobalParameters".setpoint', raw:true }
+  };
+  var LO = 0, LAG = [10,10,5];
+  var st, hist, running = true, calls = 0, maxpv = 0, speed = 10;
+
+  function resetSim(){
+    st = { integ:0, xf:0, y:[0,0,0], t:0, u:0 };
+    hist = { t:[], sp:[], pv:[], u:[] };
+    calls = 0; maxpv = 0;
+    pushSample();
+  }
+  function pushSample(){
+    hist.t.push(st.t); hist.sp.push(P.setpoint.v); hist.pv.push(st.y[2]); hist.u.push(st.u);
+    var cap = 4000;
+    if(hist.t.length > cap){ hist.t.shift(); hist.sp.shift(); hist.pv.shift(); hist.u.shift(); }
+  }
+  function step(){
+    var e = P.setpoint.v - st.y[2];
+    var d = P.N.v * (P.D.v * e - st.xf);
+    var uu = P.P.v * e + st.integ + d;
+    var u = Math.max(LO, Math.min(P.hi.v, uu));
+    st.integ += TS * P.I.v * e;
+    st.xf    += TS * d;
+    st.y[0]  += TS / LAG[0] * (u - st.y[0]);
+    st.y[1]  += TS / LAG[1] * (st.y[0] - st.y[1]);
+    st.y[2]  += TS / LAG[2] * (st.y[1] - st.y[2]);
+    st.u = u; st.t += TS; calls++;
+    if(st.y[2] > maxpv) maxpv = st.y[2];
+    pushSample();
+  }
+
+  var scope = document.getElementById('scope');
+  function drawScope(){
+    var f = fitCanvas(scope), ctx = f.ctx, w = f.w, h = f.h, c = paint.get();
+    ctx.clearRect(0,0,w,h);
+    var padL = 42, padR = 10, padT = 10, padB = 26;
+    var pw = Math.max(10, w - padL - padR), ph = Math.max(10, h - padT - padB);
+    var yMax = 110;
+    var t1 = Math.max(TSPAN, st.t), t0 = Math.max(0, t1 - TSPAN);
+    function X(t){ return padL + (t - t0) / (t1 - t0) * pw; }
+    function Y(v){ return padT + ph - (v / yMax) * ph; }
+
+    ctx.strokeStyle = c.grid; ctx.lineWidth = 1;
+    ctx.fillStyle = c.faint; ctx.font = '11px ' + (getComputedStyle(document.body).fontFamily);
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    for(var v=0; v<=100; v+=25){
+      var yy = Math.round(Y(v)) + .5;
+      ctx.beginPath(); ctx.moveTo(padL, yy); ctx.lineTo(padL+pw, yy); ctx.stroke();
+      ctx.fillText(String(v), padL - 7, Y(v));
+    }
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    var tickStep = 25;
+    for(var tt = Math.ceil(t0/tickStep)*tickStep; tt <= t1; tt += tickStep){
+      var xx = Math.round(X(tt)) + .5;
+      ctx.strokeStyle = c.grid; ctx.beginPath(); ctx.moveTo(xx, padT); ctx.lineTo(xx, padT+ph); ctx.stroke();
+      ctx.fillStyle = c.faint; ctx.fillText(String(Math.round(tt)), X(tt), padT + ph + 7);
+    }
+    ctx.strokeStyle = c.stroke; ctx.beginPath();
+    ctx.moveTo(padL+.5, padT); ctx.lineTo(padL+.5, padT+ph); ctx.lineTo(padL+pw, padT+ph); ctx.stroke();
+    ctx.fillStyle = c.faint; ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
+    ctx.fillText('Time (s)', padL + pw, h - 2);
+
+    var n = hist.t.length;
+    var i0 = 0;
+    for(var i = n-1; i >= 0; i--){ if(hist.t[i] < t0){ i0 = i; break; } }
+
+    /* outPID — with a gradient area fill */
+    if(n > 1){
+      var g = ctx.createLinearGradient(0, padT, 0, padT+ph);
+      g.addColorStop(0, hexA(c.u, .30)); g.addColorStop(1, hexA(c.u, 0));
+      ctx.beginPath(); ctx.moveTo(X(hist.t[i0]), padT+ph);
+      for(var a=i0; a<n; a++) ctx.lineTo(X(hist.t[a]), Y(hist.u[a]));
+      ctx.lineTo(X(hist.t[n-1]), padT+ph); ctx.closePath();
+      ctx.fillStyle = g; ctx.fill();
+    }
+    function trace(arr, col, lw){
+      if(n < 2) return;
+      ctx.beginPath();
+      for(var a=i0; a<n; a++){
+        var x = X(hist.t[a]), y = Y(arr[a]);
+        if(a === i0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.lineJoin = 'round'; ctx.stroke();
+    }
+    trace(hist.u,  c.u,  1.6);
+    trace(hist.sp, c.sp, 1.6);
+    trace(hist.pv, c.pv, 2.2);
+
+    /* emphasised endpoint on the process value */
+    if(n > 1){
+      ctx.beginPath(); ctx.arc(X(hist.t[n-1]), Y(hist.pv[n-1]), 3.2, 0, Math.PI*2);
+      ctx.fillStyle = c.pv; ctx.fill();
+    }
+  }
+
+  function fmt(v, dp){ return v.toFixed(dp === undefined ? 2 : dp); }
+  function readouts(){
+    document.getElementById('ro-t').textContent  = fmt(st.t,1) + ' s';
+    document.getElementById('ro-pv').textContent = fmt(st.y[2]);
+    document.getElementById('ro-u').textContent  = fmt(st.u);
+    document.getElementById('ro-n').textContent  = String(calls);
+    var os = document.getElementById('ro-os');
+    if(maxpv > P.setpoint.v + 0.01 && P.setpoint.v > 0.5){
+      os.textContent = fmt((maxpv - P.setpoint.v) / P.setpoint.v * 100, 2) + ' %';
+    } else { os.textContent = 'none'; }
+  }
+
+  /* controls */
+  var host = document.getElementById('ctrlhost');
+  Object.keys(P).forEach(function(k){
+    var p = P[k];
+    var wrap = document.createElement('label');
+    wrap.className = 'ctrl';
+    var id = 'ctl-' + k;
+    wrap.innerHTML =
+      '<span class="row"><span class="small" style="color:var(--ink)">' + p.label + '</span>' +
+      '<span class="val" id="v-' + k + '"></span></span>' +
+      '<span class="nm">' + (p.raw ? '"' + p.tag : 'parameters.Default.' + p.tag) + '</span>' +
+      '<input type="range" id="' + id + '" min="' + p.min + '" max="' + p.max + '" step="' + p.step + '" value="' + p.v + '">';
+    host.appendChild(wrap);
+    var inp = wrap.querySelector('input');
+    var out = wrap.querySelector('#v-' + k);
+    function show(){ out.textContent = (p.step < 0.01 ? p.v.toFixed(3) : (p.step < 1 ? p.v.toFixed(2) : p.v.toFixed(0))); }
+    show();
+    inp.addEventListener('input', function(){
+      p.v = parseFloat(inp.value); show();
+      if(k === 'setpoint') maxpv = 0;
+      if(!running){ drawScope(); readouts(); }
+    });
+    p.input = inp; p.show = show;
+  });
+  function setAll(o){
+    Object.keys(o).forEach(function(k){
+      if(!P[k]) return;
+      P[k].v = o[k]; P[k].input.value = String(o[k]); P[k].show();
+    });
+    maxpv = 0;
+  }
+  var PRESETS = {
+    stock: { P:1.9, I:0.065, D:8.5, N:5, hi:100, setpoint:50 },
+    sat20: { P:1.9, I:0.065, D:8.5, N:5, hi:20,  setpoint:50 },
+    hot:   { P:4.5, I:0.065, D:8.5, N:5, hi:100, setpoint:50 },
+    noi:   { P:1.9, I:0,     D:8.5, N:5, hi:100, setpoint:50 }
+  };
+  Array.prototype.forEach.call(document.querySelectorAll('[data-preset]'), function(b){
+    b.addEventListener('click', function(){
+      setAll(PRESETS[b.getAttribute('data-preset')]);
+      resetSim(); drawScope(); readouts();
+    });
+  });
+
+  var runbtn = document.getElementById('runbtn');
+  runbtn.addEventListener('click', function(){
+    running = !running; runbtn.textContent = running ? 'Pause' : 'Run';
+  });
+  document.getElementById('resetbtn').addEventListener('click', function(){
+    resetSim(); drawScope(); readouts();
+  });
+  var spd = document.getElementById('speed'), spdv = document.getElementById('speedv');
+  spd.addEventListener('input', function(){ speed = parseFloat(spd.value); spdv.textContent = speed + '×'; });
+
+  resetSim();
+  /* prime a full first run so the scope is never an empty frame */
+  (function prime(){ for(var i=0;i<450;i++) step(); })();
+  drawScope(); readouts();
+  if(reduce){ running = false; runbtn.textContent = 'Run'; }
+
+  var last = 0, acc = 0;
+  function loop(ts){
+    if(!last) last = ts;
+    var dt = Math.min(0.25, (ts - last)/1000); last = ts;
+    if(running){
+      acc += dt * speed;
+      var steps = Math.floor(acc / TS);
+      if(steps > 0){
+        acc -= steps * TS;
+        if(steps > 400) steps = 400;
+        for(var i=0;i<steps;i++) step();
+      }
+      drawScope(); readouts();
+    }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  window.addEventListener('resize', function(){ drawScope(); });
+
+  /* ============================================================
+     BLOCK ANATOMY — interfaces read from the generated SCL
+     ============================================================ */
+  var BLOCKS = [
+    { n:'Model_PID_Load', kind:'FB', sub:'always generated', where:['OB Startup'],
+      what:'Loads the shared object from the CPU web server into load memory. The library name is baked in with an <span class="mono">&lt;rt&gt;</span> prefix marking it a realtime function, together with the ODK instance ID that ties every generated block to this one .so.',
+      code:'VAR_INPUT\n  REQ : Bool := TRUE;\nEND_VAR\nVAR_OUTPUT\n  DONE : Bool;\n  BUSY : Bool;\n  ERROR : Bool;\n  STATUS : Int;\nEND_VAR\nVAR\n  ODK_Load_Instance : ODK_Load;\n  _odk_internal_LIBRARY_NAME : String := \'<rt>Model_PID_ODK.so\';\nEND_VAR\nVAR CONSTANT\n  _odk_internal_INSTANCE_ID : UDInt := 3808754227;\nEND_VAR' },
+
+    { n:'Model_PID_Unload', kind:'FB', sub:'always generated', where:['OB Startup'],
+      what:'Clears the shared object out of CPU memory. Called ahead of Load on the Advanced unload/load path so a restart always begins from a known state — which is what lets a rebuilt .so replace the old one.',
+      code:'VAR_INPUT\n  REQ : Bool := TRUE;\nEND_VAR\nVAR_OUTPUT\n  DONE : Bool;  BUSY : Bool;\n  ERROR : Bool; STATUS : Int;\nEND_VAR' },
+
+    { n:'Model_PIDOneStep', kind:'FB', sub:'the model itself', where:['OB CyclicInterrupt'],
+      what:'Executes exactly one model step. The inputs and outputs are the Simulink model\'s own, at LREAL — this is the block your control code talks to. <span class="mono">modelState</span> exists only when External Mode is enabled and reads 2&nbsp;=&nbsp;WAITING TO START, 0&nbsp;=&nbsp;RUNNING; <span class="mono">internalSignals</span> appears only with internal-signal access. With Stateflow access a further output, <span class="mono">chartStates</span> of type <span class="mono">StateflowChartStates</span>, carries string tags such as <span class="mono">myChart_2</span> or <span class="mono">myChart_myParentState_3</span>. <span class="xs mono">Manual p.98, p.104, p.124</span>',
+      code:'VAR_INPUT\n  "setpoint"        : LREAL;\n  "processValue"    : LREAL;\nEND_VAR\nVAR_OUTPUT\n  STATUS            : INT := 0;\n  "outPID"          : LREAL;\n  "internalSignals" : "Model_PIDInternalModelSignals";\n  "modelState"      : DINT;\nEND_VAR\nVAR\n  _odk_internal_IN_BUFFER  : Array [0..15] of Byte;\n  _odk_internal_OUT_BUFFER : Array [0..59] of Byte;\nEND_VAR' },
+
+    { n:'Model_PIDCallExtMode', kind:'FB', sub:'optional — External Mode', where:['OB CyclicInterrupt','may sit in its own OB'],
+      what:'Opens and services the TCP connection Simulink\'s External Mode talks over. Internally it is a state machine around <span class="mono">TCON</span>, <span class="mono">TRCV</span>, <span class="mono">TSEND</span> and <span class="mono">TDISCON</span> with two 64&nbsp;KiB exchange buffers — total External Mode data is capped at 64k (error 34). The <span class="mono">HW-Identifier</span> default of 64 is the CPU PROFINET X1 interface — read yours from PLC tags &rarr; System constants rather than trusting a default. With <i>Ensure thread-safety</i> off, call this in the same block as OneStep; with it on you may call it elsewhere, but only from a program cycle OB with lower priority than OneStep\'s, and the ODK object gets less memory. <span class="mono">Status_ExtMode&nbsp;=&nbsp;0x0001</span> means not enough memory for External Mode — raise <i>Static memory buffer size</i> and rebuild. <span class="xs mono">Manual p.96–97, p.138</span>',
+      code:'VAR_INPUT\n  "EnableExtMode"  : Bool     := 1;\n  "HW-Identifier"  : UInt     := 64;\n  "LocalPort"      : UInt     := 17725;\n  "OUC-Identifier" : CONN_OUC := 2048;\nEND_VAR\nVAR_OUTPUT\n  STATUS : "Model_PIDExtModeStatus";\nEND_VAR\nVAR CONSTANT\n  BUF_SIZE : UDInt := 65536;  // 64k\n  ST_IDLE := 0; ST_RECEIVE := 1; ST_SEND := 2;\n  ST_DISCON := 3; ST_DISCON_GRACEFULL := 4;\n  ST_EXEC_ODK := 5;\nEND_VAR' },
+
+    { n:'Model_PIDExtModeInternal', kind:'FB', sub:'optional — internal only', where:['called inside CallExtMode'],
+      what:'Carries the External Mode internals. It is called from <span class="mono">Model_PIDCallExtMode</span> and must not be called anywhere else in the S7 program.',
+      code:'// no user interface — instantiated as\n// "Model_PIDExtMode_Instance" inside\n// Model_PIDCallExtMode' },
+
+    { n:'Model_PIDReadWriteParameters', kind:'FB', sub:'optional — STEP 7 parameter access', where:['OB CyclicInterrupt'],
+      what:'Reads or writes the tunable parameter set in one call: <span class="mono">write = FALSE</span> copies the model\'s current values out into <span class="mono">inOutParams</span>, <span class="mono">write = TRUE</span> pushes yours in. Call it <b>before</b> OneStep to apply values in the same cycle, <b>after</b> OneStep for the next cycle; it is thread-safe, so it may sit in a different OB from OneStep. Values reset to the Simulink defaults whenever the ODK object is re-initialised. <span class="mono">storageClasses</span> selects which storage-class groups take part — the generated tag table defines <span class="mono">Model_PID_Default</span> as bit 0, and the default mask is every bit (application example SCL). <span class="xs mono">Manual p.47–48, p.102</span>',
+      code:'VAR_INPUT\n  "storageClasses" : LWORD := 16#FFFF_FFFF_FFFF_FFFF;\n  "write"          : BOOL;\nEND_VAR\nVAR_OUTPUT\n  STATUS                : INT := 0;\n  "isReadWriteCompleted" : BOOL;\nEND_VAR\nVAR_IN_OUT\n  "inOutParams" : "Model_PIDParams";\nEND_VAR' },
+
+    { n:'Model_PIDWebReadWrite', kind:'FB', sub:'optional — web visualisation', where:['OB CyclicInterrupt'],
+      what:'Feeds the user-defined website: internal signals in, parameters in and out. It instantiates <span class="mono">Model_PIDReadWriteParameters</span> itself, so the web page can change a parameter without you wiring a second write path. Two variants exist: the legacy (AWP) one needs <span class="mono">CTRL_DB</span> — the start number of the Web DBs — and an instance DB named exactly <span class="mono">gDB_SWV_Interface</span>; the Web server API variant (since V6.0, for CPU firmware &ge;&nbsp;V21.9 software / &ge;&nbsp;V2.9 hardware) drops <span class="mono">CTRL_DB</span> and takes its instance DB name from Target options instead — generate that DB via Openness or web access fails. Both are called in the same OB as OneStep and ReadWriteParameters. The shipped example\'s WebReadWrite has no <span class="mono">CTRL_DB</span>, consistent with the API variant. <span class="xs mono">Manual p.116–117, p.51</span>',
+      code:'VAR_INPUT\n  InternalSignals : "Model_PIDInternalModelSignals";\nEND_VAR\nVAR_IN_OUT\n  Params : "Model_PIDParams";\nEND_VAR\nVAR\n  TestPointedSignals : "Model_PIDInternalModelSignals";\n  RWParams_Instance  : "Model_PIDReadWriteParameters";\n  Write   : Int   := 0;\n  RunTime : LReal;\nEND_VAR' },
+
+    { n:'Model_PIDAutoLoad', kind:'FB', sub:'optional — Automated unload/load', where:['Main_AutoLoad (program cycle)'],
+      what:'Generated only when Unload/Load is set to <i>Automated</i>: it holds multi-instances of <span class="mono">…_Load</span> and <span class="mono">…_Unload</span> and is itself called from the generated OB <span class="mono">Main_AutoLoad</span>. <span class="mono">ReloadModel</span> triggers the unload&rarr;load sequence once, after a download that follows a new build or a STOP&rarr;RUN change, then returns to FALSE. Observation: the shipped example archive\'s SCL source contains <span class="mono">Load</span> and <span class="mono">Unload</span> but not this FB — Openness generates <span class="mono">…AutoLoad</span> and <span class="mono">Main_AutoLoad</span> straight into the project rather than into the SCL text. <span class="xs mono">Manual p.38, p.81</span>',
+      code:'VAR_INPUT\n  ENABLE      : Bool := TRUE;\n  ReloadModel : Bool := TRUE;\nEND_VAR\nVAR_OUTPUT\n  LOAD_STATUS   : Int;\n  UNLOAD_STATUS : Int;\n  ERROR         : Bool;\nEND_VAR\nVAR\n  Load   : "Model_PID_Load";\n  Unload : "Model_PID_Unload";\nEND_VAR' },
+
+    { n:'Model_PIDParams', kind:'TYPE', sub:'the writable set', where:['global DB'],
+      what:'One member per storage class. The example has a single class, <span class="mono">Default</span>, so every tunable parameter sits one level down — worth knowing, because the document\'s watch-table text omits that level.',
+      code:'TYPE "Model_PIDParams"\n  STRUCT\n    "Default" : "Model_PIDDefault_Type";\n  END_STRUCT;\nEND_TYPE' },
+
+    { n:'Model_PIDDefault_Type', kind:'TYPE', sub:'gains, as generated', where:['global DB'],
+      what:'The tunable parameters with the values the model was built with, each commented with its path in the model and its permitted range. These are the numbers the simulator above starts from.',
+      code:'"Model_PID_PIDController_P"   : LREAL := 1.900000;\n"Model_PID_PIDController_I"   : LREAL := 0.065000;\n"Model_PID_PIDController_D"   : LREAL := 8.500000;\n"Model_PID_PIDController_N"   : LREAL := 5.000000;\n"Model_PID_PIDController_UpperSaturationLimit" : LREAL := 100.0;\n"Model_PID_PIDController_LowerSaturationLimit" : LREAL := 0.0;\n"Model_PID_PIDController_InitialConditionForIntegrator" : LREAL := 0.0;\n"Model_PID_PIDController_InitialConditionForFilter"     : LREAL := 0.0;\n"Model_PID_Integrator_gainval" : LREAL := 0.100000;\n"Model_PID_Filter_gainval"     : LREAL := 0.100000;\n"Model_PID_Gain2_Gain"         : LREAL := 1.000000;\n"Model_PID_Gain1_Gain"         : LREAL := 1.000000;' },
+
+    { n:'Model_PIDInternalModelSignals', kind:'TYPE', sub:'test points', where:['OneStep output','web page'],
+      what:'Every signal you named and marked as a test point, with its location in the model kept as a comment. This is how a signal buried two subsystems deep becomes readable from the S7 program.',
+      code:'"sig_sum"       : LREAL; // Model_PID/\n"sig_outpid"    : LREAL; // Model_PID/PIDController/Saturation/Enabled\n"sig_setpoint"  : LREAL; // Model_PID/Gain2\n"sig_processval": LREAL; // Model_PID/Gain1\n"setpoint"      : LREAL; // Model_PID/setpoint\n"processValue"  : LREAL; // Model_PID/processValue' },
+
+    { n:'Model_PIDExtModeStatus', kind:'TYPE', sub:'six-word diagnosis', where:['global DB'],
+      what:'External Mode fails in six separable places, so the status is six words rather than one. Read whichever is non-zero against that block\'s own documentation — the TCP ones are ordinary open-user-communication status codes.',
+      code:'Status_TCON     : Word;  // TCON status\nStatus_TDISCON  : Word;  // TDISCON status\nStatus_TRCV     : Word;  // TRCV status\nStatus_TSEND    : Word;  // TSEND status\nStatus_ODK      : Int;   // ExtModeInternal / ODK status\nStatus_ExtMode  : Word;  // Target-specific error codes' }
+  ];
+
+  var blist = document.getElementById('blist'), bpane = document.getElementById('bpane');
+  BLOCKS.forEach(function(b, i){
+    var el = document.createElement('button');
+    el.type = 'button'; el.className = 'bitem'; el.setAttribute('role','tab');
+    el.setAttribute('aria-selected', i === 2 ? 'true' : 'false');
+    el.innerHTML = '<span class="k">' + b.kind + '</span><span class="nm">' + b.n +
+                   '<em>' + b.sub + '</em></span>';
+    el.addEventListener('click', function(){ pickBlock(i); });
+    blist.appendChild(el);
+  });
+  var bitems = blist.querySelectorAll('.bitem');
+  function pickBlock(i){
+    for(var k=0;k<bitems.length;k++) bitems[k].setAttribute('aria-selected', k === i ? 'true' : 'false');
+    var b = BLOCKS[i];
+    bpane.innerHTML =
+      '<div class="panel stack">' +
+        '<p class="role">' + (b.kind === 'FB' ? 'Function block' : 'PLC data type') + ' &middot; ' + b.sub + '</p>' +
+        '<h3 class="h3 mono" style="font-size:19px">' + b.n + '</h3>' +
+        '<p class="small">' + b.what + '</p>' +
+        '<div class="where">' + b.where.map(function(w){
+            return '<span class="tag on">' + w + '</span>'; }).join('') + '</div>' +
+      '</div>' +
+      '<pre>' + b.code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>';
+  }
+  pickBlock(2);
+
+  /* ============================================================
+     DATA TYPES — Simulink <-> ODK <-> C++ <-> STEP 7
+     ============================================================ */
+  var DTYPES = [
+    { simulink:'double', odk:'ODK_DOUBLE', cpp:'double', step7:'LREAL', ex:'"setpoint" : LREAL;' },
+    { simulink:'single', odk:'ODK_FLOAT', cpp:'float', step7:'REAL', ex:'"gain" : REAL;' },
+    { simulink:'int8', odk:'ODK_INT8', cpp:'char', step7:'SINT', ex:'"flag8" : SINT;' },
+    { simulink:'uint8', odk:'ODK_UINT8', cpp:'unsigned char', step7:'USINT', ex:'"flag8u" : USINT;' },
+    { simulink:'int16', odk:'ODK_INT16', cpp:'short', step7:'INT', ex:'"count16" : INT;' },
+    { simulink:'uint16', odk:'ODK_UINT16', cpp:'unsigned short', step7:'UINT', ex:'"count16u" : UINT;' },
+    { simulink:'int32', odk:'ODK_INT32', cpp:'int', step7:'DINT', ex:'"count32" : DINT;' },
+    { simulink:'uint32', odk:'ODK_UINT32', cpp:'unsigned int', step7:'UDINT', ex:'"count32u" : UDINT;' },
+    { simulink:'int64', odk:'ODK_INT64', cpp:'long long', step7:'LINT', ex:'"count64" : LINT;' },
+    { simulink:'uint64', odk:'ODK_UINT64', cpp:'unsigned long long', step7:'ULINT', ex:'"count64u" : ULINT;' },
+    { simulink:'boolean', odk:'ODK_BOOL', cpp:'bool', step7:'BOOL', ex:'"enable" : BOOL;' }
+  ];
+  var dtbody = document.getElementById('dtypebody'), dtex = document.getElementById('dtypeex');
+  DTYPES.forEach(function(d, i){
+    var tr = document.createElement('tr');
+    tr.className = 'dtrow'; tr.setAttribute('tabindex','0'); tr.setAttribute('role','button');
+    tr.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+    tr.innerHTML = '<td class="mono">' + d.simulink + '</td><td class="mono">' + d.odk + '</td><td class="mono">' + d.cpp + '</td><td class="mono">' + d.step7 + '</td>';
+    function pick(){
+      var rows = dtbody.querySelectorAll('tr');
+      for(var k=0;k<rows.length;k++) rows[k].setAttribute('aria-selected', k === i ? 'true' : 'false');
+      dtex.textContent = d.ex;
+    }
+    tr.addEventListener('click', pick);
+    tr.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); pick(); } });
+    dtbody.appendChild(tr);
+  });
+  if(dtex) dtex.textContent = DTYPES[0].ex;
+
+  /* ============================================================
+     MQTT — LiveTwin External Mode, manual Figure C-1 / p.98-99
+     ============================================================ */
+  var MQ_STEPS = [
+    { edge:'R', dir:'rtl', label:'connect', desc:'LiveTwin app connects to the External Databus (MQTT broker).', nodes:['broker','livetwin'] },
+    { edge:'R', dir:'rtl', label:'subscribe SimulinkMsg', desc:'LiveTwin subscribes to the topic "SimulinkMsg".', nodes:['broker','livetwin'] },
+    { edge:'L', dir:'ltr', label:'connect', desc:'"Connect" in Simulink activates External Mode and connects to the broker.', nodes:['simulink','broker'] },
+    { edge:'L', dir:'ltr', label:'subscribe LiveTwinMsg', desc:'Simulink subscribes to the topic "LiveTwinMsg".', nodes:['simulink','broker'] },
+    { edge:'L', dir:'ltr', label:'SimulinkMsg', desc:'Simulink publishes changed parameters to "SimulinkMsg".', nodes:['simulink','broker'] },
+    { edge:'R', dir:'ltr', label:'SimulinkMsg', desc:'LiveTwin receives and applies the changed parameters.', nodes:['broker','livetwin'] },
+    { edge:'R', dir:'rtl', label:'LiveTwinMsg', desc:'LiveTwin publishes process signals to "LiveTwinMsg".', nodes:['broker','livetwin'] },
+    { edge:'L', dir:'rtl', label:'LiveTwinMsg', desc:'Simulink receives the process signals.', nodes:['simulink','broker'] }
+  ];
+  var mqNodes = { simulink: document.getElementById('mqn-simulink'), broker: document.getElementById('mqn-broker'), livetwin: document.getElementById('mqn-livetwin') };
+  var mqEdges = { L: document.getElementById('mqe-L'), R: document.getElementById('mqe-R') };
+  var mqSel = 0, mqFlowing = !reduce;
+  var mqStepsEl = document.getElementById('mqttsteps'), mqDesc = document.getElementById('mqttstepdesc');
+  MQ_STEPS.forEach(function(s, i){
+    var b = document.createElement('button');
+    b.type = 'button'; b.setAttribute('role','tab'); b.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+    b.textContent = String(i+1);
+    b.addEventListener('click', function(){ mqSelect(i); mqFlowing = false; mqplaybtn.textContent = 'Play'; });
+    mqStepsEl.appendChild(b);
+  });
+  var mqStepBtns = mqStepsEl.querySelectorAll('button');
+  function mqSelect(i){
+    mqSel = i;
+    var s = MQ_STEPS[i];
+    for(var k=0;k<mqStepBtns.length;k++) mqStepBtns[k].setAttribute('aria-selected', k === i ? 'true' : 'false');
+    Object.keys(mqNodes).forEach(function(k){ mqNodes[k].classList.toggle('active', s.nodes.indexOf(k) !== -1); });
+    Object.keys(mqEdges).forEach(function(k){
+      var on = k === s.edge;
+      mqEdges[k].classList.toggle('active', on);
+      mqEdges[k].classList.toggle('rev', on && s.dir === 'rtl');
+      document.getElementById('mqe-' + k + '-label').textContent = on ? s.label : ' ';
+      document.getElementById('mqe-' + k + '-arrow').textContent = on ? (s.dir === 'ltr' ? '→' : '←') : '↔';
+    });
+    mqDesc.textContent = 'Step ' + (i+1) + ' of 8 — ' + s.desc;
+  }
+  mqSelect(0);
+  var mqplaybtn = document.getElementById('mqttplay');
+  mqplaybtn.textContent = mqFlowing ? 'Pause' : 'Play';
+  mqplaybtn.addEventListener('click', function(){ mqFlowing = !mqFlowing; mqplaybtn.textContent = mqFlowing ? 'Pause' : 'Play'; });
+  setInterval(function(){ if(mqFlowing) mqSelect((mqSel + 1) % MQ_STEPS.length); }, 2200);
+
+  /* ============================================================
+     TRAPS
+     ============================================================ */
+  var TRAPS = [
+    { h:'The OB cycle must equal the model step size',
+      p:'The example builds at <span class="mono">ts = 0.1</span> and calls <span class="mono">OneStep</span> from a 100&nbsp;ms cyclic interrupt. Put the same block in a 10&nbsp;ms OB and every integrator in the model runs ten times too fast — nothing errors, the loop simply misbehaves. Set the Cycle Time field with the <b>Set to recommended value</b> button (in µs) rather than typing it.',
+      s:'Manual p.38 · generated header: Step Size 0.1' },
+    { h:'Uploading the .so is not loading it',
+      p:'The file sits in the CPU\'s <span class="mono">ODK1500S</span> folder doing nothing until the Load block runs, and a modified SO is not executed until the old one has been unloaded and the new one loaded. An SO that is never unloaded stays in work memory and eats it until you shut the system down and restart it.',
+      s:'Manual p.78, p.81' },
+    { h:'The Load FB cannot be called in a cyclic interrupt OB',
+      p:'The manual is flat about it: the load block cannot be called in a cyclic interrupt, and the Unload/Load OB list offers program cycle OBs, not cyclic ones. Put it in a startup or program cycle OB — the automated path uses the generated <span class="mono">Main_AutoLoad</span> — and keep that OB in SCL if you want Target to manage it.',
+      s:'Manual p.38, p.82' },
+    { h:'The hardware identifier is not reliably 64',
+      p:'The generated <span class="mono">CallExtMode</span> defaults to 64, matching the CPU\'s PROFINET&nbsp;X1 interface — but it must equal whatever <i>Hardware identifier</i> TIA Portal actually assigned, and the application example\'s own worked step wires 59. Read yours from PLC tags &rarr; Display all tags &rarr; System constants and use that, in both Target Options and the block call.',
+      s:'Manual p.42, p.95 · App. example wires 59' },
+    { h:'External Mode needs a unique port and Connection ID per model',
+      p:'Port number defaults to 17725, Connection ID must be 1…4095. Both are fine with one model on a CPU — but run several models at once and each needs its own port <i>and</i> its own Connection ID, or the simultaneous connections collide.',
+      s:'Manual p.41–42, p.70, p.88' },
+    { h:'Openness group membership needs an OS restart, not just a login',
+      p:'Target Options talks to TIA Portal over Openness. Your Windows account must be in the local <span class="mono">Siemens TIA Openness</span> group — added in Computer Management — <b>and the operating system restarted</b> before automatic SCL import or automatic .so transfer will work.',
+      s:'Manual p.37' },
+    { h:'Tunable is a build-time decision — and so is a readable data type',
+      p:'<span class="mono">Default parameter behavior = Tunable</span>, parameter access, internal-signal access, web diagrams and External Mode all have to be set <b>before</b> you press Build. A parameter left at <i>Inherit via internal rule</i> for its data type may come out unreadable at runtime even when it is tunable — set the type explicitly.',
+      s:'Manual p.47–48' },
+    { h:'Single-tasking only, and the hardware implementation is fixed',
+      p:'Leave <i>Treat each discrete rate as a separate task</i> off (error 30) and the hardware implementation at Intel, x86-32 (Windows32) (error 33) — the ODK runtime accepts neither multitasking nor any other device type.',
+      s:'Manual errors 30, 33 · p.137–138' },
+    { h:'A long model name or path breaks the build before it starts',
+      p:'Windows path-length limits (error 32) and ODK identifier-length limits (errors 515/516) both bite on long names. Keep the model name and its folder path short, or lower <i>Maximum identifier length</i> under Code Generation &gt; Identifiers.',
+      s:'Manual errors 32, 515, 516 · p.29, p.138' },
+    { h:'Close Eclipse before you build',
+      p:'The build creates its ODK Eclipse project under the shared ODK 1500S default workspace; any other Eclipse instance already holding that workspace locks it, and the build stops with "Eclipse workspace is locked" (error 10) until you close it.',
+      s:'Manual p.75 · error 10, p.136' }
+  ];
+  var th = document.getElementById('traps');
+  TRAPS.forEach(function(t, i){
+    var d = document.createElement('div');
+    d.className = 'trap';
+    d.innerHTML = '<div class="ic">' + (i+1) + '</div><div><h4>' + t.h + '</h4><p>' + t.p +
+                  '</p><p class="src">' + t.s + '</p></div>';
+    th.appendChild(d);
+  });
+
+  /* ============================================================
+     ALARMS — searchable info/warning/error list, p.129-139
+     ============================================================ */
+  var ALARMS = [
+    { no:'1–8', type:'info', msg:'Build progress: the build starts, SIMATIC Target files are generated, the ODK 1500S project is created and built.', fix:'Informational — no action needed.', page:'129' },
+    { no:'9–12', type:'info', msg:'Build finished successfully: &lt;model&gt;_ODK.scl, &lt;model&gt;_SC_TagTable.xml and &lt;model&gt;_ODK.so are in the outputs folder, with the exact next TIA Portal / Web server steps spelt out.', fix:'Import the SCL, generate blocks and upload the SO — for whichever of those you left manual.', page:'129–130' },
+    { no:'1301–1310', type:'info', msg:'LiveTwin workflow progress: authentication, project creation, model description/hierarchy files, packaging — through to "LiveTwin processes finished successfully."', fix:'Informational — no action needed.', page:'111–112' },
+    { no:'1', type:'warning', msg:'Using "External mode" can cause serious damage to property or injury to persons if there are functional disturbances or program errors.', fix:'Make sure no dangerous situations can occur before testing with External Mode.', page:'132' },
+    { no:'2', type:'warning', msg:'"Default parameter behavior" should be "Tunable" so STEP 7 can access tunable block parameters, not only global ones.', fix:'Set "Default parameter behavior" to Tunable.', page:'133' },
+    { no:'3', type:'warning', msg:'The MEX-file arguments syntax is wrong; External Mode may not establish. Correct order: \'&lt;IPAddress&gt;\' &lt;VerbosityLevel&gt; &lt;PortNumber&gt; &lt;WaitForStart&gt;', fix:'Fix the MEX-file arguments to match that order.', page:'133' },
+    { no:'4', type:'warning', msg:'External Mode communication cannot be set up because "UpdateModelReferenceTargets" is set to "Always".', fix:'Change UpdateModelReferenceTargets to another setting.', page:'133' },
+    { no:'9', type:'warning', msg:'Enabling the ExtMode communication DB’s status by default at startup can be a serious security vulnerability.', fix:'Only turn this on deliberately, with the matching authorisation settings in place.', page:'133' },
+    { no:'21', type:'warning', msg:'"StateBitsets" is checked, so STEP 7 access and Web visualisation of Stateflow states is not possible.', fix:'Turn StateBitsets off (command line or configuration parameters) to enable Stateflow access.', page:'133' },
+    { no:'22', type:'warning', msg:'Invalid thread-safety usage with External Mode.', fix:'Relocate the OBs so OneStep and CallExtMode sit in the same block, or use the thread-safety mechanism correctly.', page:'133' },
+    { no:'23', type:'warning', msg:'One or more protected models are in use; visualisation and access to their internal signals, Stateflow states and parameters are ignored.', fix:'Expect reduced access for protected models — this is by design.', page:'133' },
+    { no:'56', type:'warning', msg:'A Simatic_Target_V&lt;version&gt;_0_&lt;coder&gt;.tlc file was detected in the current workspace path; the build will fail.', fix:'Confirm the workspace is not the SIMATIC Target source path, then delete that file.', page:'134' },
+    { no:'60', type:'warning', msg:'A custom storage class stores a parameter as a static variable, so it is not accessible from TIA Portal or the Web.', fix:'Choose a different storage class if you need STEP 7 or Web access to it.', page:'134' },
+    { no:'61', type:'warning', msg:'A custom storage class for an internal signal is set to localizable; access is not supported on TIA Portal or the Web.', fix:'Use a non-localizable storage class for signals you need to read externally.', page:'134' },
+    { no:'62', type:'warning', msg:'The number of storage classes that can be grouped has reached its limit of 64; further classes are read/written regardless of the storage-class selection.', fix:'Reduce the number of distinct storage classes, or accept the ungrouped behaviour.', page:'134' },
+    { no:'63', type:'warning', msg:'A custom storage class for a data object is defined as a pointer; pointer access is not supported on TIA Portal or the Web.', fix:'Choose a non-pointer storage class.', page:'134' },
+    { no:'703–705', type:'warning', msg:'703 empty/invalid field — no compatible Openness plugin installed; 704 the functionality is not supported by the TIA Openness version; 705 an error occurred during a TIA Openness operation.', fix:'Install a compatible Openness plugin/TIA Portal version and retry.', page:'134' },
+    { no:'710–711', type:'warning', msg:'710 the TIA Portal project could not connect or was closed; 711 the project is protected and needs a username and password from the SIMATIC Target configuration window.', fix:'Reconnect to the project; for a protected one, supply credentials in Target Options.', page:'135' },
+    { no:'752–754', type:'warning', msg:'Download failures: 752 PC station download failed, 753 CPU download failed, 754 the project could not be compiled before download.', fix:'Fix the underlying HW-config, connection or compile error, then retry.', page:'135' },
+    { no:'951–952', type:'warning', msg:'951 no IP address was given for the SO file transfer; 952 the IP address is not in the correct format.', fix:'Enter the CPU’s IP address, correctly formatted.', page:'136' },
+    { no:'953', type:'warning', msg:'"Connection Error" — the host is not reachable.', fix:'Check the CPU’s IP address, network path and that its Web server is reachable.', page:'136' },
+    { no:'954', type:'warning', msg:'"Invalid login information" — the SO-transfer login failed.', fix:'Check the Web server user name and password.', page:'136' },
+    { no:'955', type:'warning', msg:'"Error while uploading the file - file too big" — the SO file exceeds 2 147 483 648 bytes.', fix:'Reduce what the model generates.', page:'136' },
+    { no:'956', type:'warning', msg:'An invalid character was used in the SO file name. Allowed: a-z A-Z 0-9 ._- (){}[]$!=~ and space.', fix:'Rename the model or output so the SO file name uses only that character set.', page:'136' },
+    { no:'957–961', type:'warning', msg:'957 the SO file was not found; 958 an IO exception occurred reading it; 959 an authorisation error occurred; 960 the file is write-protected; 961 an error occurred uploading the SO file.', fix:'Check the file exists, is readable, and that the target location accepts the write.', page:'136' },
+    { no:'1000', type:'warning', msg:'Building with SIMATIC Target trial mode: &lt;n&gt; day(s) left.', fix:'Transfer a licence key via the Automation License Manager before the trial runs out.', page:'136' },
+    { no:'10', type:'error', msg:'Eclipse workspace is locked — another Eclipse instance holds the ODK 1500S default workspace.', fix:'Close the Eclipse instance(s) using that workspace, then rebuild.', page:'136' },
+    { no:'11', type:'error', msg:'A project named &lt;model&gt;_ODK already exists in the ODK 1500S default workspace.', fix:'Rename the Simulink model, or remove/rename the existing ODK project manually.', page:'137' },
+    { no:'14', type:'error', msg:'An error occurred while creating the shared object file.', fix:'Enable Verbose and check the ODK build log for the underlying error.', page:'137' },
+    { no:'20', type:'error', msg:'No compatible ODK 1500S version is installed.', fix:'Install a compatible ODK 1500S version and restart MATLAB.', page:'137' },
+    { no:'23', type:'error', msg:'An incompatible Java Runtime Environment (JRE) or architecture (x86/x64) is installed for the selected ODK version.', fix:'Install the JRE architecture the selected ODK 1500S version needs.', page:'137' },
+    { no:'30', type:'error', msg:'Only "SingleTasking" is allowed as the tasking mode for SIMATIC Target.', fix:'Uncheck "Treat each discrete rate as a separate task" under Solver options.', page:'137' },
+    { no:'31', type:'error', msg:'"ImportedExternPointer" is not allowed as the storage class for a tunable parameter.', fix:'Choose a different storage class for that parameter.', page:'137' },
+    { no:'32', type:'error', msg:'The model name and path push generated file paths past a Windows path-length limit.', fix:'Shorten the model name, or move the model to a shorter path.', page:'137' },
+    { no:'33', type:'error', msg:'"Device vendor" must be Intel and "Device type" must be x86-32 (Windows32) in the hardware implementation options.', fix:'Select x86-32 (Windows32) under Device type.', page:'138' },
+    { no:'34', type:'error', msg:'The maximum data size for External Mode is 64k, and the model’s current data exceeds it.', fix:'Reduce the size of the parameters External Mode has to carry.', page:'138' },
+    { no:'40', type:'error', msg:'The ODK build failed with one or more gcc compiler errors.', fix:'Enable Verbose in Code Generation Options to see the stack trace, then fix the reported line.', page:'138' },
+    { no:'56', type:'error', msg:'The same stray Simatic_Target_V&lt;version&gt;_0_&lt;coder&gt;.tlc as warning 56 — here it aborts the build outright.', fix:'Remove that .tlc file from the workspace path.', page:'138' },
+    { no:'57', type:'error', msg:'Using Stateflow access together with External Mode is not recommended — Stateflow-state visualisation in TIA Portal may be reduced or disabled.', fix:'Expect this limitation, or turn off one of the two features.', page:'138' },
+    { no:'515', type:'error', msg:'The model name causes SIMATIC Target to exceed ODK 1500S naming limits for generated functions or structs.', fix:'Lower "Maximum identifier length" under Symbols, or shorten the model name.', page:'138' },
+    { no:'516', type:'error', msg:'A variable name exceeds the ODK 1500S maximum variable-name length.', fix:'Lower "Maximum identifier length," or shorten that variable’s name.', page:'138' },
+    { no:'519', type:'error', msg:'The size of the model’s input/output parameters reaches the ODK 1500S limit.', fix:'Reduce the size of the parameters.', page:'138' },
+    { no:'520', type:'error', msg:'A parameter’s array exceeds the ODK 1500S maximum array size.', fix:'Reduce the size of that array.', page:'138' },
+    { no:'600', type:'error', msg:'The ODK 1500S code generator reported an error for the project.', fix:'Read the ODK code-generator error text, or contact Customer Support.', page:'139' },
+    { no:'1000', type:'error', msg:'"License key missing" — no licence was transferred and the trial has expired.', fix:'Transfer a licence key with the Automation License Manager.', page:'139' },
+    { no:'1001', type:'error', msg:'"Retrieving license key not possible" — ALM is not installed, cannot be reached, or an unknown error occurred.', fix:'Install or start the Automation License Manager and retry.', page:'139' },
+    { no:'1201–1213', type:'warning', msg:'LiveTwin workflow warnings: authentication failed, an invalid property, model-extraction or JSON-generation errors, generation failed. 1210 among these numbers is the one error, not a warning.', fix:'Read the detailed error text the message carries and fix that step; 1210 aborts the package.', page:'111–112' }
+  ];
+
+  var alarmq = document.getElementById('alarmq'), alarmlist = document.getElementById('alarmlist'),
+      alarmcount = document.getElementById('alarmcount'), alarmtypeseg = document.getElementById('alarmtypeseg');
+  var alarmType = 'all';
+
+  function alEsc(s){ return String(s); } /* content already hand-authored; only user query needs escaping */
+  function alarmRender(){
+    var q = (alarmq.value || '').toLowerCase().trim();
+    var out = ALARMS.filter(function(a){
+      if(alarmType !== 'all' && a.type !== alarmType) return false;
+      if(!q) return true;
+      return a.no.toLowerCase().indexOf(q) !== -1 ||
+             a.msg.toLowerCase().indexOf(q) !== -1 ||
+             a.fix.toLowerCase().indexOf(q) !== -1;
+    });
+    alarmcount.textContent = out.length + ' of ' + ALARMS.length + ' shown';
+    if(out.length === 0){
+      alarmlist.innerHTML = '<p class="small" style="padding:16px 0">No alarm matches — try a number such as 953.</p>';
+      return;
+    }
+    alarmlist.innerHTML = out.map(function(a){
+      return '<div class="trap"><div class="ic type-' + a.type + '">' + a.no + '</div><div>' +
+        '<h4><span class="achip type-' + a.type + '">' + a.type + '</span>' + a.msg + '</h4>' +
+        '<p><b>Fix:</b> ' + a.fix + '</p>' +
+        '<p class="src">Manual p.' + a.page + '</p></div></div>';
+    }).join('');
+  }
+  alarmq.addEventListener('input', alarmRender);
+  Array.prototype.forEach.call(alarmtypeseg.querySelectorAll('button'), function(b){
+    b.addEventListener('click', function(){
+      alarmType = b.getAttribute('data-type');
+      Array.prototype.forEach.call(alarmtypeseg.querySelectorAll('button'), function(o){
+        o.setAttribute('aria-checked', o === b ? 'true' : 'false');
+      });
+      alarmRender();
+    });
+  });
+  alarmRender();
+
+})();
+</script>
+
+</body></html>

@@ -1,0 +1,53 @@
+<section class="sec" id="architecture"><div class="wrap">
+  <header>
+    <div class="eyebrow">Chapters 3&ndash;5 &middot; Block map</div>
+    <h2>Architecture</h2>
+    <p class="lede">Select a block to see its interface. <span class="tag">LSKI_Core</span> is the only mandatory piece; everything above and below it is optional, but once you add one HMI plugin, <span class="tag">LSKI_Core_HMI</span> stops being optional too.</p>
+  </header>
+
+  <div class="cx-archwrap">
+    <div class="cx-arch" role="group" aria-label="LSKI block architecture, select a block for detail">
+      <div class="cx-layer"><div class="cx-node cx-node-static">WinCC Unified HMI screens</div></div>
+      <div class="cx-connector" aria-hidden="true">&darr;</div>
+
+      <div class="cx-layer">
+        <button type="button" class="cx-node" data-detail="corehmi" aria-pressed="false">LSKI_Core_HMI<span class="cx-cap">optional*</span></button>
+        <div class="cx-pluginrow"><span class="cx-plugstem">HMI plugins</span><span class="tag">Programming</span><span class="tag">Teach</span><span class="tag">Commissioning</span><span class="tag">Diagnostics</span></div>
+      </div>
+
+      <div class="cx-obrule"><b>OB rule</b>Every PLC block &mdash; anything without the <span class="tag">_HMI</span> postfix &mdash; must be called in the same OB as <span class="tag">LSKI_Core</span>. <span class="tag">_HMI</span> blocks can live in a slower OB, but should still be called at least every 25&nbsp;ms.</div>
+
+      <div class="cx-connector" aria-hidden="true">&darr;</div>
+      <div class="cx-layer">
+        <button type="button" class="cx-node cx-node-core" data-detail="core" aria-pressed="true">LSKI_Core<span class="cx-cap">mandatory</span></button>
+        <div class="cx-pluginrow"><span class="cx-plugstem">Technology plugins</span><span class="tag">SinaInfeed</span><span class="tag">GCode</span><span class="tag">Palletizing</span><span class="tag">ProductRegister</span><span class="tag">OMAC</span><span class="tag">GenericExternalDevice</span><span class="tag">AxisCoupling</span><span class="tag">AxisSafeBrakeTest</span></div>
+      </div>
+      <div class="cx-connector" aria-hidden="true">&darr;</div>
+
+      <div class="cx-layer">
+        <button type="button" class="cx-node cx-node-reg" data-detail="reg" aria-pressed="false">Registration<span class="cx-cap">Startup OB, once</span></button>
+      </div>
+      <div class="cx-connector" aria-hidden="true">&darr;</div>
+
+      <div class="cx-layer">
+        <div class="cx-noderow">
+          <button type="button" class="cx-node" data-detail="to" aria-pressed="false">TO_Kinematics</button>
+          <button type="button" class="cx-node" data-detail="to" aria-pressed="false">TO_PositioningAxis</button>
+          <button type="button" class="cx-node" data-detail="to" aria-pressed="false">TO_SynchronousAxis</button>
+          <button type="button" class="cx-node" data-detail="to" aria-pressed="false">TO_SpeedAxis</button>
+        </div>
+      </div>
+      <div class="cx-connector" aria-hidden="true">&darr;</div>
+
+      <div class="cx-layer">
+        <div class="cx-noderow">
+          <div class="cx-node cx-node-static">SINAMICS V90</div>
+          <div class="cx-node cx-node-static">SINAMICS S210</div>
+          <div class="cx-node cx-node-static">SINAMICS S120</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="cx-detail-panel" class="cx-detail card pad" aria-live="polite"></div>
+  </div>
+</div></section>

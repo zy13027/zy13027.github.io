@@ -105,7 +105,7 @@ code, kbd, pre, .zy-mono {
 }
 
 // ---- shared primitives ------------------------------------------------------
-.zy-home, .zy-projects {
+.zy-home, .zy-projects, .zy-lab {
   a { color: var(--zy-teal); text-decoration: none; }
   a:hover { color: var(--zy-teal-hover); text-decoration: underline; }
   h1 a, h2 a, h3 a, .zy-row { color: inherit; }
@@ -310,6 +310,12 @@ code, kbd, pre, .zy-mono {
 .zy-row-body { min-width: 0; .zy-muted { margin: 0 0 10px; font-size: 15px; text-wrap: pretty; } }
 .zy-row-stack { font-size: 12px; color: var(--zy-muted-2); }
 
+// ---- lab page ---------------------------------------------------------------
+// Reuses the projects rows; each row opens a standalone page under /lab/<slug>/.
+.zy-lab { padding-top: 24px; padding-bottom: 24px; }
+.zy-lab-group { .zy-label { margin-bottom: 8px; } }
+.zy-lab-group + .zy-lab-group { margin-top: 48px; }
+
 // ---- diagram below desktop --------------------------------------------------
 // Under ~1000px the card is narrower than the drawing needs, so instead of
 // shrinking the labels past legibility the figure keeps a readable minimum and
@@ -380,6 +386,11 @@ code, kbd, pre, .zy-mono {
   .zy-muted { margin: 0; }
 }
 .zy-zh-org { font-size: 12px; font-weight: 400; color: var(--zy-muted-2); }
+// lab entries are whole-row links: keep body text colour, highlight the title
+.zy-doc a.zy-zh-lab {
+  display: block; color: inherit;
+  &:hover { text-decoration: none; .zy-h3 { color: var(--zy-teal); } }
+}
 
 .zy-zh-skills {
   margin: 0;

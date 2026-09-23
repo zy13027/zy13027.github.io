@@ -1,0 +1,34 @@
+<section class="sec" id="commands">
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">Chapter 19.4.1</div>
+      <h2>Command reference</h2>
+      <p class="lede">Every command a program can call, in the three groups the manual defines: axis control, kinematics control and interpreter commands. A command written directly in the PLC behaves exactly as it would if programmed from the HMI.</p>
+    </header>
+
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-bottom:8px">
+      <div class="box"><b>Every program needs three commands</b><span class="tag">LSKI_CmdInitStart</span> and <span class="tag">LSKI_CmdInitDone</span> bracket the initialization sequence; <span class="tag">LSKI_CmdStopProgRoutine</span> marks the stop sequence. All three must be present even if left empty.</div>
+      <div class="box notice"><b>PLC-written programs bypass HMI checks</b>The HMI validates every command as it's added; a program built with these FCs is not. Call <span class="tag">LSKI_CleanProgram</span> (cleanMode 0&nbsp;none, 1&nbsp;program table + G&#8209;code list, 2&nbsp;everything) before writing, and <span class="tag">LSKI_VerifyProgram</span> after &mdash; it returns <span class="tag">errorSlot</span>, <span class="tag">errorCmd</span> and a status word from Table 20&#8209;2.</div>
+      <div class="box"><b>Variable substitution</b><span class="tag">variableSubstitution</span> links a command input to a registered variable via <span class="tag">#tempVarSub</span>, sized by <span class="tag">LSKI_NO_OF_SUBSTITUTION</span>. Index&nbsp;0 always means "no substitution" and can't be used for a real variable.</div>
+      <div class="box"><b>User functions for signals</b>Register once (e.g. in Startup): <span class="tag">LSKI_RegisterCondition</span> / <span class="tag">RegisterPoint</span> / <span class="tag">RegisterVariable</span> / <span class="tag">RegisterOutput</span> / <span class="tag">RegisterInput</span>. Callable cyclically: <span class="tag">LSKI_ReadCondition</span> / <span class="tag">ReadPoint</span> / <span class="tag">ReadVariable</span>, <span class="tag">LSKI_UpdateCondition</span> / <span class="tag">UpdatePoint</span> / <span class="tag">UpdateVariable</span>, <span class="tag">LSKI_InvertCondition</span>. <span class="tag">lock</span> blocks HMI changes to the signal; <span class="tag">readOnly</span> blocks program writes to it.</div>
+    </div>
+
+    <div class="rf-toolbar">
+      <input type="text" id="rf-cmd-search" class="rf-search" placeholder="Search command or description&hellip;" aria-label="Search commands">
+      <span class="rf-count" id="rf-cmd-count"></span>
+    </div>
+    <div class="rf-tabs" id="rf-cmd-tabs" role="group" aria-label="Filter by group">
+      <button type="button" class="pill on rf-cmd-tab" data-group="all">All &middot; 76</button>
+      <button type="button" class="pill rf-cmd-tab" data-group="axis">Axis control &middot; 16</button>
+      <button type="button" class="pill rf-cmd-tab" data-group="kin">Kinematics control &middot; 32</button>
+      <button type="button" class="pill rf-cmd-tab" data-group="interp">Interpreter &middot; 28</button>
+    </div>
+
+    <div class="card scrollx">
+      <table class="rf-cmd-table">
+        <thead><tr><th>Command</th><th>Group</th><th>Description (manual wording)</th></tr></thead>
+        <tbody id="rf-cmd-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>

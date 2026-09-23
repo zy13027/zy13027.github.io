@@ -1,0 +1,69 @@
+#gettingstarted p{color:var(--text-2)}
+#gettingstarted h4{font-family:var(--f-disp);font-size:1.02rem;margin:0 0 .5rem;color:var(--text)}
+#gettingstarted .gs-mt{margin-top:2rem}
+#gettingstarted .gs-mt2{margin-top:1.2rem}
+#gettingstarted .gs-stack{display:flex;flex-direction:column;gap:1.5rem}
+#gettingstarted b{color:var(--text)}
+#gettingstarted .mono,#gettingstarted td,#gettingstarted th{overflow-wrap:anywhere}
+
+/* intro layout */
+#gettingstarted .gs-intro-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:16px;align-items:start}
+@media(max-width:820px){#gettingstarted .gs-intro-grid{grid-template-columns:1fr}}
+#gettingstarted .gs-scenario{border-left:3px solid var(--line);min-width:0}
+#gettingstarted .gs-scenario p{font-size:13.5px;margin:0 0 8px}
+#gettingstarted .gs-schead{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+#gettingstarted .gs-schead b{font-family:var(--f-disp);font-size:14.5px}
+#gettingstarted .gs-schead .tag{margin-left:auto}
+#gettingstarted .gs-dot{width:9px;height:9px;border-radius:50%;flex:none;display:inline-block}
+#gettingstarted .gs-dot-blue{background:var(--blue)}
+#gettingstarted .gs-dot-pink{background:var(--pink)}
+#gettingstarted .gs-dot-amber{background:var(--amber-bright)}
+#gettingstarted .gs-acc-blue{border-left-color:var(--blue)}
+#gettingstarted .gs-acc-pink{border-left-color:var(--pink)}
+#gettingstarted .gs-acc-amber{border-left-color:var(--amber-bright)}
+
+/* steps */
+#gettingstarted .gs-step{border:1px solid var(--line);border-radius:var(--r-m);background:var(--surface);overflow:hidden}
+#gettingstarted .gs-step + .gs-step{margin-top:8px}
+#gettingstarted .gs-step summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:12px;padding:13px 16px;font-family:var(--f-disp);font-weight:700;font-size:15.5px}
+#gettingstarted .gs-step summary::-webkit-details-marker{display:none}
+#gettingstarted .gs-step summary::marker{content:""}
+#gettingstarted .gs-stepnum{font-family:var(--f-mono);font-size:12.5px;color:var(--accent-ink);background:var(--surface-2);border:1px solid var(--line);border-radius:100px;width:1.8em;height:1.8em;flex:none;display:inline-flex;align-items:center;justify-content:center}
+#gettingstarted .gs-chev{margin-left:auto;color:var(--text-dim);font-size:11px;transition:transform .15s}
+#gettingstarted .gs-step[open] .gs-chev{transform:rotate(90deg);color:var(--accent)}
+#gettingstarted .gs-stepbody{padding:2px 16px 16px;border-top:1px solid var(--line-soft)}
+#gettingstarted .gs-stepbody ul,#gettingstarted .gs-ol{margin:10px 0 0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px;font-size:13.5px}
+#gettingstarted .gs-stepbody table{margin-top:8px}
+
+/* object grid */
+#gettingstarted .gs-obj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:14px}
+#gettingstarted .gs-objlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px}
+#gettingstarted .gs-objlist li{font-size:13px;min-width:0}
+#gettingstarted .gs-path{display:block;font-family:var(--f-mono);font-size:11px;color:var(--text-dim);margin-top:2px;overflow-wrap:anywhere}
+
+/* code excerpts */
+#gettingstarted .gs-code{background:var(--surface-2);border:1px solid var(--line-soft);border-radius:var(--r-m);padding:12px 14px;font-family:var(--f-mono);font-size:12.3px;line-height:1.65;white-space:pre;margin:8px 0 0;color:var(--text-2)}
+
+/* pathdata tabs */
+#gettingstarted .gs-tabbar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+#gettingstarted .gs-tabbar button{border-width:1px}
+#gettingstarted .gs-pathpanel table{font-size:13px}
+
+/* IO grid */
+#gettingstarted .gs-iogrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:14px;margin-top:10px}
+#gettingstarted .gs-io{display:flex;flex-direction:column;gap:7px;font-size:12.3px}
+#gettingstarted .gs-io>div{display:flex;gap:8px;min-width:0;padding-bottom:6px;border-bottom:1px dotted var(--line-soft)}
+#gettingstarted .gs-io>div:last-child{border-bottom:none;padding-bottom:0}
+#gettingstarted .gs-io b{font-family:var(--f-mono);color:var(--accent-ink);font-weight:700;flex:none;width:3.6em}
+#gettingstarted .gs-io span{color:var(--text-2);overflow-wrap:anywhere}
+
+/* call chain diagram */
+#gettingstarted .gs-chainroot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px}
+#gettingstarted .gs-chainroot b{font-family:var(--f-disp)}
+#gettingstarted .gs-chainnote{color:var(--text-dim);font-size:12px}
+#gettingstarted .gs-chainbranch{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:14px;margin:12px 0 0 18px;padding-left:16px;border-left:2px solid var(--line-soft)}
+#gettingstarted .gs-chainnode{min-width:0}
+#gettingstarted .gs-chainhead{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:6px}
+#gettingstarted .gs-chainkids{list-style:none;margin:0;padding-left:14px;border-left:1px dotted var(--line);display:flex;flex-direction:column;gap:4px}
+#gettingstarted .gs-chainkids li{font-size:12.3px;color:var(--text-2);overflow-wrap:anywhere}
+#gettingstarted .gs-emph{color:var(--accent-ink);font-weight:600}

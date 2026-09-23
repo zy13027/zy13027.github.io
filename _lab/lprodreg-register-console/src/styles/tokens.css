@@ -1,0 +1,40 @@
+:root{
+  --bg:#EEF3F3; --surface:#FFFFFF; --surface-2:#F5F9F9; --surface-3:#E4ECEC;
+  --line:#CBD9D9; --line-soft:#DDE7E7;
+  --text:#0C1C22; --text-2:#3B5058; --text-dim:#6B8189;
+  --accent:#00868A; --accent-2:#15B7B0; --accent-ink:#00565C;
+  --amber:#C97A05; --amber-bright:#F0A32B;
+  --pink:#C23C84; --blue:#2D6FD6;
+  --ok:#17804A; --warn:#B76B00; --err:#C23A34;
+  --grad:linear-gradient(135deg,#00868A 0%,#15B7B0 45%,#5FD3C0 100%);
+  --grad-soft:linear-gradient(135deg,rgba(0,134,138,.12),rgba(21,183,176,.05));
+  --shadow:0 1px 2px rgba(12,28,34,.06),0 8px 24px -12px rgba(12,28,34,.18);
+  --r-s:4px; --r-m:8px; --r-l:14px;
+  --f-disp:"IBM Plex Sans Condensed","Helvetica Neue",Arial,sans-serif;
+  --f-body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#08151A; --surface:#0E2027; --surface-2:#122A32; --surface-3:#183740;
+  --line-soft:#1A343C;
+  --text:#E6F1F1; --text-2:#AFC6CB; --text-dim:#7E9AA1;
+  --accent:#28C2BB; --accent-2:#5FD3C0; --accent-ink:#8EE6DA;
+  --amber:#F0A32B; --amber-bright:#FFC15E;
+  --pink:#FF7FBF; --blue:#6FA8FF;
+  --ok:#3DCB80; --warn:#F0A32B; --err:#FF6B61;
+  --grad:linear-gradient(135deg,#0E7F84 0%,#22B7AE 45%,#7BE3CF 100%);
+  --grad-soft:linear-gradient(135deg,rgba(40,194,187,.16),rgba(40,194,187,.04));
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7);
+}}
+:root[data-theme="dark"]{
+  --bg:#08151A; --surface:#0E2027; --surface-2:#122A32; --surface-3:#183740;
+  --line:#23464F; --line-soft:#1A343C;
+  --text:#E6F1F1; --text-2:#AFC6CB; --text-dim:#7E9AA1;
+  --accent:#28C2BB; --accent-2:#5FD3C0; --accent-ink:#8EE6DA;
+  --amber:#F0A32B; --amber-bright:#FFC15E;
+  --pink:#FF7FBF; --blue:#6FA8FF;
+  --ok:#3DCB80; --warn:#F0A32B; --err:#FF6B61;
+  --grad:linear-gradient(135deg,#0E7F84 0%,#22B7AE 45%,#7BE3CF 100%);
+  --grad-soft:linear-gradient(135deg,rgba(40,194,187,.16),rgba(40,194,187,.04));
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7);
+}

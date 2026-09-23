@@ -1,0 +1,104 @@
+<section class="sec" id="concepts"><div class="wrap">
+  <header>
+    <div class="eyebrow">Chapter 1 &middot; Basic principles</div>
+    <h2>How LSKI thinks</h2>
+    <p class="lede">One <span class="tag">LSKI_Core</span> instance interprets one program table into motion. Everything else in this section is the vocabulary that program is built from &mdash; slots, transitions, pointers and sequences &mdash; before any HMI ever gets involved.</p>
+  </header>
+
+  <div class="cx-sub">
+    <h3><span class="cx-subno">1.1</span>The program table</h3>
+    <p>A program is built by filling a table with commands, executed one after another. The table has two axes: <b>program slots</b> as columns, sized by <span class="tag">LSKI_NO_OF_PROGRAM_SLOTS</span>, and <b>commands</b> as rows, sized by <span class="tag">LSKI_NO_OF_COMMANDS</span>. Slots exist purely to keep a large program visually organised &mdash; you could write an entire automatic program in a single slot with no loss of functionality.</p>
+    <p>Execution runs sequentially with ascending command number, in whichever slot it is currently in, until it hits a program end. To move to a different slot, a command uses a jump, a loop or a subprogram call, targeting a <b>label</b> command placed in that slot.</p>
+    <div class="scrollx cx-ptable-wrap">
+      <div class="cx-ptable-grid">
+        <div class="cx-ptable-cells">
+          <div class="cx-ph"></div>
+          <div class="cx-ph">Slot 0</div><div class="cx-ph">Slot 1</div><div class="cx-ph">Slot 2</div><div class="cx-ph">Slot x</div>
+          <div class="cx-pr">0</div><div class="cx-pc"></div><div class="cx-pc"></div><div class="cx-pc"></div><div class="cx-pc"></div>
+          <div class="cx-pr">1</div><div class="cx-pc"></div><div class="cx-pc cx-cell-label">Label: L1</div><div class="cx-pc"></div><div class="cx-pc"></div>
+          <div class="cx-pr">2</div><div class="cx-pc"></div><div class="cx-pc"></div><div class="cx-pc"></div><div class="cx-pc cx-cell-jump">Jump &rarr; L1</div>
+          <div class="cx-pr">&hellip;</div><div class="cx-pc">&hellip;</div><div class="cx-pc">&hellip;</div><div class="cx-pc">&hellip;</div><div class="cx-pc">&hellip;</div>
+          <div class="cx-pr">N</div><div class="cx-pc"></div><div class="cx-pc"></div><div class="cx-pc"></div><div class="cx-pc"></div>
+        </div>
+        <svg class="cx-ptable-svg" viewBox="0 0 462 200" aria-hidden="true">
+          <defs>
+            <marker id="cx-arrow" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M0,0 L8,4 L0,8 Z" fill="var(--accent)"></path>
+            </marker>
+          </defs>
+          <path d="M410,115 Q306,58 206,81" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#cx-arrow)"></path>
+        </svg>
+      </div>
+    </div>
+    <p class="cx-ptable-cap">Columns run to <b>LSKI_NO_OF_PROGRAM_SLOTS</b>, rows to <b>LSKI_NO_OF_COMMANDS</b>. A jump references a label by name &mdash; the label's slot is incidental.</p>
+  </div>
+
+  <div class="cx-sub">
+    <h3><span class="cx-subno">1.2</span>Program structure</h3>
+    <p>A valid program needs a fixed skeleton around whatever automatic logic sits in the middle. The <b>Add starting sequence</b> feature in the Programming plugin builds this skeleton for you in an empty program.</p>
+    <div class="cx-flow">
+      <div class="cx-flow-step"><b>Start initialization</b><small>Entry point. Sets up signals, homes axes &mdash; or can be left empty.</small></div>
+      <div class="cx-flow-arrow-h" aria-hidden="true">&rarr;</div><div class="cx-flow-arrow-v" aria-hidden="true">&darr;</div>
+      <div class="cx-flow-step"><b>Initialization end</b><small>Both commands must exist, even around an empty sequence.</small></div>
+      <div class="cx-flow-arrow-h" aria-hidden="true">&rarr;</div><div class="cx-flow-arrow-v" aria-hidden="true">&darr;</div>
+      <div class="cx-flow-step cx-flow-auto"><b>Automatic part</b><small>Your program logic, across as many slots as needed.</small></div>
+      <div class="cx-flow-arrow-h" aria-hidden="true">&rarr;</div><div class="cx-flow-arrow-v" aria-hidden="true">&darr;</div>
+      <div class="cx-flow-step"><b>Stop program routine</b><small>Runs on stop, on program end reached outside itself, and on errors. Terminates every parallel sequence.</small></div>
+    </div>
+    <div class="cx-branches">
+      <div class="cx-branch"><b>Fast stop</b>Halts every movement at once with a predefined internal sequence, then aborts the program. The stop routine above is <em>not</em> executed &mdash; fast stop can abort the stop routine itself mid-way.</div>
+      <div class="cx-branch cx-branch-cycle"><b>Cycle stop</b>Behaves like a conditional jump, evaluated once a full production cycle finishes. You choose the jump target in the cycle stop command &mdash; it can be the stop routine, or anywhere else.</div>
+    </div>
+  </div>
+
+  <div class="cx-sub">
+    <h3><span class="cx-subno">1.3</span>Command transitions</h3>
+    <p>Every command in the table carries a transition that decides when the interpreter moves to the next one. Each command exposes only two of the three; some have a fixed transition you cannot change.</p>
+    <div class="scrollx">
+      <table class="cx-transtable">
+        <thead><tr><th>Transition</th><th>Behaviour</th></tr></thead>
+        <tbody>
+          <tr><td>When command done</td><td>Wait until the command finishes before starting the next one.</td></tr>
+          <tr><td>Next cycle</td><td>Continue with the next command on the following PLC cycle.</td></tr>
+          <tr><td>Immediately</td><td>Continue with the next command in the same PLC cycle.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="box cx-limit-note"><b>Two limits worth remembering</b>At most 10 commands with the <span class="tag">Immediately</span> transition can execute per sequence per PLC cycle. And any kinematics motion command meant to blend into the next one must use <span class="tag">Next cycle</span> &mdash; nothing else queues motion ahead.</div>
+  </div>
+
+  <div class="cx-sub">
+    <h3><span class="cx-subno">1.4</span>Interpreter pointer &amp; motion pointer</h3>
+    <p>Kinematics commands do not execute immediately &mdash; they drop into a separate <b>motion queue</b> so the next motion can be prepared while the current one is still blending. That is what makes <span class="tag">Next cycle</span> work for kinematics: the interpreter keeps reading ahead and queuing without waiting on each move to finish.</p>
+    <p>This creates two positions that can differ: the <b>interpreter pointer</b> (the command being read) and the <b>motion pointer</b> (the kinematics command actually moving). The motion pointer can never overtake the interpreter pointer &mdash; a move must be read and queued before it can run.</p>
+    <div class="cx-pointer-wrap">
+      <div class="cx-prow cx-prow-queued"><span class="cx-marker cx-off">&#9654;</span><span class="cx-marker cx-off">&#9654;</span><span class="cx-pnum">1</span><span>Move L P1</span><span class="cx-ptrans">done</span></div>
+      <div class="cx-prow cx-prow-queued"><span class="cx-marker cx-off">&#9654;</span><span class="cx-marker cx-mp">&#9654;</span><span class="cx-pnum">2</span><span>Move C P2</span><span class="cx-ptrans">next cycle</span></div>
+      <div class="cx-prow cx-prow-queued"><span class="cx-marker cx-off">&#9654;</span><span class="cx-marker cx-off">&#9654;</span><span class="cx-pnum">3</span><span>Move L P3</span><span class="cx-ptrans">queued</span></div>
+      <div class="cx-prow"><span class="cx-marker cx-off">&#9654;</span><span class="cx-marker cx-off">&#9654;</span><span class="cx-pnum">4</span><span>Set Q2</span><span class="cx-ptrans">immediately</span></div>
+      <div class="cx-prow"><span class="cx-marker cx-ip">&#9654;</span><span class="cx-marker cx-off">&#9654;</span><span class="cx-pnum">5</span><span>Wait condition</span><span class="cx-ptrans">when done</span></div>
+    </div>
+    <div class="cx-pointer-legend">
+      <span><b style="color:var(--text)">&#9654; Interpreter pointer</b> &mdash; <span class="tag">ActualSequenceData</span>, the active read command</span>
+      <span><b style="color:var(--ok)">&#9654; Motion pointer</b> &mdash; <span class="tag">ActiveSequenceData</span>, the kinematics command actually moving</span>
+    </div>
+    <p style="margin-top:10px">In the Programming plugin these are drawn as a black arrow (interpreter) and a green arrow (motion) in front of the active lines.</p>
+  </div>
+
+  <div class="cx-sub">
+    <h3><span class="cx-subno">1.5</span>Parallel sequences</h3>
+    <p>Execution always starts in the <b>Main sequence</b>. To parallelise tasks, a <span class="tag">Start parallel sequence</span> command occupies a slot in the parallel sequences and always starts at a label &mdash; the new sequence takes that label's name. <span class="tag">Stop sequence</span> ends one sequence; <span class="tag">Stop all sequences</span> ends every sequence, main included, and runs the stop routine.</p>
+    <div class="box notice"><b>Every active sequence runs every cycle</b>All sequences, main and parallel, are evaluated on every single PLC cycle, and each has access to the whole program table. More parallel sequences running means more evaluation work per cycle &mdash; the ceiling is set by the constant <span class="tag">LSKI_NO_OF_PARALLEL_SEQUENCES</span>.</div>
+  </div>
+
+  <div class="cx-sub">
+    <h3><span class="cx-subno">1.6</span>Program check</h3>
+    <div class="box"><b>Checked before it runs, and after every edit</b>A program is checked for integrity before execution, and again after any change made while it is paused. A failed check invalidates the offending command and reports exactly which program slot and command number caused it &mdash; no need to hunt through the table.</div>
+  </div>
+
+  <div class="cx-sub">
+    <h3><span class="cx-subno">1.7</span>Channels</h3>
+    <p>One <span class="tag">LSKI_Core</span> instance runs one program controlling one kinematics. To add a second kinematics on the same S7&#8209;1500T, raise <span class="tag">LSKI_NO_OF_CHANNELS</span> and call the LSKI modules again with dedicated instances for that channel. On the HMI, switching channel is a single write to <span class="tag">LSKI_ChannelNavigation_ActiveChannel</span> &mdash; the HMIInterface is multiplexed, so no extra HMI tags or screens are needed per channel. Each channel can run its own, independent set of plugins.</p>
+  </div>
+
+</div></section>

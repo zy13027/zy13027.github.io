@@ -1,0 +1,170 @@
+<section class="sec" id="standalone">
+<div class="wrap">
+<header>
+<div class="eyebrow">&sect;4 &mdash; Standalone function blocks</div>
+<h2>Standalone function blocks</h2>
+<p class="lede">Five blocks work outside a PathData list, for group housekeeping, manual jogging and a self-contained pick-and-place move &mdash; the same motion sequence that <span class="mono">cmdType 11</span> wraps for use inside a path.</p>
+</header>
+
+<div class="rf-stack">
+
+<div class="rf-fb-grid">
+
+<div class="card pad rf-fbcard">
+<h4>LKinCtrl_MC_GroupPower <span class="rf-fbnum">FB 35021</span></h4>
+<p>Enables or disables every axis interconnected to the attached axesGroup in one call &mdash; equivalent to fanning <span class="mono">MC_Power</span> out across the whole kinematics group.</p>
+<div class="rf-io">
+<div><b>enable</b><span>IN Bool &mdash; TRUE enables the axes, FALSE disables them.</span></div>
+<div><b>startMode</b><span>IN Array DInt &mdash; per axis: 0 not position controlled, 1 position controlled.</span></div>
+<div><b>stopMode</b><span>IN Array Int &mdash; per axis: 0 emergency stop, 1 immediate stop, 2 stop with max dynamics.</span></div>
+<div><b>axesEnabled</b><span>OUT Bool &mdash; TRUE once every axis in the group is enabled (or disabled).</span></div>
+<div><b>busy / error</b><span>OUT Bool &mdash; standard PLCopen status.</span></div>
+<div><b>diagnostics</b><span>OUT struct &mdash; status constants in &sect;6.4.1.</span></div>
+<div><b>axesGroup</b><span>IN_OUT TO_Kinematics.</span></div>
+</div>
+</div>
+
+<div class="card pad rf-fbcard">
+<h4>LKinCtrl_MC_GroupReset <span class="rf-fbnum">FB 35023</span></h4>
+<p>Resets every TO axis on the axesGroup and the TO_Kinematics object itself &mdash; the group-level equivalent of <span class="mono">MC_Reset</span>, used to acknowledge errors or reinitialise.</p>
+<div class="rf-io">
+<div><b>execute</b><span>IN Bool &mdash; rising edge starts the reset.</span></div>
+<div><b>restart</b><span>IN Array[1..7] Bool &mdash; per axis: TRUE reinitialises the technology object, FALSE does not.</span></div>
+<div><b>done / active</b><span>OUT Bool &mdash; done once the group is successfully referenced; active while in control.</span></div>
+<div><b>commandAborted</b><span>OUT Bool &mdash; TRUE if another command aborted this one.</span></div>
+<div><b>busy / error</b><span>OUT Bool &mdash; standard PLCopen status.</span></div>
+<div><b>diagnostics</b><span>OUT struct &mdash; status constants in &sect;6.4.2.</span></div>
+<div><b>axesGroup</b><span>IN_OUT TO_Kinematics.</span></div>
+</div>
+</div>
+
+<div class="card pad rf-fbcard">
+<h4>LKinCtrl_MC_GroupHome <span class="rf-fbnum">FB 35022</span></h4>
+<p>References every TO axis interconnected to the axesGroup, with the same homing-mode options as <span class="mono">MC_Home</span> applied per axis.</p>
+<div class="rf-io">
+<div><b>execute</b><span>IN Bool &mdash; rising edge starts homing.</span></div>
+<div><b>position</b><span>IN Array LReal &mdash; reference positions / orientations per axis.</span></div>
+<div><b>mode</b><span>IN Array Int &mdash; homing mode per axis.</span></div>
+<div><b>done / active</b><span>OUT Bool &mdash; done once the group is successfully referenced.</span></div>
+<div><b>commandAborted</b><span>OUT Bool &mdash; TRUE if another command aborted this one.</span></div>
+<div><b>busy / error</b><span>OUT Bool &mdash; standard PLCopen status.</span></div>
+<div><b>diagnostics</b><span>OUT struct &mdash; status constants in &sect;6.4.3.</span></div>
+<div><b>axesGroup</b><span>IN_OUT TO_Kinematics.</span></div>
+</div>
+</div>
+
+<div class="card pad rf-fbcard">
+<h4>LKinCtrl_MC_JogFrame <span class="rf-fbnum">FB 35010</span></h4>
+<p>Manual jogging in Cartesian X/Y/Z/A/B/C, continuous or incremental, plus positioning to a target &mdash; interpolated or via sPTP &mdash; in any supported coordinate system and with any of up to three tools.</p>
+<div class="rf-io">
+<div><b>jogForward / jogBackward</b><span>IN Bool &mdash; edge starts continuous or incremental jog; falling edge stops it.</span></div>
+<div><b>jogToPosition / jogSPTP</b><span>IN Bool &mdash; hold to move (interpolated / sPTP) to targetPosition; falling edge stops early.</span></div>
+<div><b>jogDirection</b><span>IN USInt &mdash; 1 X &middot; 2 Y &middot; 3 Z &middot; 4 A &middot; 5 B &middot; 6 C &middot; 7 Z-axis about A &middot; 8 Y-axis about B &middot; 9 X-axis about C.</span></div>
+<div><b>jogModeInc / jogIncrement</b><span>IN Bool / LReal &mdash; incremental vs. continuous, and the increment distance.</span></div>
+<div><b>targetPosition</b><span>IN struct &mdash; target for jogToPosition / jogSPTP.</span></div>
+<div><b>coordSystem</b><span>IN DInt &mdash; 0 WCS &middot; 1&ndash;3 OCS &middot; 100 MCS &middot; 101 JCS (KinPlus only).</span></div>
+<div><b>linkconstellation</b><span>IN DWord &mdash; target joint-position space, jogSPTP only.</span></div>
+<div><b>tool</b><span>IN DInt &mdash; 1&ndash;3.</span></div>
+<div><b>dynamics</b><span>IN struct &mdash; jog velocity / acceleration / deceleration / jerk.</span></div>
+<div><b>done / active / error</b><span>OUT Bool &mdash; standard PLCopen status.</span></div>
+<div><b>status</b><span>OUT Word &mdash; constants in &sect;6.3.</span></div>
+<div><b>remainingDistance</b><span>OUT LReal &mdash; distance-to-go while jogging incrementally or to a target.</span></div>
+<div><b>axesGroup</b><span>IN_OUT TO_Kinematics.</span></div>
+</div>
+<div class="rf-stack" style="gap:.5rem">
+<div class="box"><b>Note</b> In MCS or JCS, jogging respects joint limits and software limit switches and stops there.</div>
+<div class="box notice"><b>Notice</b> A jog command triggered while another motion job is in progress is not executed; and if more than one jog input is set at once, no movement starts and any ongoing jog is stopped.</div>
+</div>
+</div>
+
+</div>
+
+<div class="card pad">
+<h4>LKinCtrl_MC_MovePickAndPlaceLinear <span class="rf-fbnum">FB 35026</span></h4>
+<p>Wraps a full linear pick-and-place motion &mdash; optional start vector, transition, optional target vector, optional conveyor tracking &mdash; behind one PLCopen-style call. It is the block that <span class="mono">cmdType 11</span> runs internally; everything here also applies to that PathData command (&sect;3.15).</p>
+
+<h4 class="rf-mt">Motion sequence</h4>
+<ol class="rf-pnp-steps">
+<li><span class="num">&middot;</span>Enable tracking on the target coordinate system (optional).</li>
+<li><span class="num">1</span>Linear motion along the start vector (optional) &mdash; <span class="mono">commandStep = 1</span>.</li>
+<li><span class="num">2</span>Blending into the transition motion (optional) &mdash; <span class="mono">commandStep = 2</span>.</li>
+<li><span class="num">3</span>Transition motion &mdash; <span class="mono">commandStep = 3</span>.</li>
+<li><span class="num">4</span>Blending into the target vector (optional) &mdash; <span class="mono">commandStep = 4</span>.</li>
+<li><span class="num">5</span>Linear motion along the target vector (optional) &mdash; <span class="mono">commandStep = 5</span>.</li>
+</ol>
+<p>Orientation only moves during the transition motion (steps 2&ndash;4) &mdash; never in the linear start or target vector. On a 2D+A or 3D+A kinematics, <span class="mono">directionA</span> can force which way that orientation turns.</p>
+
+<h4 class="rf-mt">Interface essentials</h4>
+<div class="rf-io">
+<div><b>execute</b><span>IN Bool &mdash; rising edge starts the sequence; FB status must read 16#7000 first.</span></div>
+<div><b>position / coordSystem</b><span>IN &mdash; target X/Y/Z/A/B/C and its frame: 0 WCS, 1&ndash;3 OCS.</span></div>
+<div><b>startPosition / startCoordSystem</b><span>IN &mdash; explicit start point; startCoordSystem &lt;0 uses the actual current position.</span></div>
+<div><b>directionA</b><span>IN DInt &mdash; 1 positive &middot; 2 negative &middot; 3 shortest (2D+A / 3D+A kinematics only).</span></div>
+<div><b>startParameter / targetParameter</b><span>IN LKinCtrl_typePnPParameter &mdash; the two vectors, see below.</span></div>
+<div><b>conveyorTracking</b><span>IN LKinCtrl_typePnPConveyorTracking &mdash; see below.</span></div>
+<div><b>dynamics</b><span>IN LKinCtrl_typePnPDynamics &mdash; path / orientation dynamics and adaption mode.</span></div>
+<div><b>bufferMode / transitionParameter</b><span>IN &mdash; blending into this sequence from the previous command.</span></div>
+<div><b>done / busy / active / commandAborted / error</b><span>OUT Bool &mdash; standard PLCopen status.</span></div>
+<div><b>commandStep</b><span>OUT DInt &mdash; 0 not active, else 1&ndash;5 as above.</span></div>
+<div><b>remainingPathLength</b><span>OUT LReal &mdash; valid only once readyForNextCommand = TRUE.</span></div>
+<div><b>readyForNextCommand</b><span>OUT Bool &mdash; TRUE once every command is buffered; gates the next FB call.</span></div>
+<div><b>status / diagnostics</b><span>OUT &mdash; constants in &sect;6.2.</span></div>
+<div><b>axesGroup</b><span>IN_OUT TO_Kinematics.</span></div>
+</div>
+
+<h4 class="rf-mt">Command buffering</h4>
+<p>Motion commands queue one after another, starting from the latest target position before the FB was triggered (or the current position, if nothing was moving). Only buffer a following MC command once <span class="mono">readyForNextCommand = TRUE</span>, so the order stays correct. <span class="mono">remainingPathLength</span> only reports a meaningful value once that output is TRUE, and it is not corrected for later internal shortening &mdash; e.g. blending or (de)synchronisation &mdash; so it may not reach exactly 0.</p>
+
+<h4 class="rf-mt">Conveyor tracking</h4>
+<p>Set <span class="mono">conveyorTracking.enable = TRUE</span> to couple the target OCS (<span class="mono">coordSystem</span>) to a belt axis before the motion starts, using the block's own axis, origin and initial-position inputs.</p>
+<div class="scrollx"><table class="rf-reftable"><thead><tr><th>Field</th><th>Type</th><th>Comment</th></tr></thead><tbody>
+<tr><td class="mono">enable</td><td class="mono">Bool</td><td>TRUE establishes tracking with this command's execution.</td></tr>
+<tr><td class="mono">conveyorBeltAxis</td><td class="mono">DB_ANY</td><td>Conveyor belt axis DB.</td></tr>
+<tr><td class="mono">conveyorBeltOrigin</td><td class="mono">TO_Struct_Kinematics_Frame</td><td>Frame at the conveyor's origin.</td></tr>
+<tr><td class="mono">initialObjectPosition</td><td class="mono">TO_Struct_Kinematics_Frame</td><td>Object position on the belt at trigger time &mdash; X only, as in &sect;3.7.1.</td></tr>
+</tbody></table></div>
+<ul style="margin:.5rem 0;padding-left:1.2rem;color:var(--text-2);display:flex;flex-direction:column;gap:.35rem">
+<li>Not established if the target coordinate system is the WCS.</li>
+<li>If the target OCS is already tracked, no new tracking starts &mdash; but <span class="mono">initialObjectPosition</span> is still applied to adapt the target position, so no manual adjustment is needed.</li>
+</ul>
+<div class="box notice"><b>Notice</b> If an externally issued <span class="mono">MC_TrackConveyorBelt</span> is already queued (busy, not yet done) when internal tracking is also requested, the outcome is undefined &mdash; the FB cannot detect this, so it must be prevented in the user program.</div>
+
+<h4 class="rf-mt">Blending into the sequence</h4>
+<ul style="margin:.3rem 0;padding-left:1.2rem;color:var(--text-2);display:flex;flex-direction:column;gap:.35rem">
+<li><span class="mono">bufferMode = 1</span>: waits for the previous motion and an empty queue before buffering.</li>
+<li><span class="mono">bufferMode = 2</span> or <span class="mono">5</span>: buffers as soon as the previous sequence's last command is active.</li>
+</ul>
+<div class="box"><b>Note</b> Blending into the command is, by default, only possible with no start vector and no motion between two tracked OCS. To blend in either of those cases too, an explicit start position and coordinate system are required (<span class="mono">startCoordSystem &ge; 0</span>).</div>
+
+<h4 class="rf-mt">Start &amp; target vector parametrisation</h4>
+<p>Both vectors share the same four fields, in <span class="mono">startParameter</span> / <span class="mono">targetParameter</span> (type <span class="mono">LKinCtrl_typePnPParameter</span>):</p>
+<div class="scrollx"><table class="rf-reftable"><thead><tr><th>Field</th><th>Comment</th></tr></thead><tbody>
+<tr><td class="mono">direction[1..3]</td><td>X/Y/Z direction of the vector, always pointing away from start or target; normed internally. All-zero means no vector at all.</td></tr>
+<tr><td class="mono">workingHeight</td><td>&le;0 no vector &middot; &gt;0 length, meaning set by <span class="mono">LKINCTRL_PNP_WORKINGHEIGHT_MODE</span>: mode 1 (default) is the complete working height including the blending part; mode 2 is the linear length alone.</td></tr>
+<tr><td class="mono">transitionArea</td><td>&lt;0 uses the axesGroup's max blending radius (not with mode 2) &middot; = 0 standstill at the vector's end &middot; &gt;0 blending distance &middot; &ge; workingHeight collapses to pure blending, no linear component (mode 1 only).</td></tr>
+<tr><td class="mono">dynamicsFactor</td><td>Path-velocity scaling factor along this vector, 1&ndash;200%.</td></tr>
+</tbody></table></div>
+<div class="box notice"><b>Notice</b> With FW&nbsp;3.0.x, if an OCS with active conveyor tracking is part of the motion, both <span class="mono">transitionArea</span> fields must be 0.0 and <span class="mono">dynamics.dynamicAdaption</span> must be 0 &mdash; no blending above the start or target point, no dynamic adaption.</div>
+<p>No vector at all (<span class="mono">workingHeight = 0</span> or <span class="mono">direction = [0,0,0]</span>) makes the block behave like a plain <span class="mono">MC_MoveLinearAbsolute</span> to <span class="mono">position</span>.</p>
+
+<h4 class="rf-mt">Start position &amp; coordinate system</h4>
+<p>Setting <span class="mono">startPosition</span> / <span class="mono">startCoordSystem</span> explicitly is required whenever blending into the command (<span class="mono">bufferMode &gt; 1</span>) is combined with a start-vector definition, or with a change between two tracked OCS. Otherwise the default (<span class="mono">startCoordSystem = -1</span>, use the actual position) is fine.</p>
+
+<h4 class="rf-mt">Worked example &mdash; wait &rarr; pick &rarr; place &rarr; wait</h4>
+<p>A typical pick-and-place cell, both pick and place positions in conveyor tracking (values as documented for this sequence):</p>
+<ol class="rf-pnp-steps">
+<li><span class="num">1</span>Track OCS1 (pick side).</li>
+<li><span class="num">2</span>Wait &rarr; Pick, in OCS1: vertical approach/depart, 200&nbsp;mm working height, 100&nbsp;mm blending, velocity reduced to 50%. Start parameter left empty &mdash; motion runs straight to the vector end with TO default dynamics.</li>
+<li><span class="num">3</span>Track OCS2 (place side).</li>
+<li><span class="num">4</span>Pick &rarr; Place, in OCS2: vertical vector, 100&nbsp;mm length, dynamics factor 75%, fully blended (<span class="mono">transitionArea = workingHeight</span>) &mdash; both start and target vector defined.</li>
+<li><span class="num">5</span>Place &rarr; Wait, in WCS: only the start vector defined, no target vector &mdash; no automatic tracking needed since the target is in WCS.</li>
+</ol>
+<p><span class="mono">conveyorTracking.initialObjectPosition</span> is updated before every execution of the sequence, from the current measured object position.</p>
+
+<h4 class="rf-mt">Error handling</h4>
+<p>Acknowledge a present error by setting <span class="mono">execute = FALSE</span>. If the block gets stuck between status 16#7000 and 16#8000, abort it with <span class="mono">MC_GroupStop</span>. Motion-command errors (status 16#8701&ndash;16#8720) carry the underlying MC command's error in <span class="mono">subFunctionStatus</span> &mdash; see the TO documentation. Command-creation errors (status 16#8601) are broken down in the Error handling section below.</p>
+</div>
+
+</div>
+</div>
+</section>

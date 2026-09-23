@@ -1,0 +1,26 @@
+<!-- ============================================================
+     S5 — INSTRUCTION EXPLORER
+     ============================================================ -->
+<section class="section" id="s5">
+  <div class="wrap">
+    <p class="eyebrow">Reference</p>
+    <h2>Instruction explorer</h2>
+    <p class="section-intro">Every MCL instruction, grouped by family. Search, filter, or click a tile for its description and when it runs.</p>
+
+    <div class="explorer-controls">
+      <input type="search" class="search-box" id="instrSearch" placeholder="Search instructions&hellip;" aria-label="Search MCL instructions">
+      <div class="family-chips" id="familyChips" role="group" aria-label="Filter by family"></div>
+      <span class="result-count" id="instrCount" aria-live="polite"></span>
+    </div>
+
+    <div class="instr-grid" id="instrGrid"></div>
+
+    <div class="instr-detail" id="instrDetail" hidden>
+      <span class="nm" id="instrDetailName"></span>
+      <span class="run-badge" id="instrDetailBadge"></span>
+      <p class="desc" id="instrDetailDesc"></p>
+    </div>
+
+    <p class="instr-note">Bit-string instructions, mathematical functions and conversions are also supported. Max 10 programmable synchronous actions.</p>
+  </div>
+</section>

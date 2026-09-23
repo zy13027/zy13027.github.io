@@ -1,0 +1,88 @@
+/* architecture.css — S2 diagram section styles, extracted verbatim from the original inline <style> block */
+
+/* ============================================================
+   S2 — DIAGRAM
+   ============================================================ */
+.diagram-panel{
+  background:var(--ix-3);
+  border:1px solid var(--ix-bdr);
+  border-radius:var(--r-md);
+  padding:var(--sp-4);
+}
+:root[data-theme="dark"] .diagram-panel{ background:var(--ix-2); }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .diagram-panel{ background:var(--ix-2); } }
+.to-diagram{ width:100%; height:auto; display:block; }
+.to-box{ cursor:pointer; }
+.to-box rect{
+  fill:var(--ix-1);
+  stroke:var(--ix-bdr-strong);
+  stroke-width:1;
+  transition:stroke 0.15s, fill 0.15s;
+}
+:root[data-theme="dark"] .to-box rect{ fill:var(--ix-3); }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .to-box rect{ fill:var(--ix-3); } }
+.to-box.is-selected rect{ stroke:var(--ix-primary); stroke-width:2; }
+.to-box:hover rect{ stroke:var(--ix-primary); }
+.to-box text{
+  fill:var(--ix-text);
+  font-family:var(--font-body);
+  font-size:12.5px;
+  pointer-events:none;
+}
+.to-box .box-title{ font-family:var(--font-display); font-weight:600; font-size:13.5px; }
+.to-box .box-sub{ fill:var(--ix-soft); font-size:10.5px; }
+.to-box .call-block{
+  fill:var(--ix-2);
+  stroke:var(--ix-bdr);
+}
+:root[data-theme="dark"] .to-box .call-block{ fill:var(--ix-1); }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .to-box .call-block{ fill:var(--ix-1); } }
+.to-box .call-block-text{ font-family:var(--font-mono); font-size:10.5px; }
+.flow-line{
+  fill:none;
+  stroke-width:2;
+  stroke-dasharray:6 5;
+  animation:dashflow 1.1s linear infinite;
+}
+.flow-line.control{ stroke:var(--ix-primary); }
+.flow-line.motion{ stroke:var(--ix-dynamic-alt); }
+.flow-line.status{ stroke:var(--ix-neutral); animation-direction:reverse; }
+@keyframes dashflow{ to{ stroke-dashoffset:-44; } }
+@media (prefers-reduced-motion: reduce){
+  .flow-line{ animation:none; }
+}
+.feed-line{
+  fill:none;
+  stroke:var(--ix-bdr-strong);
+  stroke-width:1.5;
+  stroke-dasharray:3 3;
+}
+.mk-fill-control{ fill:var(--ix-primary); }
+.mk-fill-motion{ fill:var(--ix-dynamic-alt); }
+.mk-fill-status{ fill:var(--ix-neutral); }
+.mk-fill-feed{ fill:var(--ix-bdr-strong); }
+.diagram-detail{
+  margin-top:var(--sp-5);
+  padding-top:var(--sp-5);
+  border-top:1px solid var(--ix-bdr);
+}
+.diagram-detail h3{
+  font-size:1.15rem;
+  margin-bottom:var(--sp-2);
+  font-family:var(--font-display);
+}
+.diagram-detail ul{
+  margin:var(--sp-2) 0 0;
+  padding-left:1.1em;
+  color:var(--ix-text);
+}
+.diagram-detail li{ margin-bottom:var(--sp-1); }
+.diagram-detail p{ color:var(--ix-soft); }
+.diagram-detail .note{
+  margin-top:var(--sp-3);
+  font-size:0.88rem;
+  color:var(--ix-soft);
+  border-left:2px solid var(--ix-primary);
+  padding-left:var(--sp-3);
+}
+

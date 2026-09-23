@@ -1,0 +1,83 @@
+<section class="sec" id="traps">
+<div class="wrap">
+<header>
+<div class="eyebrow">Field notes</div>
+<h2>What bites people first</h2>
+<p class="lede">A dozen things the manual flags explicitly, or that fall out of how the mechanism actually works, gathered in one place.</p>
+</header>
+
+<div class="rf-traps">
+
+<div class="card pad rf-trap">
+<h4>Blending doesn't apply at Define Tool / Set Tool <span class="tag">&sect;3.8.3&ndash;3.8.4</span></h4>
+<p>Both commands force the kinematics to standstill first; MovePath drains the motion queue automatically to get there. bufferMode is irrelevant &mdash; there is no blending into either command.</p>
+</div>
+
+<div class="card pad rf-trap">
+<h4>No blending after a measurement command <span class="tag">&sect;3.16</span></h4>
+<p>The measurement flag aborts its motion command mid-flight on a sensor edge. Whatever comes next cannot blend into that abort point.</p>
+</div>
+
+<div class="card pad rf-trap">
+<h4>Pick-and-place blending needs an explicit start point <span class="tag">&sect;3.15, &sect;4.5</span></h4>
+<p>bufferMode 2/5 only blends into the sequence when there is no start vector and no cross-OCS tracking change &mdash; or when <span class="mono">startCoordSystem</span> is set explicitly to cover those cases.</p>
+</div>
+
+<div class="card pad rf-trap">
+<h4>Conveyor tracking has its own blending exceptions <span class="tag">&sect;3.7.1</span></h4>
+<p>Up to FW&nbsp;3.0.x, three specific transitions can't blend: finishing tracking, moving straight into a freshly tracked OCS, and switching tracking from one OCS to another back to back.</p>
+</div>
+
+<div class="card pad rf-trap">
+<h4>Interpolated motion and sPTP report progress differently <span class="tag">&sect;3.5</span></h4>
+<p>Linear and circular commands expose <span class="mono">remainingDistanceActCmd</span>. sPTP has no path length to measure, so it exposes a time-based <span class="mono">executionTimeStatus</span> (0.0&ndash;1.0) instead. Only sPTP can change link constellation &mdash; a continuous-path move can't leave the current axis-position space.</p>
+</div>
+
+<div class="card pad rf-trap">
+<h4>Coordinate system and tool decide where a point actually is <span class="tag">&sect;3.8</span></h4>
+<p>The same Cartesian fields resolve differently under WCS, OCS[1&ndash;3], MCS (100), JCS (101) or a UCS &mdash; and switching the active tool moves the TCP with it. A rotated UCS (A, B or C &ne; 0) also rejects circMode 1 and 2 outright.</p>
+</div>
+
+<div class="card pad rf-trap">
+<h4>Conveyor tracking has real prerequisites <span class="tag">&sect;3.7.1</span></h4>
+<p>The axis must be listed on the TO Kinematics conveyor-tracking tab <em>and</em> have a parameter set configured at MovePath's Configuration input. <span class="mono">initialObjectPosition</span> only accepts a value on X. sPTP commands are rejected outright while tracking is active.</p>
+</div>
+
+<div class="card pad rf-trap">
+<h4>MC_GroupStop does not desynchronise <span class="tag">&sect;3.7.1, WARNING</span></h4>
+<p>A GroupStop during active tracking leaves the kinematics still riding the belt. Use <span class="mono">stopMode</span> 10/11 for automatic desync on stop, or an explicit <span class="mono">cmdType 50</span>.</p>
+</div>
+
+<div class="card pad rf-trap">
+<h4>flagMode 5 plus 11/13/15 can interlock a flag <span class="tag">&sect;3.10.2</span></h4>
+<p>Combined on the same command, a wait-for-acknowledge mode and an auto-set-after mode on the same flag can leave it permanently unable to reset. Don't combine them.</p>
+</div>
+
+<div class="card pad rf-trap">
+<h4>remainingDistance = 0.0 isn't always the target <span class="tag">&sect;3.10.2</span></h4>
+<p>flagModes 10 and 22 measure to where the <em>next</em> command's blending radius begins, not the literal programmed point.</p>
+</div>
+
+<div class="card pad rf-trap">
+<h4>Flags survive a stop, but not a fresh start <span class="tag">&sect;3.10.1</span></h4>
+<p>A stopped path leaves flag-driven actuators exactly as they were &mdash; a gripper keeps holding. Only a new rising edge at <span class="mono">execute</span>, or MovePath's own done signal, resets the flags.</p>
+</div>
+
+<div class="card pad rf-trap">
+<h4>A point reference &ge; 0 is taken literally <span class="tag">&sect;3.2</span></h4>
+<p>An invalid point number throws an error rather than being ignored. Use exactly <span class="mono">-1</span> to mean &ldquo;no reference.&rdquo;</p>
+</div>
+
+<div class="card pad rf-trap">
+<h4>Relative OCS shifts stack only on the same CS <span class="tag">&sect;3.14</span></h4>
+<p>Shifting a different coordinate system silently resets the previous shift. And insert a linear move to the CS origin before any circular command that immediately follows a shift.</p>
+</div>
+
+</div>
+
+<div class="rf-credit">
+<p>Drawn from the LKinCtrl V5.3 manual (Siemens Industry Online Support, Entry ID 109755891, 04/2026) and its Getting Started manual. This page is a reading aid built for quick lookup &mdash; not a substitute for the manual, which remains the authority for anything safety-relevant or version-specific.</p>
+</div>
+
+</div>
+</section>

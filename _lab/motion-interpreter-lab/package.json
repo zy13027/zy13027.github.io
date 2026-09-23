@@ -1,0 +1,18 @@
+{
+  "name": "motion-interpreter-lab",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Interactive guide to the SIMATIC S7-1500T Motion Interpreter (MCL), V10.0 / STEP 7 V21",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --host"
+  },
+  "devDependencies": {
+    "vite": "^8.3.0"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  }
+}

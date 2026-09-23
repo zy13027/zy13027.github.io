@@ -1,0 +1,31 @@
+<!-- ============================================================
+     S1 — HERO
+     ============================================================ -->
+<section class="section hero" id="s1">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">Unofficial notes &middot; SIMATIC S7-1500T &middot; Technology version V10.0 &middot; STEP 7 V21</p>
+        <h1>The Motion Interpreter</h1>
+        <p class="standfirst">With the SIMATIC Motion Interpreter of the S7-1500T CPU you create motion jobs for individual axes and kinematics with up to 6 interpolating axes. The Interpreter executes a series of serial instructions &mdash; that sequence is called an Interpreter program.</p>
+        <p>In contrast to cyclic programming in STEP&nbsp;7, you do not program step-enabling conditions or &lsquo;job done&rsquo; queries &mdash; the Interpreter sequences the work itself.</p>
+        <p style="color:var(--ix-weak);font-size:0.85rem">Personal study notes &mdash; not a Siemens publication. The manuals on Siemens Industry Online Support are authoritative.</p>
+      </div>
+      <div>
+        <div class="hero-canvas-wrap">
+          <canvas id="heroCanvas" role="img" aria-label="Animated pick-and-place cycle of a Cartesian-portal kinematics TCP, tracing a gradient path"></canvas>
+          <div class="hero-canvas-cap" id="heroCap">pick &amp; place cycle &middot; TCP trail</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec-chips" role="list" aria-label="Interpreter configuration limits">
+      <div class="spec-chip" role="listitem"><span class="fig tabular">6</span><span class="lbl">interpolating kinematics axes</span></div>
+      <div class="spec-chip" role="listitem"><span class="fig tabular">30</span><span class="lbl">kinematics jobs in the job sequence (fixed)</span></div>
+      <div class="spec-chip" role="listitem"><span class="fig tabular">10&ndash;100</span><span class="lbl">jobs prepared (MaxNumberOfCommands, configurable, default cap 100)</span></div>
+      <div class="spec-chip" role="listitem"><span class="fig tabular">20</span><span class="lbl">mapped technology objects</span></div>
+      <div class="spec-chip" role="listitem"><span class="fig tabular">100</span><span class="lbl">entries in the Interpreter mapping table</span></div>
+      <div class="spec-chip" role="listitem"><span class="fig tabular">300 / 100 / 100</span><span class="lbl">clipboard BOOL / DINT / LREAL tags</span></div>
+    </div>
+  </div>
+</section>

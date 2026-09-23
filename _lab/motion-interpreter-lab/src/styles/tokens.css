@@ -1,0 +1,77 @@
+/* tokens.css — design tokens, extracted verbatim from the original inline <style> block */
+
+/* ============================================================
+   MOTION INTERPRETER LAB — design tokens
+   Siemens IX-derived palette. Light on bare :root, dark redefined
+   under prefers-color-scheme AND under [data-theme="dark"].
+   ============================================================ */
+:root{
+  /* --- surfaces / text / borders (light) --- */
+  --ix-1:#ffffff;
+  --ix-2:#eff0f1;
+  --ix-3:#e2e4e6;
+  --ix-4:#d8dadd;
+  --ix-8:#92979b;
+  --ix-text:rgba(0,10,20,0.9);
+  --ix-soft:rgba(0,10,20,0.6);
+  --ix-weak:rgba(0,10,20,0.4);
+  --ix-bdr:rgba(35,48,60,0.15);
+  --ix-bdr-strong:rgba(0,20,40,0.3);
+
+  /* --- accents (identical across themes; brand holds) --- */
+  --ix-primary:#006e93;
+  --ix-dynamic:#005e66;
+  --ix-dynamic-alt:#00eaff;
+  --ix-success:#2c8500;
+  --ix-warning:#ffbb00;
+  --ix-alarm:#d72332;
+  --ix-critical:#bc5b01;
+  --ix-neutral:#66727e;
+
+  /* --- radius (Siemens IX is near-square) --- */
+  --r-sm:2px;
+  --r-md:4px;
+  --r-pill:999px;
+
+  /* --- spacing scale --- */
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:24px;
+  --sp-6:32px; --sp-7:40px; --sp-8:48px; --sp-9:64px; --sp-10:80px;
+  --sp-11:96px; --sp-12:128px;
+
+  /* --- type --- */
+  --font-display:"Barlow Condensed",Oswald,"Arial Narrow",sans-serif;
+  --font-body:"IBM Plex Sans",-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --font-mono:"JetBrains Mono","SFMono-Regular",Consolas,"Liberation Mono",monospace;
+
+  /* --- gradients (built from tokens above; theme-adaptive automatically) --- */
+  --grad-flow: linear-gradient(90deg, var(--ix-primary), var(--ix-dynamic-alt));
+  --grad-prep: linear-gradient(90deg, #006e93 0%, #00a4b8 100%);
+  --grad-exec: linear-gradient(90deg, #005e66 0%, #00eaff 100%);
+
+  /* --- velocity ramp stops (path canvases) --- */
+  --v-slow:#006e93; --v-mid:#00a4b8; --v-fast:#00eaff;
+
+  /* --- layout --- */
+  --max-w:1140px;
+  --header-h:56px;
+  --ease:cubic-bezier(.2,.7,.2,1);
+}
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ix-1:#0d1417; --ix-2:#162025; --ix-3:#1d2b31; --ix-4:#27383f; --ix-8:#6d7f86;
+    --ix-text:rgba(233,242,245,0.92); --ix-soft:rgba(233,242,245,0.62); --ix-weak:rgba(233,242,245,0.42);
+    --ix-bdr:rgba(160,190,200,0.18); --ix-bdr-strong:rgba(160,190,200,0.34);
+    --ix-primary:#2ba3c7; --ix-dynamic:#0a8d96; --ix-dynamic-alt:#00eaff;
+    --ix-success:#4aac1e; --ix-warning:#ffc633; --ix-alarm:#ff5b68; --ix-critical:#e0791f;
+    --ix-neutral:#8d9aa5;
+  }
+}
+:root[data-theme="dark"]{
+  --ix-1:#0d1417; --ix-2:#162025; --ix-3:#1d2b31; --ix-4:#27383f; --ix-8:#6d7f86;
+  --ix-text:rgba(233,242,245,0.92); --ix-soft:rgba(233,242,245,0.62); --ix-weak:rgba(233,242,245,0.42);
+  --ix-bdr:rgba(160,190,200,0.18); --ix-bdr-strong:rgba(160,190,200,0.34);
+  --ix-primary:#2ba3c7; --ix-dynamic:#0a8d96; --ix-dynamic-alt:#00eaff;
+  --ix-success:#4aac1e; --ix-warning:#ffc633; --ix-alarm:#ff5b68; --ix-critical:#e0791f;
+  --ix-neutral:#8d9aa5;
+}

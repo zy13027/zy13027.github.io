@@ -1,0 +1,51 @@
+<section class="sec" id="quantity">
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">Chapters 1.4 &amp; 4.2.2</div>
+      <h2>What it costs on the CPU</h2>
+      <p class="lede">Every quantity-structure constant maps straight onto retain memory. Table 4&#8209;1 shows one channel's default configuration on three CPU classes &mdash; the smaller the CPU, the tighter the headroom.</p>
+    </header>
+
+    <div class="grid" style="grid-template-columns:1.1fr 1fr;align-items:start">
+      <div class="card pad">
+        <h3 style="margin-bottom:10px">Used retain memory, one channel</h3>
+        <div class="rf-retain-chart">
+          <div class="rf-retain-item">
+            <div class="rf-retain-value">46%</div>
+            <div class="rf-retain-wrap"><div class="rf-retain-bar" style="height:46%"></div></div>
+            <div class="rf-retain-label"><b>CPU 1511T</b>101&nbsp;kB retain</div>
+          </div>
+          <div class="rf-retain-item">
+            <div class="rf-retain-value">33%</div>
+            <div class="rf-retain-wrap"><div class="rf-retain-bar" style="height:33%"></div></div>
+            <div class="rf-retain-label"><b>CPU 1515T</b>162&nbsp;kB retain</div>
+          </div>
+          <div class="rf-retain-item">
+            <div class="rf-retain-value">3%</div>
+            <div class="rf-retain-wrap"><div class="rf-retain-bar" style="height:3%"></div></div>
+            <div class="rf-retain-label"><b>CPU 1518T</b>162&nbsp;kB retain</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card scrollx">
+        <table>
+          <thead><tr><th>Table 4&#8209;1</th><th>1511T</th><th>1515T</th><th>1518T</th></tr></thead>
+          <tbody id="rf-quantity-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="box caution" style="margin-top:18px"><b>Loss of project data</b>Changing any constant in <span class="tag">LSKI_ProjectConfiguration</span> reinitialises <span class="tag">LSKI_ProjectData</span> in every channel. A download with reinitialisation of data blocks overwrites the online data outright &mdash; save the project data into <span class="tag">LSKI_ProjectData</span>'s start values first.</div>
+
+    <div class="rf-tblhead"><h3>Quantity-structure constants (chapter 4.2.2)</h3></div>
+    <div class="card scrollx">
+      <table class="rf-const-table"><thead><tr><th>Constant</th><th>Governs</th></tr></thead><tbody id="rf-const-tbody"></tbody></table>
+    </div>
+
+    <div class="rf-tblhead"><h3>Runtime configuration &middot; ProjectConfiguration.core</h3></div>
+    <div class="card scrollx">
+      <table class="rf-cfg-table"><thead><tr><th>Setting</th><th>Description</th></tr></thead><tbody id="rf-runtime-tbody"></tbody></table>
+    </div>
+  </div>
+</section>

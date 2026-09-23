@@ -1,0 +1,912 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style><title>Reflex &amp; Imagination · Zinan Yang</title>
+</head><body>
+<div class="zylab-bar"><a href="/lab/">&larr; Zinan Yang &middot; lab</a></div>
+<style>
+.zylab-bar{position:relative;z-index:1000;padding:7px 16px;border-bottom:1px solid rgba(128,128,128,.28);
+  font:500 12px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+  letter-spacing:.02em}
+.zylab-bar a{color:inherit;opacity:.78;text-decoration:none}
+.zylab-bar a:hover,.zylab-bar a:focus-visible{opacity:1;text-decoration:underline}
+</style>
+
+<style>
+  :root{
+    --ground:#0B0E14;
+    --panel:#121622;
+    --panel-2:#171C2B;
+    --line:#242B3D;
+    --ink:#E9EDF6;
+    --muted:#949DB3;
+    --faint:#5C6478;
+    --vla:#FFB454;
+    --vla-dim:rgba(255,180,84,.14);
+    --wm:#9D8CFF;
+    --wm-dim:rgba(157,140,255,.14);
+    --good:#55D68B;
+    --bad:#FF6E6E;
+    --disp:"Fraunces", Georgia, serif;
+    --body:"Schibsted Grotesk", "Segoe UI", system-ui, sans-serif;
+    --mono:"JetBrains Mono", Consolas, monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--ground);
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:17px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:rgba(157,140,255,.35)}
+  a{color:var(--wm)}
+  .col{max-width:860px;margin:0 auto;padding:0 24px}
+  .wide{max-width:1120px;margin:0 auto;padding:0 24px}
+  h1,h2,h3{font-family:var(--disp);font-weight:600;line-height:1.12;text-wrap:balance;margin:0}
+  h2{font-size:clamp(28px,4vw,40px);margin:0 0 14px}
+  h3{font-size:21px;margin:0 0 8px}
+  p{margin:0 0 16px;max-width:68ch}
+  .eyebrow{
+    font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--faint);margin:0 0 14px;
+  }
+  .im{font-family:var(--disp);font-style:italic;color:var(--wm);font-weight:500}
+  .act{font-family:var(--mono);font-size:.92em;color:var(--vla);background:var(--vla-dim);
+    padding:1px 6px;border-radius:4px;white-space:nowrap}
+  section{padding:88px 0}
+  section + section{border-top:1px solid var(--line)}
+
+  /* ---------- hero ---------- */
+  .hero{padding:96px 0 72px;text-align:left;position:relative;overflow:hidden}
+  .hero h1{font-size:clamp(46px,8vw,96px);font-weight:600;letter-spacing:-.01em}
+  .hero h1 .amp{font-style:italic;font-weight:400;color:var(--faint);padding:0 .08em}
+  .hero .w-reflex{color:var(--vla)}
+  .hero .w-imag{color:var(--wm);font-style:italic}
+  .hero-sub{color:var(--muted);font-size:19px;margin:20px 0 40px;max-width:56ch}
+  .q-pair{display:flex;gap:16px;flex-wrap:wrap}
+  .q-card{
+    flex:1 1 280px;border:1px solid var(--line);border-radius:14px;padding:20px 22px;
+    background:var(--panel);position:relative;overflow:hidden;
+  }
+  .q-card::before{content:"";position:absolute;inset:0 auto 0 0;width:3px}
+  .q-card.vla::before{background:var(--vla)}
+  .q-card.wm::before{background:var(--wm)}
+  .q-card .who{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+  .q-card.vla .who{color:var(--vla)}
+  .q-card.wm .who{color:var(--wm)}
+  .q-card .q{font-family:var(--disp);font-size:26px;line-height:1.2}
+  .q-card.wm .q{font-style:italic}
+  .q-card .a{color:var(--muted);font-size:15px;margin-top:10px}
+  .heroflow{margin-top:56px;width:100%;height:auto;display:block}
+  .heroflow text{font-family:var(--mono);font-size:11px;fill:var(--faint)}
+
+  /* ---------- diagrams ---------- */
+  .dgm-wrap{display:flex;flex-direction:column;gap:28px;margin-top:36px}
+  .dgm{
+    border:1px solid var(--line);border-radius:16px;background:var(--panel);
+    padding:22px 22px 10px;overflow-x:auto;
+  }
+  .dgm-title{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+  .dgm-title .tag{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+  .dgm.vla-d .tag{color:var(--vla)}
+  .dgm.wm-d .tag{color:var(--wm)}
+  .dgm-title .note{color:var(--faint);font-size:14px}
+  .dgm svg{display:block;width:100%;min-width:640px;height:auto}
+  .dgm svg text{font-family:var(--mono);font-size:12px;fill:var(--muted)}
+  .dgm svg text.big{font-size:14px;fill:var(--ink)}
+  .dgm svg text.lbl{fill:var(--faint);font-size:11px}
+  .node{fill:var(--panel-2);stroke:var(--line);stroke-width:1.5;rx:10}
+  .node.hot-v{stroke:var(--vla)}
+  .node.hot-w{stroke:var(--wm)}
+  .flow{fill:none;stroke-width:1.6;stroke-dasharray:6 6}
+  .flow.v{stroke:var(--vla)}
+  .flow.w{stroke:var(--wm)}
+  .flow.dim{stroke:var(--faint)}
+  @keyframes dash{to{stroke-dashoffset:-24}}
+  .flow.anim{animation:dash 1.1s linear infinite}
+  @keyframes pulse{0%,100%{opacity:.55}50%{opacity:1}}
+  .pulsing{animation:pulse 1.8s ease-in-out infinite}
+  .loop-note{font-family:var(--disp);font-style:italic;font-size:15px}
+  .loop-note.v{fill:var(--vla)}
+  .loop-note.w{fill:var(--wm)}
+
+  /* ---------- simulation ---------- */
+  .sim-controls{display:flex;gap:10px;flex-wrap:wrap;margin:26px 0 18px}
+  button{
+    font-family:var(--mono);font-size:13px;letter-spacing:.04em;cursor:pointer;
+    background:var(--panel-2);color:var(--ink);border:1px solid var(--line);
+    border-radius:9px;padding:10px 18px;transition:border-color .15s, transform .05s;
+  }
+  button:hover{border-color:var(--muted)}
+  button:active{transform:translateY(1px)}
+  button:focus-visible{outline:2px solid var(--wm);outline-offset:2px}
+  button.primary{background:var(--ink);color:var(--ground);border-color:var(--ink);font-weight:600}
+  button.primary:hover{background:#fff}
+  button.warn.on{border-color:var(--bad);color:var(--bad);background:rgba(255,110,110,.08)}
+  .sim-pair{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media (max-width:900px){.sim-pair{grid-template-columns:1fr}}
+  .sim-cell{border:1px solid var(--line);border-radius:16px;background:var(--panel);padding:16px;min-width:0}
+  .sim-cell header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+  .sim-cell .name{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+  .sim-cell.v .name{color:var(--vla)}
+  .sim-cell.w .name{color:var(--wm)}
+  .sim-cell .sub{color:var(--faint);font-size:13px}
+  .sim-cell canvas{width:100%;height:auto;display:block;border-radius:10px;background:#0D111A}
+  .statusline{
+    font-family:var(--mono);font-size:12.5px;margin-top:12px;min-height:38px;
+    color:var(--muted);line-height:1.5;
+  }
+  .statusline .ok{color:var(--good)}
+  .statusline .err{color:var(--bad)}
+  .statusline .think{color:var(--wm)}
+  .sim-caption{color:var(--faint);font-size:14px;margin-top:18px;max-width:78ch}
+
+  /* ---------- drift demo ---------- */
+  .drift-panel{border:1px solid var(--line);border-radius:16px;background:var(--panel);padding:20px;margin-top:30px}
+  .drift-panel canvas{width:100%;height:auto;display:block;border-radius:10px;background:#0D111A}
+  .drift-ctl{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:16px;font-family:var(--mono);font-size:13px;color:var(--muted)}
+  .drift-ctl input[type=range]{flex:1;min-width:180px;accent-color:var(--wm)}
+  .drift-read{font-variant-numeric:tabular-nums;color:var(--ink)}
+  .drift-read b{color:var(--wm);font-weight:600}
+
+  /* ---------- comparison ---------- */
+  .cmp{margin-top:34px;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .cmp-row{display:grid;grid-template-columns:180px 1fr 1fr}
+  .cmp-row > div{padding:14px 18px;border-top:1px solid var(--line);font-size:15px;min-width:0}
+  .cmp-row:first-child > div{border-top:none}
+  .cmp-row .k{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);background:var(--panel)}
+  .cmp-row .cv{background:rgba(255,180,84,.045)}
+  .cmp-row .cw{background:rgba(157,140,255,.05)}
+  .cmp-row.head .cv{color:var(--vla);font-family:var(--mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+  .cmp-row.head .cw{color:var(--wm);font-family:var(--mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+  .cmp mark{background:none;color:var(--ink);font-weight:700}
+  @media (max-width:760px){
+    .cmp-row{grid-template-columns:110px 1fr 1fr}
+    .cmp-row > div{padding:10px;font-size:13px}
+  }
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+  .chip{font-family:var(--mono);font-size:12px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+
+  /* ---------- note / mpc ---------- */
+  .note-panel{
+    border:1px solid var(--line);border-left:3px solid var(--good);border-radius:12px;
+    background:var(--panel);padding:22px 26px;margin-top:34px;
+  }
+  .note-panel .nt{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--good);margin-bottom:10px}
+  .note-panel p{font-size:15.5px;color:var(--muted)}
+  .note-panel p:last-child{margin-bottom:0}
+  .note-panel strong{color:var(--ink)}
+
+  /* ---------- convergence ---------- */
+  .conv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px}
+  @media (max-width:860px){.conv-grid{grid-template-columns:1fr}}
+  .conv-card{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:20px}
+  .conv-card h3{font-size:19px}
+  .conv-card p{font-size:14.5px;color:var(--muted);margin:8px 0 0}
+  .conv-card .cn{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.1em;text-transform:uppercase}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--line);padding:64px 0 96px}
+  .final{font-family:var(--disp);font-size:clamp(24px,3.4vw,34px);line-height:1.35;max-width:24em;text-wrap:balance}
+  .final .fv{color:var(--vla)}
+  .final .fw{color:var(--wm);font-style:italic}
+  .fine{color:var(--faint);font-size:13.5px;margin-top:28px;max-width:74ch}
+
+  @media (prefers-reduced-motion: reduce){
+    .flow.anim,.pulsing{animation:none}
+  }
+</style>
+
+<div class="hero">
+  <div class="col">
+    <p class="eyebrow">Two ways a machine can know the world</p>
+    <h1><span class="w-reflex">Reflex</span><span class="amp">&amp;</span><span class="w-imag">Imagination</span></h1>
+    <p class="hero-sub">A vision-language-action model and a world model both sit inside modern robots — but they learn opposite things. One learns a mapping. The other learns a simulator.</p>
+    <div class="q-pair">
+      <div class="q-card vla">
+        <div class="who">VLA · vision-language-action</div>
+        <div class="q">“What should I do, right now?”</div>
+        <div class="a">A policy. Pixels and words in, motor commands out. No prediction of the future — it acts, then looks again.</div>
+      </div>
+      <div class="q-card wm">
+        <div class="who">World model</div>
+        <div class="q">“What will happen next?”</div>
+        <div class="a">A simulator. Given a state and an action, it predicts the next state — so futures can be rehearsed before anything moves.</div>
+      </div>
+    </div>
+    <svg class="heroflow" viewBox="0 0 860 60" aria-hidden="true">
+      <path class="flow v anim" d="M 20 30 H 400"/>
+      <path class="flow w anim" d="M 460 30 C 520 30 520 8 580 8 C 640 8 640 52 700 52 C 760 52 760 30 840 30"/>
+      <circle cx="430" cy="30" r="5" fill="none" stroke="#5C6478" stroke-width="1.5"/>
+      <text x="20" y="52" class="lbl">reflex: straight through</text>
+      <text x="620" y="34" class="lbl" text-anchor="middle"></text>
+      <text x="840" y="52" class="lbl" text-anchor="end">imagination: detours through possible futures</text>
+    </svg>
+  </div>
+</div>
+
+<section>
+  <div class="col">
+    <p class="eyebrow">The fundamental difference</p>
+    <h2>Where the loop closes</h2>
+    <p>Every intelligent controller runs a loop: sense, decide, act, sense again. The deepest difference between these two families is <em>where that loop closes</em>.</p>
+    <p>A <span class="act">VLA</span> closes its loop <strong>through reality</strong>. It maps what it sees and what it is told directly to an action, executes it on the real world, and only then observes the consequence. All of its knowledge is compressed into that single mapping — a trained reflex.</p>
+    <p>A <span class="im">world model</span> closes its loop <strong>inside itself</strong>. It learns the dynamics of the environment — <span style="font-family:var(--mono);font-size:.9em">next&nbsp;state = f(state,&nbsp;action)</span> — so it can feed its own predictions back in as input and roll the world forward in its head, many steps, many alternatives, without touching anything real.</p>
+    <div class="dgm-wrap">
+
+      <div class="dgm vla-d">
+        <div class="dgm-title"><span class="tag">VLA — a trained reflex</span><span class="note">one forward pass per action</span></div>
+        <svg viewBox="0 0 760 240" role="img" aria-label="VLA pipeline: pixels and words feed a policy network which outputs an action into reality; reality feeds pixels back">
+          <!-- inputs -->
+          <rect class="node" x="24" y="52" width="128" height="46" rx="10"/>
+          <text class="big" x="88" y="74" text-anchor="middle">pixels</text>
+          <text x="88" y="90" text-anchor="middle" class="lbl">camera frame</text>
+          <rect class="node" x="24" y="130" width="128" height="46" rx="10"/>
+          <text class="big" x="88" y="150" text-anchor="middle">words</text>
+          <text x="88" y="167" text-anchor="middle" class="lbl">“pick the red block”</text>
+          <!-- policy -->
+          <rect class="node hot-v" x="228" y="62" width="204" height="104" rx="12"/>
+          <text class="big" x="330" y="103" text-anchor="middle">policy  π</text>
+          <text x="330" y="124" text-anchor="middle">action = π(pixels, words)</text>
+          <text x="330" y="144" text-anchor="middle" class="lbl">VLM backbone + action head</text>
+          <!-- action chip -->
+          <rect class="node" x="486" y="88" width="92" height="52" rx="10"/>
+          <text class="big" x="532" y="112" text-anchor="middle">action</text>
+          <text x="532" y="128" text-anchor="middle" class="lbl">Δ pose, gripper</text>
+          <!-- reality -->
+          <rect class="node" x="628" y="72" width="108" height="84" rx="12" style="stroke:#3A4358"/>
+          <text class="big" x="682" y="110" text-anchor="middle">REALITY</text>
+          <text x="682" y="130" text-anchor="middle" class="lbl">the actual world</text>
+          <!-- flows -->
+          <path class="flow v anim" d="M 152 75 H 228"/>
+          <path class="flow v anim" d="M 152 153 C 190 153 190 130 228 126"/>
+          <path class="flow v anim" d="M 432 114 H 486"/>
+          <path class="flow v anim" d="M 578 114 H 628"/>
+          <!-- loop back through reality -->
+          <path class="flow dim anim" d="M 682 72 V 26 H 88 V 52"/>
+          <polygon points="88,52 84,44 92,44" fill="#5C6478"/>
+          <text class="loop-note v" x="380" y="20" text-anchor="middle">the loop closes through reality — act first, see what happened after</text>
+          <!-- arrowheads -->
+          <polygon points="228,75 220,71 220,79" fill="#FFB454"/>
+          <polygon points="228,126 220,122 220,130" fill="#FFB454"/>
+          <polygon points="486,114 478,110 478,118" fill="#FFB454"/>
+          <polygon points="628,114 620,110 620,118" fill="#FFB454"/>
+        </svg>
+      </div>
+
+      <div class="dgm wm-d">
+        <div class="dgm-title"><span class="tag">World model — a learned simulator</span><span class="note">many imagined steps per real action</span></div>
+        <svg viewBox="0 0 760 260" role="img" aria-label="World model pipeline: pixels are encoded to a latent state, a dynamics model rolls it forward in an imagination loop, decoding to imagined futures and rewards, and a planner picks the action">
+          <!-- input + encoder -->
+          <rect class="node" x="24" y="96" width="104" height="46" rx="10"/>
+          <text class="big" x="76" y="117" text-anchor="middle">pixels</text>
+          <text x="76" y="133" text-anchor="middle" class="lbl">observation</text>
+          <rect class="node" x="168" y="96" width="104" height="46" rx="10"/>
+          <text class="big" x="220" y="117" text-anchor="middle">encoder</text>
+          <text x="220" y="133" text-anchor="middle" class="lbl">compress</text>
+          <!-- latent -->
+          <circle class="pulsing" cx="330" cy="119" r="24" fill="rgba(157,140,255,.14)" stroke="#9D8CFF" stroke-width="1.5"/>
+          <text class="big" x="330" y="124" text-anchor="middle" style="fill:var(--wm)">z</text>
+          <text x="330" y="162" text-anchor="middle" class="lbl">latent state</text>
+          <!-- dynamics -->
+          <rect class="node hot-w" x="404" y="80" width="168" height="78" rx="12"/>
+          <text class="big" x="488" y="112" text-anchor="middle">dynamics</text>
+          <text x="488" y="132" text-anchor="middle">z′ = f(z, a)</text>
+          <!-- imagination self-loop -->
+          <path class="flow w anim" d="M 540 80 C 540 30 436 30 436 80"/>
+          <polygon points="436,80 431,71 441,71" fill="#9D8CFF"/>
+          <text class="loop-note w" x="488" y="22" text-anchor="middle">imagination — feed predictions back in, no reality required</text>
+          <!-- outputs -->
+          <rect class="node" x="628" y="52" width="108" height="46" rx="10"/>
+          <text class="big" x="682" y="72" text-anchor="middle">decoder</text>
+          <text x="682" y="88" text-anchor="middle" class="lbl">imagined frames</text>
+          <rect class="node" x="628" y="120" width="108" height="46" rx="10"/>
+          <text class="big" x="682" y="140" text-anchor="middle">reward</text>
+          <text x="682" y="156" text-anchor="middle" class="lbl">how good is z′?</text>
+          <!-- planner -->
+          <rect class="node" x="404" y="196" width="168" height="44" rx="10"/>
+          <text class="big" x="488" y="215" text-anchor="middle">planner / policy</text>
+          <text x="488" y="231" text-anchor="middle" class="lbl">pick the best imagined future</text>
+          <!-- flows -->
+          <path class="flow w anim" d="M 128 119 H 168"/>
+          <path class="flow w anim" d="M 272 119 H 306"/>
+          <path class="flow w anim" d="M 354 119 H 404"/>
+          <path class="flow w anim" d="M 572 100 C 600 96 600 80 628 76"/>
+          <path class="flow w anim" d="M 572 138 C 600 140 600 142 628 142"/>
+          <path class="flow w anim" d="M 488 158 V 196"/>
+          <polygon points="168,119 160,115 160,123" fill="#9D8CFF"/>
+          <polygon points="306,119 298,115 298,123" fill="#9D8CFF"/>
+          <polygon points="404,119 396,115 396,123" fill="#9D8CFF"/>
+          <polygon points="628,76 620,72 620,80" fill="#9D8CFF"/>
+          <polygon points="628,142 620,138 620,146" fill="#9D8CFF"/>
+          <polygon points="488,196 484,188 492,188" fill="#9D8CFF"/>
+        </svg>
+      </div>
+    </div>
+    <p style="margin-top:26px">Notice what the world model diagram does <em>not</em> output directly: an action. On its own, a world model doesn’t act at all — it only predicts. It needs a planner or a policy bolted on to choose between the futures it imagines. And notice what the VLA never produces: a prediction. It cannot tell you what the world will look like after its action — it simply doesn’t model that.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wide">
+    <div class="col" style="padding:0">
+      <p class="eyebrow">Simulation · run it yourself</p>
+      <h2>The blocked corridor</h2>
+      <p>Both agents were “trained” on the same maze: demonstrations that go straight down the middle corridor. Run them, then <strong>block the corridor</strong> and run again — this is where the two philosophies split.</p>
+    </div>
+    <div class="sim-controls">
+      <button class="primary" id="btnRun">▶ run both agents</button>
+      <button class="warn" id="btnBlock">block the corridor</button>
+      <button id="btnReset">reset</button>
+    </div>
+    <div class="sim-pair">
+      <div class="sim-cell v">
+        <header><span class="name">VLA · reflex</span><span class="sub">acts from the learned mapping</span></header>
+        <canvas id="cvVla" aria-label="VLA agent maze simulation"></canvas>
+        <div class="statusline" id="stVla">idle — press run</div>
+      </div>
+      <div class="sim-cell w">
+        <header><span class="name">World model · imagination</span><span class="sub">rehearses futures, then acts</span></header>
+        <canvas id="cvWm" aria-label="World model agent maze simulation"></canvas>
+        <div class="statusline" id="stWm">idle — press run</div>
+      </div>
+    </div>
+    <p class="sim-caption">With the corridor open, the reflex is superb — fewer computations, straight to the goal. Block it, and the VLA keeps emitting the action its training data prescribed for “corridor-like” observations: it walks into the new wall, because nothing in its mapping represents <em>consequences</em>. The world model never memorised a route at all — it rehearses candidate futures against its internal simulator (the faint violet trails), scores them, and simply imagines its way around the change. <span style="color:var(--faint)">(Toy rendering, of course: real VLAs generalise better than a lookup table, and real world models imagine in latent space, not on a grid — but the asymmetry is exactly this.)</span></p>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <p class="eyebrow">The price of imagination</p>
+    <h2>Dreams drift</h2>
+    <p>If world models can rehearse the future, why not imagine hundreds of steps ahead and plan everything? Because a learned simulator is never exact. Each imagined step adds a small error, and errors <strong>compound</strong> — the dream slowly parts company with reality. Drag the horizon and watch twelve imagined futures of the same bouncing ball fan away from the true trajectory (white).</p>
+    <div class="drift-panel">
+      <canvas id="cvDrift" aria-label="Compounding prediction error demo: imagined ball trajectories diverge from the true one as horizon grows"></canvas>
+      <div class="drift-ctl">
+        <span>imagination horizon</span>
+        <input type="range" id="rgH" min="12" max="230" value="60" step="2" aria-label="imagination horizon in steps">
+        <span class="drift-read"><b id="hVal">60</b> steps · spread <b id="spVal">—</b></span>
+      </div>
+    </div>
+    <p style="margin-top:22px">This is why practical systems imagine in <em>short bursts</em>: plan a handful of steps, execute the first one, observe reality, and re-plan from the fresh observation. Reality keeps correcting the dream before it drifts too far.</p>
+    <div class="note-panel">
+      <div class="nt">If you come from control engineering</div>
+      <p>This whole page may feel familiar. A <strong>VLA is a learned direct controller</strong> — a reflex law mapping measurement to actuation, like a tuned PID or a cam table: fast, fixed, no plant knowledge. A <strong>world model is the plant model inside an MPC</strong>: the imagination horizon is the prediction horizon, and “imagine a few steps, execute one, re-observe, re-plan” is precisely receding-horizon control.</p>
+      <p>And training a policy inside a world model (Dreamer-style) is commissioning your controller against the digital twin before you ever download to the real machine.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <p class="eyebrow">Side by side</p>
+    <h2>The anatomy of the difference</h2>
+    <div class="cmp">
+      <div class="cmp-row head">
+        <div class="k"></div>
+        <div class="cv">VLA</div>
+        <div class="cw">World model</div>
+      </div>
+      <div class="cmp-row">
+        <div class="k">Core question</div>
+        <div class="cv"><mark>What should I do?</mark></div>
+        <div class="cw"><mark>What will happen?</mark></div>
+      </div>
+      <div class="cmp-row">
+        <div class="k">What is learnt</div>
+        <div class="cv">A <mark>policy</mark> — a direct mapping from observation + instruction to action</div>
+        <div class="cw">The <mark>dynamics</mark> of the environment — a predictive simulator of state transitions</div>
+      </div>
+      <div class="cmp-row">
+        <div class="k">Mapping</div>
+        <div class="cv" style="font-family:var(--mono);font-size:13.5px">a = π(o, language)</div>
+        <div class="cw" style="font-family:var(--mono);font-size:13.5px">s′ = f(s, a)</div>
+      </div>
+      <div class="cmp-row">
+        <div class="k">Loop closes</div>
+        <div class="cv">Through <mark>reality</mark> — act, then observe</div>
+        <div class="cw">Inside <mark>the model</mark> — imagine, then act</div>
+      </div>
+      <div class="cmp-row">
+        <div class="k">At inference</div>
+        <div class="cv">One forward pass per action — fast, reactive, System&nbsp;1</div>
+        <div class="cw">Many imagined rollouts per decision — deliberate, System&nbsp;2</div>
+      </div>
+      <div class="cmp-row">
+        <div class="k">Fed by</div>
+        <div class="cv">Demonstrations (teleoperation, imitation) + internet-scale vision-language pre-training</div>
+        <div class="cw">Any experience at all — video, interaction logs — no labels or demonstrations needed</div>
+      </div>
+      <div class="cmp-row">
+        <div class="k">Great at</div>
+        <div class="cv">Following open-ended language, transferring semantic knowledge (“the <em>red</em> block”), low-latency control</div>
+        <div class="cw">Counterfactuals, planning routes never demonstrated, safe rehearsal, learning without a real robot</div>
+      </div>
+      <div class="cmp-row">
+        <div class="k">Fails by</div>
+        <div class="cv">Confident nonsense off-distribution — repeats the reflex when the world changed</div>
+        <div class="cw">Compounding prediction error — the dream drifts; hallucinated physics rewards impossible plans</div>
+      </div>
+      <div class="cmp-row">
+        <div class="k">Flag-bearers</div>
+        <div class="cv"><div class="chips"><span class="chip">RT-2</span><span class="chip">OpenVLA</span><span class="chip">π0</span><span class="chip">Helix</span><span class="chip">Gemini Robotics</span></div></div>
+        <div class="cw"><div class="chips"><span class="chip">Dreamer V3</span><span class="chip">MuZero</span><span class="chip">Genie 3</span><span class="chip">V-JEPA 2</span><span class="chip">Cosmos</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <p class="eyebrow">Where the field is heading</p>
+    <h2>Rivals on paper, partners in practice</h2>
+    <p>The honest answer to “which is right?” is that they solve different halves of the same problem — and the strongest recent systems are hybrids. Three couplings keep appearing:</p>
+    <div class="conv-grid">
+      <div class="conv-card">
+        <div class="cn">Train the reflex in the dream</div>
+        <h3>Dream training</h3>
+        <p>Dreamer-style: learn a world model from experience, then train a fast policy entirely <em>inside</em> its imagination — millions of rehearsals, zero wear on real hardware. The deployed artefact behaves like a reflex; it was raised in a simulator.</p>
+      </div>
+      <div class="conv-card">
+        <div class="cn">Manufacture experience</div>
+        <h3>Synthetic data</h3>
+        <p>Video world models (Genie, Cosmos) act as data factories: generate plausible, controllable worlds and roll robots through them, then distil the result into a VLA. The scarcest resource in robotics — real interaction data — gets synthesised.</p>
+      </div>
+      <div class="conv-card">
+        <div class="cn">Reflex proposes, model vets</div>
+        <h3>Imagination as a safety check</h3>
+        <p>A VLA proposes an action instantly; a world model rolls it forward a few steps and vetoes futures that end badly. System&nbsp;1 supplies speed, System&nbsp;2 supplies foresight — much like how you catch a falling cup by reflex but plan a house move in your head.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="col">
+    <p class="final">A <span class="fv">VLA</span> compresses experience into a reflex — brilliant until the world stops resembling its training data. A <span class="fw">world model</span> compresses experience into a simulator — able to rehearse worlds it has never seen, at the price of dreams that drift. <span style="color:var(--muted)">Intelligence, most likely, needs both.</span></p>
+    <p class="fine">Interactive explainer built for exploring the concepts; the maze and bouncing-ball demos are deliberate simplifications. Representative systems mentioned — RT-2, OpenVLA, π0, Helix, Dreamer, MuZero, Genie, V-JEPA, Cosmos — are described as of early 2026.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ============ shared canvas helper ============ */
+  function fitCanvas(cv, aspect){
+    var w = cv.clientWidth || cv.parentElement.clientWidth;
+    var h = Math.round(w * aspect);
+    var dpr = window.devicePixelRatio || 1;
+    cv.width = Math.round(w * dpr);
+    cv.height = Math.round(h * dpr);
+    cv.style.height = h + "px";
+    var ctx = cv.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: w, h: h };
+  }
+
+  /* ============ maze simulation ============ */
+  var COLS = 13, ROWS = 9;
+  var START = {x:2, y:4}, GOAL = {x:10, y:4};
+  var BLOCK_CELL = "6,4";
+  var blocked = false;
+
+  function wallSet(){
+    var s = {};
+    var x, y;
+    for (x = 0; x < COLS; x++){ s[x+",0"] = 1; s[x+","+(ROWS-1)] = 1; }
+    for (y = 0; y < ROWS; y++){ s["0,"+y] = 1; s[(COLS-1)+","+y] = 1; }
+    for (x = 5; x <= 7; x++){
+      for (y = 1; y <= 3; y++) s[x+","+y] = 1;   /* upper slab */
+      for (y = 5; y <= 6; y++) s[x+","+y] = 1;   /* lower slab (row 7 stays open) */
+    }
+    if (blocked) s[BLOCK_CELL] = 1;
+    return s;
+  }
+
+  function bfs(walls){
+    var q = [[START.x, START.y]], prev = {}, seen = {};
+    seen[START.x+","+START.y] = 1;
+    var dirs = [[1,0],[0,1],[-1,0],[0,-1]];
+    while (q.length){
+      var c = q.shift();
+      if (c[0] === GOAL.x && c[1] === GOAL.y){
+        var path = [], k = GOAL.x+","+GOAL.y;
+        while (k){ var p = k.split(","); path.unshift({x:+p[0], y:+p[1]}); k = prev[k]; }
+        return path;
+      }
+      for (var i = 0; i < 4; i++){
+        var nx = c[0]+dirs[i][0], ny = c[1]+dirs[i][1], key = nx+","+ny;
+        if (nx<0||ny<0||nx>=COLS||ny>=ROWS||walls[key]||seen[key]) continue;
+        seen[key] = 1; prev[key] = c[0]+","+c[1]; q.push([nx,ny]);
+      }
+    }
+    return null;
+  }
+
+  /* the "demonstration" policy: straight along row 4 (learned when corridor was open) */
+  function demoAction(){ return {dx:1, dy:0}; }
+
+  var cvV = document.getElementById("cvVla");
+  var cvW = document.getElementById("cvWm");
+  var stV = document.getElementById("stVla");
+  var stW = document.getElementById("stWm");
+  var ASPECT = ROWS/COLS;
+  var V = fitCanvas(cvV, ASPECT), W = fitCanvas(cvW, ASPECT);
+
+  var sim = null; /* null = idle */
+  function freshSim(){
+    return {
+      t0: performance.now(),
+      vla: { x:START.x, y:START.y, px:START.x, py:START.y, moveT:0, bumps:0, done:false, failed:false, steps:0, bumpFlash:0, lastTick:0 },
+      wm:  { phase:"imagine", x:START.x, y:START.y, px:START.x, py:START.y, moveT:0, idx:0, done:false, steps:0, lastTick:0,
+             plan: bfs(wallSet()),
+             rollouts: makeRollouts(wallSet()) }
+    };
+  }
+
+  function makeRollouts(walls){
+    var outs = [], n = 18, len = 20;
+    for (var r = 0; r < n; r++){
+      var pts = [{x:START.x, y:START.y}], cx = START.x, cy = START.y, lastD = -1;
+      for (var s = 0; s < len; s++){
+        var choices = [];
+        var dirs = [[1,0],[0,1],[-1,0],[0,-1]];
+        for (var d = 0; d < 4; d++){
+          var nx = cx+dirs[d][0], ny = cy+dirs[d][1];
+          if (walls[nx+","+ny]) continue;
+          var wgt = (d === lastD) ? 3 : (Math.abs(d - lastD) === 2 ? 0.3 : 1);
+          if (dirs[d][0] === 1) wgt *= 1.6; /* mild goal-ward bias */
+          choices.push({d:d, nx:nx, ny:ny, w:wgt});
+        }
+        if (!choices.length) break;
+        var tot = 0, i;
+        for (i = 0; i < choices.length; i++) tot += choices[i].w;
+        var pick = Math.random()*tot;
+        for (i = 0; i < choices.length; i++){ pick -= choices[i].w; if (pick <= 0) break; }
+        var ch = choices[Math.min(i, choices.length-1)];
+        cx = ch.nx; cy = ch.ny; lastD = ch.d;
+        pts.push({x:cx, y:cy});
+        if (cx === GOAL.x && cy === GOAL.y) break;
+      }
+      outs.push(pts);
+    }
+    return outs;
+  }
+
+  function cellPx(view, x, y){
+    var cs = view.w / COLS;
+    return { x: x*cs + cs/2, y: y*cs + cs/2, cs: cs };
+  }
+
+  function drawBoard(view, walls){
+    var ctx = view.ctx, cs = view.w / COLS;
+    ctx.clearRect(0,0,view.w,view.h);
+    /* cells */
+    for (var y = 0; y < ROWS; y++){
+      for (var x = 0; x < COLS; x++){
+        var key = x+","+y;
+        if (walls[key]){
+          ctx.fillStyle = (key === BLOCK_CELL && blocked) ? "rgba(255,110,110,.55)" : "#1B2233";
+          rr(ctx, x*cs+1.5, y*cs+1.5, cs-3, cs-3, 4); ctx.fill();
+          if (key === BLOCK_CELL && blocked){
+            ctx.strokeStyle = "#FF6E6E"; ctx.lineWidth = 1.5;
+            rr(ctx, x*cs+1.5, y*cs+1.5, cs-3, cs-3, 4); ctx.stroke();
+          }
+        } else {
+          ctx.fillStyle = "rgba(255,255,255,.022)";
+          rr(ctx, x*cs+1.5, y*cs+1.5, cs-3, cs-3, 4); ctx.fill();
+        }
+      }
+    }
+    /* start & goal */
+    var g = cellPx(view, GOAL.x, GOAL.y);
+    ctx.strokeStyle = "#55D68B"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(g.x, g.y, cs*0.28, 0, 7); ctx.stroke();
+    ctx.fillStyle = "#55D68B";
+    ctx.font = "600 "+Math.round(cs*0.26)+"px JetBrains Mono, monospace";
+    ctx.textAlign = "center";
+    ctx.fillText("G", g.x, g.y - cs*0.42);
+    var s = cellPx(view, START.x, START.y);
+    ctx.fillStyle = "rgba(233,237,246,.5)";
+    ctx.fillText("S", s.x, s.y - cs*0.42);
+  }
+
+  function rr(ctx,x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+  }
+
+  function drawAgent(view, ax, ay, colour, flash){
+    var cs = view.w / COLS;
+    var p = { x: ax*cs + cs/2, y: ay*cs + cs/2 };
+    var ctx = view.ctx;
+    ctx.save();
+    ctx.shadowColor = colour; ctx.shadowBlur = 14;
+    ctx.fillStyle = colour;
+    ctx.beginPath(); ctx.arc(p.x, p.y, cs*0.26, 0, 7); ctx.fill();
+    ctx.restore();
+    if (flash > 0){
+      ctx.strokeStyle = "rgba(255,110,110,"+flash+")";
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(p.x, p.y, cs*0.40 + (1-flash)*cs*0.25, 0, 7); ctx.stroke();
+    }
+  }
+
+  var VLA_TICK = 300, WM_TICK = 150, IMAGINE_MS = 1600, MAX_VLA_TICKS = 26;
+
+  function stepSim(now){
+    var walls = wallSet();
+
+    /* ----- VLA ----- */
+    var a = sim.vla;
+    drawBoard(V, walls);
+    if (!a.done && !a.failed && now - a.lastTick > VLA_TICK){
+      a.lastTick = now;
+      var act = demoAction();
+      var nx = a.x + act.dx, ny = a.y + act.dy;
+      a.steps++;
+      if (walls[nx+","+ny]){
+        a.bumps++; a.bumpFlash = 1;
+        if (a.steps > MAX_VLA_TICKS) a.failed = true;
+      } else {
+        a.px = a.x; a.py = a.y; a.x = nx; a.y = ny; a.moveT = now;
+      }
+      if (a.x === GOAL.x && a.y === GOAL.y) a.done = true;
+    }
+    var f = Math.min(1, (now - a.moveT) / 180);
+    var ix = a.px + (a.x - a.px)*ease(f), iy = a.py + (a.y - a.py)*ease(f);
+    /* intended-action arrow */
+    if (!a.done){
+      var cs = V.w / COLS, cx0 = ix*cs+cs/2, cy0 = iy*cs+cs/2;
+      V.ctx.strokeStyle = "rgba(255,180,84,.8)"; V.ctx.lineWidth = 2;
+      V.ctx.beginPath(); V.ctx.moveTo(cx0+cs*0.3, cy0); V.ctx.lineTo(cx0+cs*0.55, cy0); V.ctx.stroke();
+      V.ctx.fillStyle = "rgba(255,180,84,.8)";
+      V.ctx.beginPath(); V.ctx.moveTo(cx0+cs*0.62, cy0); V.ctx.lineTo(cx0+cs*0.5, cy0-4); V.ctx.lineTo(cx0+cs*0.5, cy0+4); V.ctx.fill();
+    }
+    a.bumpFlash = Math.max(0, a.bumpFlash - 0.04);
+    var jx = (a.bumps > 0 && !a.done && !a.failed && a.bumpFlash > 0.5) ? Math.sin(now/25)*2/(V.w/COLS) : 0;
+    drawAgent(V, ix + jx, iy, "#FFB454", a.bumpFlash);
+    if (a.done){
+      stV.innerHTML = '<span class="ok">✓ goal reached in '+(a.steps)+' steps.</span> one forward pass per move — pure reflex, and in-distribution it is unbeatable.';
+    } else if (a.failed){
+      stV.innerHTML = '<span class="err">✗ stuck. out of distribution.</span> the mapping still says “corridor → go right”; it cannot ask <i>what would happen</i>.';
+    } else if (a.bumps > 0){
+      stV.innerHTML = '<span class="err">⚠ bump ×'+a.bumps+'</span> obs ≈ training obs → π says <b>→</b> … repeating the learned action.';
+    } else if (sim){
+      stV.innerHTML = 'obs → π → action <b>→</b> · step '+a.steps;
+    }
+
+    /* ----- World model ----- */
+    var b = sim.wm;
+    drawBoard(W, walls);
+    var ctx = W.ctx, cs2 = W.w / COLS;
+    if (b.phase === "imagine"){
+      var prog = Math.min(1, (now - sim.t0) / IMAGINE_MS);
+      /* ghost rollouts */
+      for (var r = 0; r < b.rollouts.length; r++){
+        var pts = b.rollouts[r];
+        var reveal = Math.max(2, Math.floor(pts.length * Math.min(1, prog*1.4)));
+        ctx.strokeStyle = "rgba(157,140,255,.20)"; ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        for (var i = 0; i < reveal && i < pts.length; i++){
+          var q = cellPx(W, pts[i].x, pts[i].y);
+          if (i === 0) ctx.moveTo(q.x, q.y); else ctx.lineTo(q.x, q.y);
+        }
+        ctx.stroke();
+      }
+      /* chosen plan brightens near the end */
+      if (b.plan && prog > 0.65){
+        var al = (prog - 0.65) / 0.35;
+        ctx.strokeStyle = "rgba(157,140,255,"+(0.25 + 0.75*al)+")";
+        ctx.lineWidth = 3; ctx.lineCap = "round";
+        ctx.beginPath();
+        for (var j = 0; j < b.plan.length; j++){
+          var pq = cellPx(W, b.plan[j].x, b.plan[j].y);
+          if (j === 0) ctx.moveTo(pq.x, pq.y); else ctx.lineTo(pq.x, pq.y);
+        }
+        ctx.stroke();
+      }
+      drawAgent(W, b.x, b.y, "#9D8CFF", 0);
+      var nRoll = Math.floor(b.rollouts.length * Math.min(1, prog*1.2));
+      stW.innerHTML = '<span class="think">imagining '+nRoll+' futures inside the model…</span>' +
+        (b.plan && prog > 0.65 ? ' best plan found: <b>'+(b.plan.length-1)+' steps</b>' : '');
+      if (prog >= 1){
+        b.phase = b.plan ? "execute" : "stuckplan";
+        b.lastTick = now;
+      }
+    } else if (b.phase === "execute"){
+      /* keep plan faintly visible */
+      ctx.strokeStyle = "rgba(157,140,255,.35)"; ctx.lineWidth = 2.5; ctx.lineCap = "round";
+      ctx.beginPath();
+      for (var j2 = 0; j2 < b.plan.length; j2++){
+        var pq2 = cellPx(W, b.plan[j2].x, b.plan[j2].y);
+        if (j2 === 0) ctx.moveTo(pq2.x, pq2.y); else ctx.lineTo(pq2.x, pq2.y);
+      }
+      ctx.stroke();
+      if (!b.done && now - b.lastTick > WM_TICK){
+        b.lastTick = now;
+        if (b.idx < b.plan.length - 1){
+          b.idx++; b.steps++;
+          b.px = b.x; b.py = b.y;
+          b.x = b.plan[b.idx].x; b.y = b.plan[b.idx].y;
+          b.moveT = now;
+        }
+        if (b.idx >= b.plan.length - 1) b.done = true;
+      }
+      var f2 = Math.min(1, (now - b.moveT) / 130);
+      drawAgent(W, b.px + (b.x-b.px)*ease(f2), b.py + (b.y-b.py)*ease(f2), "#9D8CFF", 0);
+      if (b.done){
+        stW.innerHTML = '<span class="ok">✓ goal reached in '+b.steps+' steps'+(blocked ? " — via the detour it had never been shown." : ".")+'</span> planned first, moved second.';
+      } else {
+        stW.innerHTML = 'executing imagined plan · step '+b.steps+' of '+(b.plan.length-1);
+      }
+    } else {
+      drawAgent(W, b.x, b.y, "#9D8CFF", 0);
+      stW.innerHTML = '<span class="err">no future reaches the goal — the model can even tell you that before moving.</span>';
+    }
+  }
+
+  function ease(t){ return t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2; }
+
+  function drawIdle(){
+    var walls = wallSet();
+    drawBoard(V, walls); drawAgent(V, START.x, START.y, "#FFB454", 0);
+    drawBoard(W, walls); drawAgent(W, START.x, START.y, "#9D8CFF", 0);
+  }
+
+  var rafSim = null;
+  function loopSim(now){
+    if (!sim) return;
+    stepSim(now);
+    if (!(sim.vla.done || sim.vla.failed) || !(sim.wm.done || sim.wm.phase === "stuckplan")){
+      rafSim = requestAnimationFrame(loopSim);
+    } else {
+      stepSim(performance.now());
+    }
+  }
+
+  document.getElementById("btnRun").addEventListener("click", function(){
+    if (rafSim) cancelAnimationFrame(rafSim);
+    sim = freshSim();
+    rafSim = requestAnimationFrame(loopSim);
+  });
+  var btnBlock = document.getElementById("btnBlock");
+  btnBlock.addEventListener("click", function(){
+    blocked = !blocked;
+    btnBlock.textContent = blocked ? "corridor blocked ✕ (reopen)" : "block the corridor";
+    btnBlock.classList.toggle("on", blocked);
+    if (rafSim) cancelAnimationFrame(rafSim);
+    sim = null;
+    stV.textContent = blocked ? "the world just changed — press run" : "idle — press run";
+    stW.textContent = blocked ? "the world just changed — press run" : "idle — press run";
+    drawIdle();
+  });
+  document.getElementById("btnReset").addEventListener("click", function(){
+    if (rafSim) cancelAnimationFrame(rafSim);
+    sim = null;
+    stV.textContent = "idle — press run";
+    stW.textContent = "idle — press run";
+    drawIdle();
+  });
+
+  /* ============ drift demo ============ */
+  var cvD = document.getElementById("cvDrift");
+  var D = fitCanvas(cvD, 0.42);
+  var rgH = document.getElementById("rgH");
+  var hVal = document.getElementById("hVal");
+  var spVal = document.getElementById("spVal");
+
+  /* deterministic PRNG so the fan morphs smoothly with the slider */
+  function mulberry32(seed){
+    return function(){
+      seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+      var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function gauss(rnd){ var u=0,v=0; while(!u)u=rnd(); while(!v)v=rnd(); return Math.sqrt(-2*Math.log(u))*Math.cos(6.2831853*v); }
+
+  var T = 232, KTR = 12;
+  var BOXW = 100, BOXH = 42;
+  function physicsRun(noise, rnd){
+    var pts = [], x = 8, y = 8, vx = 0.62, vy = 0.05, gy = 0.012, damp = 0.995;
+    for (var t = 0; t < T; t++){
+      if (noise){ vx += gauss(rnd)*0.006; vy += gauss(rnd)*0.006; }
+      vy += gy; x += vx; y += vy; vx *= damp;
+      if (y > BOXH-2){ y = BOXH-2; vy = -Math.abs(vy)*0.92; }
+      if (y < 2){ y = 2; vy = Math.abs(vy); }
+      if (x > BOXW-2){ x = BOXW-2; vx = -Math.abs(vx); }
+      if (x < 2){ x = 2; vx = Math.abs(vx); }
+      pts.push({x:x, y:y});
+    }
+    return pts;
+  }
+  var truth = physicsRun(false, null);
+  var dreams = [];
+  for (var k = 0; k < KTR; k++) dreams.push(physicsRun(true, mulberry32(1000 + k*77)));
+
+  var driftPhase = 0;
+  function drawDrift(){
+    var ctx = D.ctx, sx = D.w/BOXW, sy = D.h/BOXH;
+    var H = parseInt(rgH.value, 10);
+    ctx.clearRect(0,0,D.w,D.h);
+    /* faint grid */
+    ctx.strokeStyle = "rgba(255,255,255,.04)"; ctx.lineWidth = 1;
+    for (var gx = 0; gx <= BOXW; gx += 10){ ctx.beginPath(); ctx.moveTo(gx*sx,0); ctx.lineTo(gx*sx,D.h); ctx.stroke(); }
+    for (var gy2 = 0; gy2 <= BOXH; gy2 += 10){ ctx.beginPath(); ctx.moveTo(0,gy2*sy); ctx.lineTo(D.w,gy2*sy); ctx.stroke(); }
+    /* dreams */
+    var ex = 0, ey = 0;
+    for (var d = 0; d < KTR; d++){
+      var pts = dreams[d];
+      ctx.strokeStyle = "rgba(157,140,255,.28)"; ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      for (var t = 0; t < H; t++){
+        var p = pts[t];
+        if (t === 0) ctx.moveTo(p.x*sx, p.y*sy); else ctx.lineTo(p.x*sx, p.y*sy);
+      }
+      ctx.stroke();
+      var end = pts[H-1];
+      ctx.fillStyle = "rgba(157,140,255,.85)";
+      ctx.beginPath(); ctx.arc(end.x*sx, end.y*sy, 3.4, 0, 7); ctx.fill();
+      ex += Math.abs(end.x - truth[H-1].x); ey += Math.abs(end.y - truth[H-1].y);
+    }
+    /* truth */
+    ctx.strokeStyle = "rgba(233,237,246,.9)"; ctx.lineWidth = 2.2; ctx.lineCap = "round";
+    ctx.beginPath();
+    for (var t2 = 0; t2 < H; t2++){
+      var q = truth[t2];
+      if (t2 === 0) ctx.moveTo(q.x*sx, q.y*sy); else ctx.lineTo(q.x*sx, q.y*sy);
+    }
+    ctx.stroke();
+    var te = truth[H-1];
+    ctx.fillStyle = "#E9EDF6";
+    ctx.beginPath(); ctx.arc(te.x*sx, te.y*sy, 5, 0, 7); ctx.fill();
+    /* animated marker along truth */
+    if (!reduceMotion){
+      var mi = Math.floor(driftPhase) % H;
+      var mp = truth[mi];
+      ctx.strokeStyle = "rgba(233,237,246,.5)"; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(mp.x*sx, mp.y*sy, 8, 0, 7); ctx.stroke();
+    }
+    /* labels */
+    ctx.font = "11px JetBrains Mono, monospace"; ctx.textAlign = "left";
+    ctx.fillStyle = "rgba(233,237,246,.75)"; ctx.fillText("reality", te.x*sx + 10, te.y*sy - 8);
+    ctx.fillStyle = "rgba(157,140,255,.9)";  ctx.fillText("12 imagined futures", 12, 20);
+    hVal.textContent = H;
+    var spread = (ex+ey) / KTR;
+    spVal.textContent = spread < 1 ? "tiny" : spread.toFixed(1) + " units";
+  }
+  var lastDrift = 0;
+  function loopDrift(now){
+    if (now - lastDrift > 33){
+      lastDrift = now;
+      driftPhase += 1.4;
+      drawDrift();
+    }
+    if (!reduceMotion) requestAnimationFrame(loopDrift);
+  }
+  rgH.addEventListener("input", drawDrift);
+
+  /* ============ resize ============ */
+  var rszT = null;
+  window.addEventListener("resize", function(){
+    clearTimeout(rszT);
+    rszT = setTimeout(function(){
+      V = fitCanvas(cvV, ASPECT); W = fitCanvas(cvW, ASPECT);
+      D = fitCanvas(cvD, 0.42);
+      if (!sim) drawIdle();
+      drawDrift();
+    }, 120);
+  });
+
+  drawIdle();
+  drawDrift();
+  if (!reduceMotion) requestAnimationFrame(loopDrift);
+})();
+</script>
+
+</body></html>

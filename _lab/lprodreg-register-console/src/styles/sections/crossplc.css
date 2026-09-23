@@ -1,0 +1,11 @@
+/* ---- section 5: cross-plc ---- */
+.rf-xplc-diagram{margin:22px 0 6px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-l);box-shadow:var(--shadow);padding:16px 14px 6px}
+.rf-xplc-diagram svg{width:100%;height:auto;display:block}
+.rf-xplc-diagram figcaption{font-size:12.5px;color:var(--text-dim);padding:10px 2px 14px;max-width:84ch}
+.rf-xplc-grid{grid-template-columns:repeat(auto-fit,minmax(320px,1fr));margin-top:20px}
+.rf-xplc-grid h4{font-family:var(--f-mono);font-size:13px;letter-spacing:.03em;color:var(--text);margin-bottom:4px}
+.rf-xplc-grid .rf-lim{font-size:12px;color:var(--text-dim);margin-bottom:10px}
+.rf-xplc-grid ul{margin:0;padding-left:17px;display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--text-2)}
+.rf-xplc-steps{margin-top:10px}
+.rf-xplc-limtbl{margin-top:18px}
+.rf-sync-note{font-size:13.5px;color:var(--text-2);max-width:78ch;margin-top:14px}

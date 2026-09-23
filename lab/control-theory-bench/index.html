@@ -1,0 +1,620 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}</style><title>Control Theory Bench · Zinan Yang</title>
+</head><body>
+<div class="zylab-bar"><a href="/lab/">&larr; Zinan Yang &middot; lab</a></div>
+<style>
+.zylab-bar{position:relative;z-index:1000;padding:7px 16px;border-bottom:1px solid rgba(128,128,128,.28);
+  font:500 12px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+  letter-spacing:.02em}
+.zylab-bar a{color:inherit;opacity:.78;text-decoration:none}
+.zylab-bar a:hover,.zylab-bar a:focus-visible{opacity:1;text-decoration:underline}
+</style>
+
+
+<style>
+:root{
+  color-scheme:light;
+  --petrol:#009999; --petrol-dk:#00706f; --petrol-ink:#005e5e;
+  --petrol-lt:#e0f5f5; --deepblue:#000028;
+  --ink:#000028; --ink-2:#3f3f57; --ink-3:#66667e;
+  --bg:#f3f3f0; --surface:#fff; --surface-2:#fafaf8; --hover:#f2f2ee;
+  --line:#d4d4dd; --line-2:#e2e2e9; --line-3:#eeeef2;
+  --violet:#7353e5; --violet-lt:#efeafd; --violet-ink:#4a2fae;
+  --orange:#e96401; --orange-lt:#fdeee2; --orange-ink:#9c4300;
+  --red:#c0392b; --green:#01893a;
+  --t-10:10px; --t-11:11px; --t-12:12px; --t-13:13px; --t-14:14px;
+  --t-15:15px; --t-17:17px; --t-20:20px; --t-26:26px;
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:24px; --s-6:32px; --s-7:48px;
+  --r:2px;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --shadow:0 1px 1px rgba(0,0,40,.04);
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink-2);
+  font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  font-size:var(--t-15);line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:0 var(--s-5) var(--s-7)}
+:focus-visible{outline:2px solid var(--petrol-dk);outline-offset:2px}
+
+.hero{background:var(--deepblue);color:#fff;border-top:3px solid var(--petrol);margin-bottom:var(--s-5)}
+.hero-in{max-width:900px;margin:0 auto;padding:var(--s-6) var(--s-5) var(--s-5)}
+.eyebrow{font-family:var(--mono);font-size:var(--t-11);font-weight:500;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--petrol);margin:0 0 var(--s-3)}
+h1{font-size:clamp(26px,4.6vw,38px);line-height:1.08;margin:0 0 var(--s-2);font-weight:600;
+  letter-spacing:-.025em;color:#fff}
+.sub{color:#a9a9c2;font-size:var(--t-14);margin:0;max-width:62ch}
+
+nav.rail{position:sticky;top:0;z-index:20;background:rgba(243,243,240,.94);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line);margin-bottom:var(--s-5)}
+nav.rail ul{max-width:900px;margin:0 auto;padding:0 var(--s-5);list-style:none;display:flex;
+  gap:var(--s-1);overflow-x:auto}
+nav.rail a{display:block;padding:11px var(--s-3);font-size:var(--t-12);font-weight:500;
+  color:var(--ink-3);text-decoration:none;white-space:nowrap;border-bottom:2px solid transparent}
+nav.rail a:hover{color:var(--ink)}
+nav.rail a.on{color:var(--petrol-dk);border-bottom-color:var(--petrol);font-weight:600}
+
+section{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:var(--s-5);margin-bottom:var(--s-4);box-shadow:var(--shadow);scroll-margin-top:56px}
+.snum{font-family:var(--mono);font-size:var(--t-11);color:var(--petrol-dk);letter-spacing:.1em;
+  text-transform:uppercase;font-weight:600;margin:0 0 var(--s-2)}
+h2{font-size:var(--t-20);margin:0 0 var(--s-3);color:var(--ink);font-weight:600;letter-spacing:-.015em}
+h3{font-size:var(--t-15);margin:var(--s-5) 0 var(--s-2);color:var(--ink);font-weight:600}
+p{margin:0 0 var(--s-3)}
+ul.t{margin:0 0 var(--s-3);padding-left:18px}
+ul.t li{margin-bottom:var(--s-1)}
+code{font-family:var(--mono);font-size:.9em;background:var(--petrol-lt);color:var(--petrol-ink);
+  padding:1px 5px;border-radius:var(--r)}
+.eq{font-family:var(--mono);font-size:var(--t-14);background:var(--surface-2);border:1px solid var(--line-2);
+  padding:var(--s-3) var(--s-4);border-radius:var(--r);margin:0 0 var(--s-3);overflow-x:auto}
+
+.note{padding:var(--s-3) var(--s-4);background:var(--surface-2);border-left:2px solid var(--line);
+  font-size:var(--t-14);margin:0 0 var(--s-3);border-radius:0 var(--r) var(--r) 0}
+.note.key{background:var(--petrol-lt);border-left-color:var(--petrol);color:#0d4d4d}
+.note.warn{background:var(--orange-lt);border-left-color:var(--orange);color:#7a3600}
+.note b{font-weight:600}
+
+/* lab */
+.lab{border:1px solid var(--line);border-radius:var(--r);background:var(--surface-2);
+  padding:var(--s-4);margin:var(--s-4) 0}
+.lab-h{font-size:var(--t-10);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);
+  font-weight:600;margin-bottom:var(--s-3);display:flex;justify-content:space-between;gap:var(--s-3)}
+canvas{width:100%;height:230px;display:block;background:#fff;border:1px solid var(--line-2);
+  border-radius:var(--r)}
+.ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:var(--s-3);
+  margin-top:var(--s-4)}
+.sl label{display:flex;justify-content:space-between;font-size:var(--t-12);font-weight:500;
+  color:var(--ink-2);margin-bottom:var(--s-1)}
+.sl label b{font-family:var(--mono);color:var(--petrol-dk);font-weight:600}
+.sl input[type=range]{width:100%;accent-color:var(--petrol);cursor:pointer}
+.togs{display:flex;flex-wrap:wrap;gap:var(--s-3);margin-top:var(--s-3);padding-top:var(--s-3);
+  border-top:1px solid var(--line-2)}
+.tog{display:flex;align-items:center;gap:6px;font-size:var(--t-13);cursor:pointer}
+.tog input{width:15px;height:15px;accent-color:var(--petrol);cursor:pointer}
+.btn{font:inherit;font-size:var(--t-12);font-weight:500;padding:4px 10px;border:1px solid var(--line);
+  background:#fff;color:var(--ink-2);border-radius:var(--r);cursor:pointer}
+.btn:hover{background:var(--hover);border-color:var(--ink-3);color:var(--ink)}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(108px,1fr));gap:var(--s-3);
+  margin-top:var(--s-3);padding-top:var(--s-3);border-top:1px solid var(--line-2)}
+.metric b{display:block;font-size:var(--t-10);letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:600;margin-bottom:2px}
+.metric span{font-family:var(--mono);font-size:var(--t-17);font-weight:600;color:var(--ink);
+  font-variant-numeric:tabular-nums}
+.metric span.bad{color:var(--red)}
+.metric span.good{color:var(--green)}
+.verdict{margin-top:var(--s-3);font-size:var(--t-13);color:var(--ink-2);background:var(--petrol-lt);
+  border-left:2px solid var(--petrol);padding:var(--s-2) var(--s-3);border-radius:0 var(--r) var(--r) 0}
+.verdict b{color:var(--petrol-ink)}
+.legend{display:flex;gap:var(--s-4);flex-wrap:wrap;font-size:var(--t-12);color:var(--ink-3);
+  margin-top:var(--s-2)}
+.legend i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:5px}
+
+.q{border:1px solid var(--violet-lt);background:#fcfbff;border-left:2px solid var(--violet);
+  padding:var(--s-4);margin:var(--s-4) 0 0;border-radius:0 var(--r) var(--r) 0}
+.q .k{font-size:var(--t-10);letter-spacing:.12em;text-transform:uppercase;color:var(--violet-ink);
+  font-weight:600;display:block;margin-bottom:var(--s-2)}
+.q p{margin:0 0 var(--s-3);color:var(--ink);font-weight:500}
+.q .a{display:none;padding:var(--s-3);background:var(--violet-lt);border-radius:var(--r);
+  font-size:var(--t-14);color:#3a2483}
+.q.on .a{display:block}
+
+.tblwrap{overflow-x:auto;margin:0 0 var(--s-3)}
+table.cmp{border-collapse:collapse;width:100%;min-width:520px;font-size:var(--t-13)}
+table.cmp th{background:var(--surface-2);text-align:left;padding:9px 12px;font-size:var(--t-10);
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);border-bottom:1px solid var(--line);font-weight:600}
+table.cmp td{padding:10px 12px;border-bottom:1px solid var(--line-3);vertical-align:top}
+table.cmp tr td:first-child{font-weight:600;color:var(--ink);white-space:nowrap}
+table.cmp tr:last-child td{border-bottom:none}
+.say{background:var(--deepblue);color:#fff;border-radius:var(--r);padding:var(--s-4) var(--s-5);
+  margin-top:var(--s-4)}
+.say b{display:block;font-size:var(--t-10);letter-spacing:.13em;text-transform:uppercase;
+  color:var(--petrol);font-weight:600;margin-bottom:var(--s-2)}
+.say p{margin:0;font-size:var(--t-15);line-height:1.5}
+footer{margin-top:var(--s-6);padding-top:var(--s-4);border-top:1px solid var(--line);
+  font-size:var(--t-12);color:var(--ink-3)}
+@media (max-width:560px){canvas{height:190px}}
+@media print{nav.rail{display:none}.hero{background:#fff;color:#000}h1,.sub{color:#000}
+  section{break-inside:avoid;box-shadow:none}.q .a{display:block}}
+</style>
+
+<div class="hero"><div class="hero-in">
+  <p class="eyebrow">Interactive notes &middot; from PID to MPC</p>
+  <h1>Control Theory Bench</h1>
+  <p class="sub">Everything here is a live simulation. Drag the sliders and watch the plant respond &mdash; control is learned in the fingers, not the eyes. Written for someone who has already tuned real drives and now needs the maths underneath.</p>
+</div></div>
+
+<nav class="rail"><ul>
+  <li><a href="#s1" class="on">1 · The plant</a></li>
+  <li><a href="#s2">2 · P, I, D</a></li>
+  <li><a href="#s3">3 · Feedforward</a></li>
+  <li><a href="#s4">4 · Saturation</a></li>
+  <li><a href="#s5">5 · State space</a></li>
+  <li><a href="#s6">6 · LQR</a></li>
+  <li><a href="#s7">7 · MPC</a></li>
+</ul></nav>
+
+<div class="wrap">
+
+<section id="s1">
+  <p class="snum">Module 01</p>
+  <h2>The plant, and why it rings</h2>
+  <p>Nearly every mechanical axis you have commissioned is, to a first approximation, a second-order system: inertia, damping, and a spring-like restoring effect from the position loop.</p>
+  <div class="eq">J&middot;&theta;&#776; + b&middot;&theta;&#775; + k&middot;&theta; = &tau;<br><br>&rarr; &nbsp; &theta;&#776; + 2&zeta;&omega;&#8345;&middot;&theta;&#775; + &omega;&#8345;&sup2;&middot;&theta; = &omega;&#8345;&sup2;&middot;r</div>
+  <p>Two numbers describe its whole character. <b>&omega;&#8345;</b> (natural frequency) is how fast it wants to move. <b>&zeta;</b> (damping ratio) is how much it resists overshooting.</p>
+
+  <div class="lab">
+    <div class="lab-h"><span>Step response &mdash; drag &zeta; and &omega;&#8345;</span></div>
+    <canvas id="c1"></canvas>
+    <div class="legend"><span><i style="background:#000028"></i>setpoint</span><span><i style="background:#009999"></i>response</span></div>
+    <div class="ctl">
+      <div class="sl"><label>Damping ratio &zeta; <b id="v-zeta">0.30</b></label>
+        <input type="range" id="i-zeta" min="0.02" max="2" step="0.01" value="0.3"></div>
+      <div class="sl"><label>Natural freq &omega;&#8345; [rad/s] <b id="v-wn">6.0</b></label>
+        <input type="range" id="i-wn" min="1" max="20" step="0.1" value="6"></div>
+    </div>
+    <div class="metrics">
+      <div class="metric"><b>Overshoot</b><span id="m1-os">—</span></div>
+      <div class="metric"><b>Settling 2%</b><span id="m1-ts">—</span></div>
+      <div class="metric"><b>Rise 10-90%</b><span id="m1-tr">—</span></div>
+      <div class="metric"><b>Regime</b><span id="m1-reg" style="font-size:13px">—</span></div>
+    </div>
+    <div class="verdict" id="m1-v"></div>
+  </div>
+
+  <div class="note key"><b>Your translation.</b> &zeta; &lt; 1 is the axis that rings after a move and needs the damping term raised. &zeta; = 1 is critically damped — the fastest approach with no overshoot, which is what you are aiming for when you tune out oscillation on a positioning axis. &zeta; &gt; 1 is the sluggish, over-damped axis that never overshoots but takes forever to arrive.</div>
+
+
+  <div class="q" data-q><span class="k">Check yourself</span>
+    <p>Raising &omega;&#8345; makes the axis faster. Why can you not simply keep raising it on a real machine?</p>
+    <button class="btn" data-rev type="button">Reveal</button>
+    <div class="a">Because the second-order model is a lie above a certain frequency. A real axis has structural resonance, backlash, finite drive bandwidth and sampling delay, none of which appear in J&theta;&#776;+b&theta;&#775;+k&theta;. Push &omega;&#8345; toward those unmodelled dynamics and the loop excites them — the axis screams, the coupling rings, the current draw climbs. The classical limit is the phase margin at the crossover frequency: you can go fast until the loop's own delays turn negative feedback into positive feedback.</div>
+  </div>
+</section>
+
+<section id="s2">
+  <p class="snum">Module 02</p>
+  <h2>P, I and D — earn each one</h2>
+  <div class="note"><b>PID stands for Proportional, Integral, Derivative</b> &mdash; three terms summed, each acting on the error differently: on its present value, on its accumulated history, and on its rate of change.</div>
+  <p>Below is a real closed loop: the same second-order axis, now with a PID controller and a constant load torque pulling it off target. It is the classic case where pure PD leaves a steady droop that no amount of K&#8346; removes.</p>
+
+  <div class="lab">
+    <div class="lab-h"><span>Closed loop &mdash; tune it</span>
+      <button class="btn" id="pid-reset" type="button">Reset gains</button></div>
+    <canvas id="c2"></canvas>
+    <div class="legend">
+      <span><i style="background:#000028"></i>setpoint</span>
+      <span><i style="background:#009999"></i>position</span>
+      <span><i style="background:#e96401"></i>control effort</span>
+      <span><i style="background:#c0392b"></i>saturated</span>
+    </div>
+    <div class="ctl">
+      <div class="sl"><label>K&#8346; <b id="v-kp">20</b></label>
+        <input type="range" id="i-kp" min="0" max="200" step="1" value="20"></div>
+      <div class="sl"><label>K&#7522; <b id="v-ki">0</b></label>
+        <input type="range" id="i-ki" min="0" max="120" step="1" value="0"></div>
+      <div class="sl"><label>K&#8340; <b id="v-kd">2.0</b></label>
+        <input type="range" id="i-kd" min="0" max="30" step="0.1" value="2"></div>
+      <div class="sl"><label>Load torque <b id="v-load">4.0</b></label>
+        <input type="range" id="i-load" min="0" max="12" step="0.1" value="4"></div>
+      <div class="sl"><label>Actuator limit <b id="v-sat">30</b></label>
+        <input type="range" id="i-sat" min="3" max="60" step="1" value="30"></div>
+    </div>
+    <div class="togs">
+      <label class="tog"><input type="checkbox" id="i-aw" checked> anti-wind-up (clamp integrator when saturated)</label>
+      <label class="tog"><input type="checkbox" id="i-ff"> load feedforward</label>
+    </div>
+    <div class="metrics">
+      <div class="metric"><b>Steady error</b><span id="m2-ss">—</span></div>
+      <div class="metric"><b>Overshoot</b><span id="m2-os">—</span></div>
+      <div class="metric"><b>Settling 2%</b><span id="m2-ts">—</span></div>
+      <div class="metric"><b>Peak effort</b><span id="m2-pk">—</span></div>
+      <div class="metric"><b>Saturated</b><span id="m2-sat">—</span></div>
+    </div>
+    <div class="verdict" id="m2-v"></div>
+  </div>
+
+
+  <h3>What each term actually does</h3>
+  <ul class="t">
+    <li><b>P — the spring.</b> Torque proportional to present error. Alone it always leaves droop against a constant load, because zero error would mean zero torque. Raising K&#8346; shrinks the droop but never deletes it, and eventually causes overshoot and ringing.</li>
+    <li><b>D — the damper.</b> Torque proportional to how fast the error is closing. Adds damping, kills overshoot, costs you noise sensitivity: differentiating a noisy encoder amplifies the noise, which is why real implementations filter D or use the measured velocity instead.</li>
+    <li><b>I — the memory.</b> Accumulates error over time, so any persistent offset eventually generates enough torque to cancel it. It is the only term that removes steady-state error to a constant load — and the only one that can wind up.</li>
+  </ul>
+
+  <div class="note warn"><b>Try this.</b> Set K&#7522; to 0 and raise the load. Watch the droop appear. Now raise K&#8346; alone and see the droop shrink but never reach zero, while the response starts to ring. Then add K&#7522; and watch the error walk to zero — slowly at first, then faster as you raise it, until the integrator itself causes overshoot.</div>
+
+  <div class="q" data-q><span class="k">Check yourself</span>
+    <p>Why is D usually implemented as &minus;K&#8340;&middot;&theta;&#775; (measured velocity) rather than K&#8340;&middot;d(error)/dt?</p>
+    <button class="btn" data-rev type="button">Reveal</button>
+    <div class="a">Two reasons. First, a step change in setpoint makes d(error)/dt infinite for one instant — the notorious "derivative kick" that slams the actuator. Using &minus;&theta;&#775; ignores setpoint jumps and responds only to actual motion. Second, error derivative and velocity differ only by the setpoint's own derivative, which is zero while the setpoint is constant — so you lose nothing in regulation and gain a great deal in behaviour at the step. This is why drive parameter sets almost always expose a velocity feedback gain rather than a true error-derivative gain.</div>
+  </div>
+</section>
+
+<section id="s3">
+  <p class="snum">Module 03</p>
+  <h2>Feedforward — the term that prevents rather than corrects</h2>
+  <p>Feedback is reactive by construction: it needs an error before it acts. Feedforward uses a <i>model</i> to command what you already know will be needed, so the error never appears.</p>
+  <div class="eq">&tau; = <span style="color:#009999">K&#8346;e + K&#7522;&int;e + K&#8340;&#279;</span> &nbsp;+&nbsp; <span style="color:#e96401">&#28;&#770; &nbsp;(the model's guess at the load)</span></div>
+  <p>Go back to Module 02 and tick <b>load feedforward</b> with K&#7522; at zero. The droop vanishes instantly — no integrator, no waiting, no wind-up risk. That is the whole argument for feedforward.</p>
+
+  <div class="note key"><b>A MuJoCo test makes the point.</b> Pure PD against gravity left +6.165&deg; of steady droop; adding <code>data.qfrc_bias</code> — MuJoCo's computed gravity and Coriolis torque — took it to +0.000&deg;. Nothing was tuned. The controller was simply told what the physics was about to do.</div>
+
+  <p>In your commissioning world this is torque feedforward, velocity feedforward, and the pre-control terms in a positioning axis. In robotics it is computed-torque control and the inverse-dynamics term in MR Ch 11. Same idea, three vocabularies.</p>
+
+  <div class="note warn"><b>The catch, and it is a real one.</b> Feedforward is only as good as the model. Get the mass wrong and you inject the wrong torque — now you have a systematic error that feedback must clean up, and you have gained nothing. Feedback is robust and slow; feedforward is fast and brittle. Production systems use both, which is exactly why the equation above has two halves.</div>
+
+  <div class="q" data-q><span class="k">Check yourself</span>
+    <p>If feedforward removes the error without an integrator, why keep the integrator at all?</p>
+    <button class="btn" data-rev type="button">Reveal</button>
+    <div class="a">Because the model is never exactly right, and the plant drifts. Friction changes with temperature, a payload is added, a belt wears, the true mass differs from the CAD value by 8%. Feedforward cancels the part you predicted; the integrator mops up the residue you did not. Drop the integrator and every modelling error becomes permanent droop. Drop the feedforward and the integrator has to do all the work, slowly, with wind-up risk. Keep both, and each covers the other's weakness.</div>
+  </div>
+</section>
+
+<section id="s4">
+  <p class="snum">Module 04</p>
+  <h2>Saturation and integrator wind-up</h2>
+  <p>Every real actuator has a limit — current, torque, voltage. When the controller asks for more than the limit, the loop is effectively open, and the integrator keeps accumulating an error it is powerless to fix.</p>
+
+  <div class="note warn"><b>Reproduce it in Module 02.</b> Set K&#7522; high (say 60), drop the actuator limit to about 6, and untick <b>anti-wind-up</b>. The response overshoots massively and takes an age to recover: the integrator charged up during saturation and must now discharge before the output can come back. Tick anti-wind-up and the same gains behave.</div>
+
+  <p>The fix in the simulation is the simplest of several: stop integrating while the output is saturated. Real implementations also use back-calculation, which bleeds the integrator down in proportion to how far the command exceeded the limit.</p>
+
+  <div class="note key"><b>You have seen this on a machine.</b> An axis blocked mid-move, or a conveyor started against a jam, then lurches violently when it frees. That lurch is the integrator discharging. It is also why a drive's ramp limiter and torque limit interact so badly with an untreated position loop.</div>
+
+  <div class="q" data-q><span class="k">Check yourself</span>
+    <p>Anti-wind-up stops integrating during saturation. What are you giving up?</p>
+    <button class="btn" data-rev type="button">Reveal</button>
+    <div class="a">Integral action exactly when the error is largest. If the plant is saturated because it genuinely needs sustained maximum effort — a heavy lift, a steep ramp — the frozen integrator will not help you get there faster, and on release the recovery is slower than an unclamped integrator would have been. That is the correct trade: you accept a slightly lazier recovery in exchange for never having a violent, uncontrolled discharge. In safety terms the choice makes itself.</div>
+  </div>
+</section>
+
+<section id="s5">
+  <p class="snum">Module 05</p>
+  <h2>State space — the same system, written for more than one variable</h2>
+  <p>PID thinks about one error signal. State space thinks about the whole state vector at once, which is what you need when the variables interact — a cart <i>and</i> its pendulum, a robot's joints coupling through inertia.</p>
+  <div class="eq">x&#775; = A&middot;x + B&middot;u<br>y &nbsp;= C&middot;x + D&middot;u</div>
+  <ul class="t">
+    <li><b>x</b> — the state <i>vector</i>. Everything you need to know now to predict the future: positions and velocities, stacked into one column of numbers.</li>
+    <li><b>A</b> — the plant's own dynamics. Its eigenvalues <i>are</i> the poles: negative real parts mean stable, imaginary parts mean oscillation.</li>
+    <li><b>B</b> — how your actuator pushes on the state.</li>
+    <li><b>u</b> — the input vector: what the actuators are told to do. <b>u = &minus;K&middot;x</b> is full state feedback. Choose K and you move the eigenvalues of (A &minus; BK) wherever you like, provided the system is <i>controllable</i>.</li>
+  </ul>
+
+  <div class="note key"><b>Controllability, in one sentence.</b> A system is controllable if your actuator can reach every direction of the state space, possibly indirectly. A cart-pole is controllable: pushing the cart sideways does eventually rotate the pole. A pendulum with no motor is not — you can compute any K you like and none of it will help.</div>
+
+
+  <p>PID is a special case of this. A PD controller on a single axis is exactly u = &minus;[K&#8346; K&#8340;]&middot;[position error, velocity error]&#7488; — state feedback with a two-element state.</p>
+</section>
+
+<section id="s6">
+  <p class="snum">Module 06</p>
+  <h2>LQR — stop guessing K, state the trade-off instead</h2>
+  <p><b>LQR stands for Linear Quadratic Regulator.</b> All three words are load-bearing:</p>
+  <ul class="t">
+    <li><b>Linear</b> &mdash; it assumes the plant is linear, x&#775; = Ax + Bu. For a nonlinear robot you linearise about an operating point first, which is why Brunton devotes a whole lecture to linearising around a fixed point.</li>
+    <li><b>Quadratic</b> &mdash; the cost squares everything: x&#7488;Qx and u&#7488;Ru. Squaring is what makes the problem solvable in closed form (it yields the Riccati equation), and it penalises large deviations disproportionately, which is usually what you want.</li>
+    <li><b>Regulator</b> &mdash; its job is to drive the state to zero and hold it there. Following a moving reference is a variant built on top, not the base case.</li>
+  </ul>
+  <p>Pole placement makes you choose where the poles go, which is hard to reason about physically. LQR asks a question you can actually answer: <b>how much do you care about error versus effort?</b></p>
+  <div class="eq">minimise &nbsp; J = &int; ( x&#7488;Qx + u&#7488;Ru ) dt</div>
+  <div class="note key"><b>Reading that equation.</b> <b>x</b> is the <i>state vector</i> — everything you must know now to predict the future. <b>u</b> is the <i>input vector</i> — what your actuators are commanded to do. For a cart-pole:
+    <div class="eq" style="margin-top:8px;background:#fff">x = [ cart position, cart velocity, pole angle, pole rate ]&#7488; &nbsp;&larr; 4&times;1<br>u = [ force on the cart ] &nbsp;&larr; 1&times;1</div>
+    That raised &#7488; means <b>transpose</b> — flipping a column of numbers on its side into a row.</div>
+
+  <div class="note"><b>Why the transpose is there: the cost has to be a single number.</b> You cannot minimise a vector — "smaller" is meaningless for four numbers at once. The transpose is what collapses them to one:
+    <div class="eq" style="margin-top:8px;background:#fff">x&#7488; &middot; Q &middot; x &nbsp; = &nbsp; (1&times;4) &middot; (4&times;4) &middot; (4&times;1) &nbsp; = &nbsp; <b>1&times;1, a scalar</b></div>
+    Written out with a diagonal Q, it is just a weighted sum of squares:
+    <div class="eq" style="margin-top:8px;background:#fff">x&#7488;Qx = q&#8321;&middot;position&sup2; + q&#8322;&middot;velocity&sup2; + q&#8323;&middot;angle&sup2; + q&#8324;&middot;rate&sup2;</div>
+    So each q is simply "how much do I care about this state being wrong", and each entry of R is "how much do I care about spending this actuator". Squaring is also why sign does not matter — an error of &minus;2&deg; costs the same as +2&deg;.</div>
+
+  <p><b>Q</b> prices state error. <b>R</b> prices actuator effort. Give it those two and the Riccati equation hands back the optimal K. No trial and error.</p>
+
+  <div class="lab">
+    <div class="lab-h"><span>Double integrator under LQR &mdash; slide the effort price</span></div>
+    <canvas id="c3"></canvas>
+    <div class="legend">
+      <span><i style="background:#009999"></i>position</span>
+      <span><i style="background:#e96401"></i>control effort</span>
+    </div>
+    <div class="ctl">
+      <div class="sl"><label>R &mdash; price of effort <b id="v-R">1.00</b></label>
+        <input type="range" id="i-R" min="-2" max="2" step="0.05" value="0"></div>
+      <div class="sl"><label>Q &mdash; price of error <b id="v-Q">1.00</b></label>
+        <input type="range" id="i-Q" min="-1" max="2" step="0.05" value="0"></div>
+    </div>
+    <div class="metrics">
+      <div class="metric"><b>K position</b><span id="m3-k1">—</span></div>
+      <div class="metric"><b>K velocity</b><span id="m3-k2">—</span></div>
+      <div class="metric"><b>Settling 2%</b><span id="m3-ts">—</span></div>
+      <div class="metric"><b>Peak effort</b><span id="m3-pk">—</span></div>
+    </div>
+    <div class="verdict" id="m3-v"></div>
+  </div>
+
+
+  <div class="note key"><b>Notice what you are doing.</b> You are not tuning gains — you are stating a preference, and the maths derives the gains. Cheap effort (low R) buys a fast, aggressive response. Expensive effort (high R) gives a gentle one. For the double integrator here the answer is analytic: K&#8321; = &radic;(Q/R), K&#8322; = &radic;(2K&#8321;).</div>
+
+  <div class="q" data-q><span class="k">Check yourself</span>
+    <p>When would you reach for LQR over a well-tuned PID?</p>
+    <button class="btn" data-rev type="button">Reveal</button>
+    <div class="a">When the system is multivariable and the variables fight each other. One PID per axis works while the axes are independent; the moment moving joint 1 disturbs joint 2, per-axis loops are tuning against each other and you are trading one axis's performance for another's. LQR handles the coupling explicitly, because K is a matrix acting on the whole state. It also gives you a principled tuning knob — cost weights with physical meaning — instead of three gains and intuition. The price is that you need a model. No model, no A and B, no LQR: which is exactly why PID still runs most of the world's machinery.</div>
+  </div>
+
+  <div class="say"><b>The sentence to own</b><p>&ldquo;Q prices state error, R prices actuator effort, and the Riccati equation returns the optimal gain matrix. I am specifying a trade-off rather than guessing gains.&rdquo;</p></div>
+</section>
+
+<section id="s7">
+  <p class="snum">Module 07</p>
+  <h2>MPC — conversation level, and that is enough</h2>
+  <p>Model Predictive Control does at every timestep what LQR does once: it optimises. The difference is that it optimises over a finite horizon, subject to <b>constraints</b>, and then throws most of the answer away.</p>
+  <ul class="t">
+    <li>Predict the plant's behaviour over the next N steps using a model.</li>
+    <li>Solve for the control sequence minimising a cost, subject to hard limits on states and inputs.</li>
+    <li>Apply only the <i>first</i> control of that sequence.</li>
+    <li>Measure again, and re-solve from scratch. This is the <b>receding horizon</b>.</li>
+  </ul>
+
+  <h3>LQR vs MPC, side by side</h3>
+  <div class="tblwrap"><table class="cmp">
+    <thead><tr><th></th><th>LQR</th><th>MPC</th></tr></thead>
+    <tbody>
+      <tr><td>When it optimises</td><td>Once, offline. You get a fixed gain matrix K.</td><td>Every timestep, online.</td></tr>
+      <tr><td>Horizon</td><td>Infinite</td><td>Finite (N steps), then slid forward</td></tr>
+      <tr><td>What runs on the machine</td><td>u = &minus;Kx &mdash; a matrix multiply. Microseconds.</td><td>A full optimisation problem. Milliseconds, and it must finish before the next cycle.</td></tr>
+      <tr><td>Constraints</td><td>None. It will happily command 400% of your torque limit.</td><td>Handled natively, and anticipated &mdash; it will brake early because it can see the limit coming.</td></tr>
+      <tr><td>Needs a model</td><td>Yes (A, B)</td><td>Yes, and a better one &mdash; errors compound over the horizon</td></tr>
+      <tr><td>Fails by</td><td>Saturating, at which point its optimality guarantees are void</td><td>Not solving in time, or the model drifting from reality</td></tr>
+      <tr><td>Your analogy</td><td>Commissioned gains in the drive: computed once, then it just runs</td><td>A planner that re-plans the ramp every cycle against live limits</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note"><b>The one-sentence version.</b> Unconstrained, with an infinite horizon and a linear plant, MPC converges to exactly the LQR solution &mdash; MPC is the generalisation, and LQR is the special case you can solve in closed form. You pay for the generality in compute.</div>
+
+  <div class="note key"><b>What MPC buys that LQR cannot.</b> Constraints, handled natively. LQR will happily hand you a gain that commands 400% of your available torque; you then saturate, and all its optimality guarantees evaporate. MPC knows the limit is 100% and plans a trajectory that respects it — including anticipating a limit several steps ahead and starting to brake early. That is why it dominates in process control, and increasingly in autonomous driving.</div>
+
+  <div class="note warn"><b>What it costs.</b> You solve an optimisation problem every single cycle. At 1 kHz on an embedded target that is a serious engineering constraint, which is why linear MPC with a fast QP solver is common and full nonlinear MPC is still mostly a research or low-rate proposition.</div>
+
+
+  <p>At this level, what matters is the receding horizon and how constraints are handled &mdash; not the QP solver underneath.</p>
+</section>
+
+<footer>
+  Control Theory Bench &middot; all simulations run in your browser; nothing is stored.
+</footer>
+</div>
+
+<script>
+/* ============ small plotting helper ============ */
+function fit(cv){
+  const r=window.devicePixelRatio||1, w=cv.clientWidth, h=cv.clientHeight;
+  cv.width=w*r; cv.height=h*r;
+  const g=cv.getContext("2d"); g.setTransform(r,0,0,r,0,0);
+  return {g,w,h};
+}
+function axes(g,w,h,xmax,ymin,ymax,xlab){
+  const L=44,R=10,T=10,B=24;
+  g.clearRect(0,0,w,h);
+  g.strokeStyle="#eeeef2"; g.lineWidth=1;
+  for(let i=0;i<=5;i++){const y=T+(h-T-B)*i/5;g.beginPath();g.moveTo(L,y);g.lineTo(w-R,y);g.stroke();}
+  for(let i=0;i<=5;i++){const x=L+(w-L-R)*i/5;g.beginPath();g.moveTo(x,T);g.lineTo(x,h-B);g.stroke();}
+  g.strokeStyle="#d4d4dd";g.beginPath();g.moveTo(L,T);g.lineTo(L,h-B);g.lineTo(w-R,h-B);g.stroke();
+  g.fillStyle="#66667e";g.font="10px 'IBM Plex Mono',monospace";g.textAlign="right";
+  for(let i=0;i<=5;i++){
+    const v=ymax-(ymax-ymin)*i/5, y=T+(h-T-B)*i/5;
+    g.fillText(v.toFixed(Math.abs(ymax)<3?1:0),L-6,y+3);
+  }
+  g.textAlign="center";
+  for(let i=0;i<=5;i++){
+    const x=L+(w-L-R)*i/5;
+    g.fillText((xmax*i/5).toFixed(1),x,h-B+14);
+  }
+  g.fillText(xlab||"time [s]",(L+w-R)/2,h-2);
+  const px=(t)=>L+(w-L-R)*(t/xmax);
+  const py=(v)=>T+(h-T-B)*(1-(v-ymin)/(ymax-ymin));
+  return {px,py,L,R,T,B};
+}
+function line(g,m,ts,ys,col,wd){
+  g.strokeStyle=col;g.lineWidth=wd||2;g.beginPath();
+  for(let i=0;i<ts.length;i++){const X=m.px(ts[i]),Y=m.py(ys[i]);i?g.lineTo(X,Y):g.moveTo(X,Y);}
+  g.stroke();
+}
+function settle(ts,ys,target,band){
+  const tol=Math.abs(target)*band||band;
+  for(let i=ys.length-1;i>=0;i--) if(Math.abs(ys[i]-target)>tol) return ts[Math.min(i+1,ts.length-1)];
+  return 0;
+}
+
+/* ============ 1. plant explorer ============ */
+const c1=document.getElementById("c1");
+function sim1(){
+  const z=+document.getElementById("i-zeta").value, wn=+document.getElementById("i-wn").value;
+  document.getElementById("v-zeta").textContent=z.toFixed(2);
+  document.getElementById("v-wn").textContent=wn.toFixed(1);
+  const dt=0.001, T=4, n=T/dt, r=1;
+  let x=0,v=0; const ts=[],ys=[];
+  for(let i=0;i<n;i++){
+    const a=wn*wn*(r-x)-2*z*wn*v;
+    v+=a*dt; x+=v*dt;
+    if(i%4===0){ts.push(i*dt);ys.push(x);}
+  }
+  const {g,w,h}=fit(c1);
+  const peak=Math.max(...ys), ymax=Math.max(1.8,peak*1.1);
+  const m=axes(g,w,h,T,0,ymax);
+  g.setLineDash([4,4]);line(g,m,[0,T],[r,r],"#000028",1.5);g.setLineDash([]);
+  line(g,m,ts,ys,"#009999",2);
+  const os=Math.max(0,(peak-r)/r*100);
+  const ts2=settle(ts,ys,r,0.02);
+  let t10=0,t90=0;
+  for(let i=0;i<ys.length;i++){if(!t10&&ys[i]>=0.1*r)t10=ts[i];if(!t90&&ys[i]>=0.9*r){t90=ts[i];break}}
+  const E=(id,txt,cls)=>{const e=document.getElementById(id);e.textContent=txt;e.className=cls||"";};
+  E("m1-os",os.toFixed(1)+"%",os>20?"bad":os<1?"good":"");
+  E("m1-ts",ts2.toFixed(2)+" s");
+  E("m1-tr",(t90-t10>0?(t90-t10).toFixed(2):"—")+" s");
+  const reg=z<0.98?"under-damped":z>1.02?"over-damped":"critical";
+  E("m1-reg",reg,z>0.98&&z<1.02?"good":"");
+  document.getElementById("m1-v").innerHTML =
+    z<0.4 ? "<b>Ringing.</b> This is the axis that oscillates after every move. On a machine you would raise the damping term — here, &zeta;."
+    : z<0.98 ? "<b>Some overshoot, quick arrival.</b> Often the right compromise in practice: a few percent of overshoot buys a much faster response."
+    : z<1.02 ? "<b>Critically damped.</b> The fastest possible approach with zero overshoot — the textbook target for a positioning axis."
+    : "<b>Over-damped and sluggish.</b> No overshoot, but you are wasting cycle time. Rarely what you want unless overshoot is genuinely forbidden.";
+}
+["i-zeta","i-wn"].forEach(id=>document.getElementById(id).addEventListener("input",sim1));
+
+/* ============ 2. PID playground ============ */
+const c2=document.getElementById("c2");
+const P={kp:"i-kp",ki:"i-ki",kd:"i-kd",load:"i-load",sat:"i-sat"};
+function sim2(){
+  const kp=+document.getElementById("i-kp").value, ki=+document.getElementById("i-ki").value,
+        kd=+document.getElementById("i-kd").value, load=+document.getElementById("i-load").value,
+        sat=+document.getElementById("i-sat").value,
+        aw=document.getElementById("i-aw").checked, ff=document.getElementById("i-ff").checked;
+  document.getElementById("v-kp").textContent=kp;
+  document.getElementById("v-ki").textContent=ki;
+  document.getElementById("v-kd").textContent=kd.toFixed(1);
+  document.getElementById("v-load").textContent=load.toFixed(1);
+  document.getElementById("v-sat").textContent=sat;
+
+  const dt=0.001,T=4,n=T/dt,r=1,J=1,b=0.6;
+  let x=0,v=0,I=0,satCount=0,peakU=0;
+  const ts=[],ys=[],us=[],flags=[];
+  for(let i=0;i<n;i++){
+    const e=r-x;
+    const uUnsat=kp*e+ki*I-kd*v+(ff?load:0);
+    let u=Math.max(-sat,Math.min(sat,uUnsat));
+    const saturated=Math.abs(uUnsat-u)>1e-9;
+    if(saturated)satCount++;
+    if(!(aw&&saturated)) I+=e*dt;
+    const a=(u-b*v-load)/J;
+    v+=a*dt; x+=v*dt;
+    peakU=Math.max(peakU,Math.abs(u));
+    if(i%4===0){ts.push(i*dt);ys.push(x);us.push(u);flags.push(saturated);}
+  }
+  const {g,w,h}=fit(c2);
+  const peak=Math.max(...ys), lo=Math.min(0,Math.min(...ys));
+  const ymax=Math.max(1.8,peak*1.1), ymin=Math.min(-0.3,lo*1.1);
+  const m=axes(g,w,h,T,ymin,ymax);
+  // control effort, scaled onto the same axes
+  const uscale=(ymax-0)/Math.max(sat,1)*0.45;
+  g.globalAlpha=.75;
+  line(g,m,ts,us.map(u=>u*uscale),"#e96401",1.4);
+  g.globalAlpha=1;
+  // red where saturated
+  g.strokeStyle="#c0392b";g.lineWidth=2.5;g.beginPath();let drawing=false;
+  for(let i=0;i<ts.length;i++){
+    if(flags[i]){const X=m.px(ts[i]),Y=m.py(us[i]*uscale);drawing?g.lineTo(X,Y):(g.moveTo(X,Y),drawing=true);}
+    else drawing=false;
+  }
+  g.stroke();
+  g.setLineDash([4,4]);line(g,m,[0,T],[r,r],"#000028",1.5);g.setLineDash([]);
+  line(g,m,ts,ys,"#009999",2.2);
+
+  const ss=r-ys[ys.length-1];
+  const os=Math.max(0,(peak-r)/r*100);
+  const tset=settle(ts,ys,r,0.02);
+  const satPct=satCount/n*100;
+  const E=(id,txt,cls)=>{const e=document.getElementById(id);e.textContent=txt;e.className=cls||"";};
+  E("m2-ss",ss.toFixed(4),Math.abs(ss)<0.005?"good":Math.abs(ss)>0.05?"bad":"");
+  E("m2-os",os.toFixed(1)+"%",os>25?"bad":os<2?"good":"");
+  E("m2-ts",tset>0?tset.toFixed(2)+" s":"— ");
+  E("m2-pk",peakU.toFixed(1));
+  E("m2-sat",satPct.toFixed(0)+"%",satPct>40?"bad":satPct===0?"good":"");
+
+  let msg;
+  if(kp===0&&ki===0) msg="<b>No controller at all.</b> The load simply drags the axis away. Everything below is the argument for feedback.";
+  else if(satPct>50&&ki>20&&!aw) msg="<b>Wind-up.</b> The actuator is saturated for most of the move while the integrator keeps charging. Watch the overshoot and the long recovery — then tick anti-wind-up with the same gains.";
+  else if(satPct>50) msg="<b>Saturated most of the time.</b> The loop is effectively open — gains beyond this point change nothing except how hard you slam into the limit.";
+  else if(Math.abs(ss)>0.02&&ki===0&&!ff) msg="<b>There is your droop.</b> P and D alone cannot cancel a constant load: zero error would mean zero torque. Add K&#7522;, or tick feedforward and remove it instantly.";
+  else if(Math.abs(ss)<0.005&&ff&&ki===0) msg="<b>Feedforward did that, not tuning.</b> No integrator involved — you simply told the controller what the load was going to be.";
+  else if(os>30) msg="<b>Too aggressive.</b> Raise K&#8340; to damp it, or lower K&#8346;. On a real axis this is the regime that rings and wears couplings.";
+  else if(os<2&&Math.abs(ss)<0.01&&tset<1.5) msg="<b>Well tuned.</b> Fast, no meaningful overshoot, no steady error. Note what it cost in peak effort — that is the number your drive sizing cares about.";
+  else msg="<b>Reasonable.</b> Try trading overshoot against settling time and watch peak effort move with them — you are always spending one to buy another.";
+  document.getElementById("m2-v").innerHTML=msg;
+}
+Object.values(P).forEach(id=>document.getElementById(id).addEventListener("input",sim2));
+["i-aw","i-ff"].forEach(id=>document.getElementById(id).addEventListener("change",sim2));
+document.getElementById("pid-reset").addEventListener("click",()=>{
+  const d={"i-kp":20,"i-ki":0,"i-kd":2,"i-load":4,"i-sat":30};
+  for(const k in d) document.getElementById(k).value=d[k];
+  document.getElementById("i-aw").checked=true;
+  document.getElementById("i-ff").checked=false;
+  sim2();
+});
+
+/* ============ 3. LQR ============ */
+const c3=document.getElementById("c3");
+function sim3(){
+  const R=Math.pow(10,+document.getElementById("i-R").value);
+  const Q=Math.pow(10,+document.getElementById("i-Q").value);
+  document.getElementById("v-R").textContent=R<1?R.toFixed(3):R.toFixed(2);
+  document.getElementById("v-Q").textContent=Q<1?Q.toFixed(3):Q.toFixed(2);
+  const k1=Math.sqrt(Q/R), k2=Math.sqrt(2*k1);
+  const dt=0.001,T=6,n=T/dt;
+  let x=1,v=0,peakU=0;
+  const ts=[],ys=[],us=[];
+  for(let i=0;i<n;i++){
+    const u=-(k1*x+k2*v);
+    v+=u*dt; x+=v*dt;
+    peakU=Math.max(peakU,Math.abs(u));
+    if(i%6===0){ts.push(i*dt);ys.push(x);us.push(u);}
+  }
+  const {g,w,h}=fit(c3);
+  const m=axes(g,w,h,T,-0.6,1.2);
+  const us_=us.map(u=>u/Math.max(peakU,1e-6)*0.45);
+  g.globalAlpha=.8;line(g,m,ts,us_,"#e96401",1.4);g.globalAlpha=1;
+  g.setLineDash([4,4]);line(g,m,[0,T],[0,0],"#000028",1.2);g.setLineDash([]);
+  line(g,m,ts,ys,"#009999",2.2);
+  const tset=settle(ts,ys,0,0.02);
+  const E=(id,t)=>document.getElementById(id).textContent=t;
+  E("m3-k1",k1.toFixed(2));E("m3-k2",k2.toFixed(2));
+  E("m3-ts",tset>0?tset.toFixed(2)+" s":"— ");
+  E("m3-pk",peakU.toFixed(2));
+  document.getElementById("m3-v").innerHTML =
+    R>20 ? "<b>Effort is expensive.</b> The optimiser has decided a slow, gentle return is worth it. Peak effort is low; settling is long."
+    : R<0.05 ? "<b>Effort is nearly free.</b> Aggressive gains, fast settling, high peak torque — fine in simulation, but check that number against what your drive can actually deliver."
+    : "<b>Balanced.</b> Slide R across two decades and watch the gains follow &radic;(Q/R). You are not tuning — you are pricing.";
+}
+["i-R","i-Q"].forEach(id=>document.getElementById(id).addEventListener("input",sim3));
+
+/* ============ reveal answers ============ */
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-rev]");
+  if(!b)return;
+  const q=b.closest("[data-q]");
+  q.classList.toggle("on");
+  b.textContent=q.classList.contains("on")?"Hide":"Reveal";
+});
+
+/* ============ nav highlighting ============ */
+const secs=[...document.querySelectorAll("section")];
+const links=[...document.querySelectorAll("nav.rail a")];
+const spy=()=>{
+  let cur=secs[0].id;
+  for(const s of secs) if(s.getBoundingClientRect().top<=80) cur=s.id;
+  links.forEach(a=>a.classList.toggle("on",a.getAttribute("href")==="#"+cur));
+};
+document.addEventListener("scroll",spy,{passive:true});
+
+/* ============ go ============ */
+function all(){sim1();sim2();sim3();}
+all(); spy();
+window.addEventListener("resize",all);
+</script>
+
+</body></html>

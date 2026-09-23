@@ -1,0 +1,254 @@
+<section class="sec" id="movepath">
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">Engineering &middot; Chapter 2, 5 &middot; FB 35000</div>
+      <h2 class="mono">LKinCtrl_MC_MovePath</h2>
+      <p class="lede">The block engineers actually call. It reads the PathData command list, drives the TO
+        Kinematics, and is the one instance you wire into the cyclic task — everything else in the library
+        supports it.</p>
+    </header>
+
+    <h3>Project integration</h3>
+    <h4>Requirements</h4>
+    <p>To run the application, a basic TIA Portal V19 project with a TO Kinematics and the corresponding number
+      of TO PositioningAxis objects needs to be set up. The TO Kinematics must be configured, and a basic
+      commissioning to run the kinematics with the control panel should be completed — this can also be done with
+      the commissioning module in the HMI.</p>
+
+    <h4>Import of the application</h4>
+    <p>Integrating the library blocks into a STEP 7 program follows a fixed sequence of drag-and-drop copies:</p>
+    <div class="scrollx">
+      <table>
+        <thead><tr><th class="num">No.</th><th>Action</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td>Copy the folder <span class="mono">LKinCtrl_Tags</span> with drag &amp; drop into "PLC tags" in the PLC.</td></tr>
+          <tr><td class="num">2</td><td>Copy the folder <span class="mono">LKinCtrl_Types</span> with drag &amp; drop into "PLC data types" in the PLC.</td></tr>
+          <tr><td class="num">3</td><td>Copy the folder <span class="mono">LKinCtrl_Blocks</span> with drag &amp; drop into "Program blocks" in the PLC.</td></tr>
+          <tr><td class="num">4</td><td>(Optional) Copy the folder <span class="mono">LKinCtrl_Data</span> with drag &amp; drop into "Program blocks" in the PLC. Existing data, or separately created data, can also be used for the interface of the library blocks.</td></tr>
+          <tr><td class="num">5</td><td>The blocks can now be configured and called in the user program.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="box"><b>NOTE</b> Follow the sequence of inserting the folders.</div>
+
+    <h3>Block interface</h3>
+    <p>The interfaces and controls of the LKinCtrl blocks follow the PLCopen standard; they are implemented in
+      SCL for use in a cyclic task. The table below is the full parameter list of
+      <span class="mono">LKinCtrl_MC_MovePath</span> — filter it by parameter type, or scan the whole thing.</p>
+
+    <div class="box caution">
+      <b>NOTICE</b> Due to the block's internal structure, only optimized DBs can be used for its interface data.
+      Using non-optimized DBs sends the CPU to STOP mode.
+    </div>
+
+    <div class="pc-filter-row" role="group" aria-label="Filter the interface table by parameter type">
+      <span class="pc-filter-label">Show:</span>
+      <span class="pill pc-toggle on" tabindex="0" role="button" aria-pressed="true" data-pc-filter="all">All parameters</span>
+      <span class="pill pc-toggle" tabindex="0" role="button" aria-pressed="false" data-pc-filter="in">IN</span>
+      <span class="pill pc-toggle" tabindex="0" role="button" aria-pressed="false" data-pc-filter="out">OUT</span>
+      <span class="pill pc-toggle" tabindex="0" role="button" aria-pressed="false" data-pc-filter="inout">IN_OUT</span>
+    </div>
+
+    <div class="scrollx">
+      <table class="pc-iface" id="pc-iface-table">
+        <thead><tr><th>Name</th><th>Type</th><th>Data type</th><th>Comment</th></tr></thead>
+        <tbody>
+          <tr class="pc-group-row" data-ptype="in"><td colspan="4">Inputs</td></tr>
+          <tr data-ptype="in"><td class="pc-name mono">execute</td><td><span class="tag pc-tag-in">IN</span></td><td class="pc-type mono">Bool</td><td class="pc-desc">Rising edge starts action once.</td></tr>
+          <tr data-ptype="in"><td class="pc-name mono">stop</td><td><span class="tag pc-tag-in">IN</span></td><td class="pc-type mono">Bool</td><td class="pc-desc">Abort path motion.</td></tr>
+          <tr data-ptype="in"><td class="pc-name mono">interrupt</td><td><span class="tag pc-tag-in">IN</span></td><td class="pc-type mono">Bool</td><td class="pc-desc">Interrupt path motion.</td></tr>
+          <tr data-ptype="in"><td class="pc-name mono">reset</td><td><span class="tag pc-tag-in">IN</span></td><td class="pc-type mono">Bool</td><td class="pc-desc">Reset FB / acknowledge errors.</td></tr>
+          <tr data-ptype="in"><td class="pc-name mono">sequenceMode</td><td><span class="tag pc-tag-in">IN</span></td><td class="pc-type mono">Int</td><td class="pc-desc">Activate sequence mode (0) / single step mode (1).</td></tr>
+          <tr data-ptype="in"><td class="pc-name mono">pathTransition</td><td><span class="tag pc-tag-in">IN</span></td><td class="pc-type mono">DInt</td><td class="pc-desc">Initial transition configuration for a new path motion (1: use <span class="mono">bufferMode</span> and <span class="mono">transitionParameter</span>).</td></tr>
+          <tr data-ptype="in"><td class="pc-name mono">bufferMode</td><td><span class="tag pc-tag-in">IN</span></td><td class="pc-type mono">DInt</td><td class="pc-desc">Initial buffer mode for a new path motion.</td></tr>
+          <tr data-ptype="in"><td class="pc-name mono">transitionParameter</td><td><span class="tag pc-tag-in">IN</span></td><td class="pc-type mono">Array[1..5] of LReal</td><td class="pc-desc">Initial transition parameter for a new path motion.</td></tr>
+          <tr data-ptype="in"><td class="pc-name mono">configuration</td><td><span class="tag pc-tag-in">IN</span></td><td class="pc-type mono">"LKinCtrl_typeConfiguration"</td><td class="pc-desc">Configuration structure — see below.</td></tr>
+          <tr data-ptype="in"><td class="pc-name mono">abortMeasurementCmd</td><td><span class="tag pc-tag-in">IN</span></td><td class="pc-type mono">Bool</td><td class="pc-desc">TRUE: abort the active command if it is a measurement command.</td></tr>
+
+          <tr class="pc-group-row" data-ptype="out"><td colspan="4">Outputs</td></tr>
+          <tr data-ptype="out"><td class="pc-name mono">done</td><td><span class="tag pc-tag-out">OUT</span></td><td class="pc-type mono">Bool</td><td class="pc-desc">TRUE: commanded functionality has completed successfully.</td></tr>
+          <tr data-ptype="out"><td class="pc-name mono">busy</td><td><span class="tag pc-tag-out">OUT</span></td><td class="pc-type mono">Bool</td><td class="pc-desc">TRUE: FB is not finished — new output values can be expected.</td></tr>
+          <tr data-ptype="out"><td class="pc-name mono">active</td><td><span class="tag pc-tag-out">OUT</span></td><td class="pc-type mono">Bool</td><td class="pc-desc">FB is in control of the axesGroup / kinematic is in motion.</td></tr>
+          <tr data-ptype="out"><td class="pc-name mono">commandAborted</td><td><span class="tag pc-tag-out">OUT</span></td><td class="pc-type mono">Bool</td><td class="pc-desc">TRUE: commanded functionality was aborted by another command.</td></tr>
+          <tr data-ptype="out"><td class="pc-name mono">error</td><td><span class="tag pc-tag-out">OUT</span></td><td class="pc-type mono">Bool</td><td class="pc-desc">TRUE: an error occurred during execution of the FB.</td></tr>
+          <tr data-ptype="out"><td class="pc-name mono">status</td><td><span class="tag pc-tag-out">OUT</span></td><td class="pc-type mono">Word</td><td class="pc-desc">Status of the FB (constants in the status &amp; error reference).</td></tr>
+          <tr data-ptype="out"><td class="pc-name mono">diagnostics</td><td><span class="tag pc-tag-out">OUT</span></td><td class="pc-type mono">"LKinCtrl_typeMovePathDiagnostics"</td><td class="pc-desc">Diagnostics information of the FB.</td></tr>
+          <tr data-ptype="out"><td class="pc-name mono">activePathData</td><td><span class="tag pc-tag-out">OUT</span></td><td class="pc-type mono">String["LKINCTRL_LENGTH_OF_PATHDATA_NAME"]</td><td class="pc-desc">Name of the actual PathData.</td></tr>
+          <tr data-ptype="out"><td class="pc-name mono">activeCmdNo</td><td><span class="tag pc-tag-out">OUT</span></td><td class="pc-type mono">DInt</td><td class="pc-desc">Number of the actual PathData command.</td></tr>
+          <tr data-ptype="out"><td class="pc-name mono">remainingDistanceActCmd</td><td><span class="tag pc-tag-out">OUT</span></td><td class="pc-type mono">LReal</td><td class="pc-desc">Remaining distance of the actual PathData command.</td></tr>
+          <tr data-ptype="out"><td class="pc-name mono">readyForNextPath</td><td><span class="tag pc-tag-out">OUT</span></td><td class="pc-type mono">Bool</td><td class="pc-desc">TRUE: the next PathData can be triggered.</td></tr>
+          <tr data-ptype="out"><td class="pc-name mono">activeUserFrames</td><td><span class="tag pc-tag-out">OUT</span></td><td class="pc-type mono">Array["LKINCTRL_CS_NO_OF_FIRST_USER_FRAME".."LKINCTRL_CS_NO_OF_LAST_USER_FRAME"] of "LKinCtrl_typeFrame"</td><td class="pc-desc">Currently active user frames.</td></tr>
+          <tr data-ptype="out"><td class="pc-name mono">bufferedCommands</td><td><span class="tag pc-tag-out">OUT</span></td><td class="pc-type mono">"LKinCtrl_typeBufferInfo"</td><td class="pc-desc">Current buffered commands, including history.</td></tr>
+
+          <tr class="pc-group-row" data-ptype="inout"><td colspan="4">In/out</td></tr>
+          <tr data-ptype="inout"><td class="pc-name mono">axesGroup</td><td><span class="tag pc-tag-inout">IN_OUT</span></td><td class="pc-type mono">TO_Kinematics</td><td class="pc-desc">Reference to the axesGroup.</td></tr>
+          <tr data-ptype="inout"><td class="pc-name mono">pathData</td><td><span class="tag pc-tag-inout">IN_OUT</span></td><td class="pc-type mono">Variant</td><td class="pc-desc">Reference to the PathData.</td></tr>
+          <tr data-ptype="inout"><td class="pc-name mono">pointTable</td><td><span class="tag pc-tag-inout">IN_OUT</span></td><td class="pc-type mono">Array[*] of "LKinCtrl_typePoint"</td><td class="pc-desc">Reference to the point table.</td></tr>
+          <tr data-ptype="inout"><td class="pc-name mono">flags</td><td><span class="tag pc-tag-inout">IN_OUT</span></td><td class="pc-type mono">Array[0.."LKINCTRL_NO_OF_LAST_SETFLAG"] of Bool</td><td class="pc-desc">Boolean defined by setFlags in a PathCommand.</td></tr>
+          <tr data-ptype="inout"><td class="pc-name mono">valueFlags</td><td><span class="tag pc-tag-inout">IN_OUT</span></td><td class="pc-type mono">Array[0.."LKINCTRL_NO_OF_LAST_VALUEFLAG"] of LReal</td><td class="pc-desc">Value defined by valueFlags in a PathCommand.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p id="pc-iface-empty" hidden style="font-size:0.85rem;color:var(--text-dim)">No parameters match this filter.</p>
+
+    <div class="box"><b>NOTE</b> The <span class="mono">axesGroup</span>, <span class="mono">pathData</span>,
+      <span class="mono">pointTable</span> and <span class="mono">flags</span> in/outs must be connected to their
+      corresponding objects — they are not optional.</div>
+    <div class="box"><b>NOTE</b> Resetting the function block, or acknowledging its errors, is only possible when
+      <span class="mono">busy</span> = FALSE.</div>
+
+    <h4>Configuration structure</h4>
+    <p>The <span class="mono">configuration</span> input carries settings that apply across the block's
+      operation — offset and conveyor parameters, user and zone frames, and the stop/interrupt dynamics:</p>
+    <div class="scrollx">
+      <table class="pc-config">
+        <thead><tr><th>Field</th><th>Type</th><th>Comment</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">offsetParameter</td><td class="mono" style="font-size:0.8rem">Array[1.."LKINCTRL_NO_OF_OFFSETS"] of "LKinCtrl_typeContourOffsetParameter"</td><td class="pc-desc">Offset parameter settings for contour offset commands.</td></tr>
+          <tr><td class="mono">conveyorParameter</td><td class="mono" style="font-size:0.8rem">Array[1.."LKINCTRL_NO_OF_CONVEYOR"] of "LKinCtrl_typeConveyorConfiguration"</td><td class="pc-desc">Conveyor parameter settings for conveyor tracking commands.</td></tr>
+          <tr><td class="mono">userFrames</td><td class="mono" style="font-size:0.8rem">Array[first..last user frame] of "LKinCtrl_typeFrame"</td><td class="pc-desc">User frame configuration — additional frames beyond OCS1&ndash;3, used as coordinate system 11&hellip;n at the command.</td></tr>
+          <tr><td class="mono">workspaceFrames</td><td class="mono" style="font-size:0.8rem">Array[1.."LKINCTRL_NO_OF_ZONES"] of "LKinCtrl_typeWorkspaceZoneDefinition"</td><td class="pc-desc">Workspace zone configurations used for zone commands.</td></tr>
+          <tr><td class="mono">kinematicsFrame</td><td class="mono" style="font-size:0.8rem">Array[1.."LKINCTRL_NO_OF_ZONES"] of "LKinCtrl_typeKinematicsZoneDefinition"</td><td class="pc-desc">Kinematics zone configuration used for zone commands.</td></tr>
+          <tr><td class="mono">stopMode</td><td class="mono">DInt</td><td class="pc-desc">MC_GroupStop dynamics: 0 stop with dynamics of the active job; 1 stop with maximum kinematics dynamics (adaption still effective); 10 / 11 as 0 / 1 plus desync conveyor.</td></tr>
+          <tr><td class="mono">interruptMode</td><td class="mono">DInt</td><td class="pc-desc">MC_GroupInterrupt dynamics: 0 dynamics of the active job; 1 maximum kinematics dynamics (adaption still effective).</td></tr>
+          <tr><td class="mono">errorStopMode</td><td class="mono">DInt</td><td class="pc-desc">MC_GroupStop dynamics when stopping due to an error — same value set as stopMode.</td></tr>
+          <tr><td class="mono">preloadMotionQueue</td><td class="mono">USInt</td><td class="pc-desc">Preload the motion queue via interrupt/continue before the start of motion: 0 no preloading; 1 preload and start when prepared; 2 preload and start with acknowledge (rising edge at execute).</td></tr>
+          <tr><td class="mono">resetModalDynamics</td><td class="mono">Bool</td><td class="pc-desc">TRUE: internal modal dynamics are reset between paths. FALSE: kept between paths.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Calling the block</h3>
+    <p>Once a PathData structure has been created in a DB, the FB is called cyclically. The
+      <span class="mono">axesGroup</span>, <span class="mono">pathData</span>, <span class="mono">pointTable</span>
+      and <span class="mono">flags</span> in/outs must be connected to their corresponding objects; the
+      <span class="mono">execute</span> signal that starts the path motion can be wired to an input pin, or set in
+      the code of an SCL block.</p>
+
+    <div class="box caution">
+      <b>CAUTION</b> Only trigger one instance at a time. Triggering multiple instances of the function block
+      against the same TO Kinematics at the same time makes both instances try to execute commands, mixing up the
+      order of the MotionQueue and potentially causing unexpected kinematics motion. This is never necessary — one
+      instance can handle multiple PathData structures, one after another, in an optimised period of time.
+    </div>
+
+    <h3>Operation</h3>
+    <h4>General functionalities</h4>
+    <p>Based on PLCopen Part 4 behaviour, <span class="mono">execute</span> reacts to a rising edge. The other
+      control inputs each map to a distinct system-level action:</p>
+    <div class="pc-func-grid">
+      <div class="card pad">
+        <h5>Start / continue</h5>
+        <p>A rising edge at <span class="mono">execute</span> starts a new path motion, or — after an interrupt —
+          continues the interrupted one.</p>
+      </div>
+      <div class="card pad">
+        <h5>Stop</h5>
+        <p><span class="mono">stop</span> triggers <span class="mono">MC_GroupStop</span> internally: the path
+          motion is aborted and every executed command is deleted from the MotionQueue.</p>
+      </div>
+      <div class="card pad">
+        <h5>Interrupt</h5>
+        <p><span class="mono">interrupt</span> triggers <span class="mono">MC_GroupInterrupt</span>: motion status
+          and all executed commands stay in the MotionQueue, and can be continued.</p>
+      </div>
+      <div class="card pad">
+        <h5>Reset</h5>
+        <p><span class="mono">reset</span> acknowledges errors or performs a general reset of the FB, once
+          <span class="mono">busy</span> = FALSE.</p>
+      </div>
+      <div class="card pad">
+        <h5>Mode selection</h5>
+        <p><span class="mono">sequenceMode</span> switches between automatic and single step operation — see
+          Operating modes.</p>
+      </div>
+      <div class="card pad">
+        <h5>Actuator control</h5>
+        <p>Actuators can be controlled via flags depending on path motion status, alongside the stop-mode and
+          offset settings in <span class="mono">configuration</span>.</p>
+      </div>
+    </div>
+
+    <h4>Diagnostics &amp; status</h4>
+    <p>Diagnostic output splits into two groups. The PLCopen-style outputs — <span class="mono">done</span>,
+      <span class="mono">busy</span>, <span class="mono">active</span>, <span class="mono">commandAborted</span>,
+      <span class="mono">error</span> and <span class="mono">status</span> — follow the timing behaviour of the
+      PLCopen-conformant system motion commands. Beyond that, the <span class="mono">diagnostics</span> structure
+      is written whenever an error occurs: it identifies the command number and PathData name that may have
+      caused it, the state-machine states of <span class="mono">LKinCtrl_MC_MovePath</span> and
+      <span class="mono">LKinCtrl_ExecuteKinMotionCmd</span>, and the TO Kinematics' own status and error words.</p>
+    <p>While a path motion runs, <span class="mono">activePathData</span> and <span class="mono">activeCmdNo</span>
+      report which command is executing and in which PathData, and <span class="mono">remainingDistanceActCmd</span>
+      reports the remaining distance of that single command. <span class="mono">readyForNextPath</span> switches
+      TRUE once every command in the current PathData has been internally executed into the MotionQueue — not
+      that those commands have finished, only that they are queued — and that is the signal to trigger the FB
+      again with the next PathData, keeping the MotionQueue filled for maximum look-ahead.</p>
+
+    <h3>Operating modes</h3>
+    <p><span class="mono">sequenceMode</span> switches the FB between two distinct ways of working through a
+      PathData. The difference is how much of the list one <span class="mono">execute</span> edge commits to:</p>
+
+    <div class="pc-mode-tabs" role="group" aria-label="Choose an operating mode to read about">
+      <span class="pill pc-toggle on" tabindex="0" role="button" aria-pressed="true" data-pc-mode="auto">Automatic mode &middot; sequenceMode = 0</span>
+      <span class="pill pc-toggle" tabindex="0" role="button" aria-pressed="false" data-pc-mode="single">Single step mode &middot; sequenceMode = 1</span>
+    </div>
+
+    <div class="scrollx">
+      <table class="pc-modes">
+        <thead><tr><th></th><th class="pc-mcol">Automatic (0, default)</th><th class="pc-scol">Single step (1)</th></tr></thead>
+        <tbody>
+          <tr><td>Per execute edge</td><td>Runs the complete PathData</td><td>Runs exactly one command</td></tr>
+          <tr><td>done signals</td><td>After the last command in the PathData finishes</td><td>After each single command finishes</td></tr>
+          <tr><td>Retriggering</td><td>Possible on <span class="mono">done</span> = TRUE, or as soon as <span class="mono">readyForNextPath</span> goes TRUE — keeps the MotionQueue filled</td><td>A new rising edge on <span class="mono">execute</span> is required for every command</td></tr>
+          <tr><td>Blending between commands</td><td>Configured via the next command's first entry, or overridden at the FB via <span class="mono">pathTransition</span> / <span class="mono">bufferMode</span> / <span class="mono">transitionParameter</span></td><td>None — bufferMode is ignored, see caution below</td></tr>
+          <tr><td>Best suited to</td><td>Production operation, continuous paths</td><td>Commissioning, step-through diagnosis</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pc-mode-panel" id="pc-mode-panel-auto">
+      <p>Once <span class="mono">readyForNextPath</span> signals that a PathData's commands are all registered in
+        the MotionQueue, the FB can be retriggered with the following PathData — the queue stays filled and the
+        path continues immediately once the first PathData ends.</p>
+      <p>Transitions between two path motions can be configured either in the following PathData's first command
+        entry, or by setting <span class="mono">pathTransition</span> = 1, which overwrites that entry's blending
+        parameters with the ones set at the FB inputs <span class="mono">bufferMode</span> and
+        <span class="mono">transitionParameter[1..5]</span>.</p>
+      <div class="box"><b>NOTE</b> <span class="mono">pathTransition</span> = 1 enables the blending parameters
+        <span class="mono">bufferMode</span> and <span class="mono">transitionParameter[1..5]</span> for the
+        transition between two PathData structures.</div>
+    </div>
+
+    <div class="pc-mode-panel" id="pc-mode-panel-single" hidden>
+      <p>Every command in the PathData is executed separately, and every rising edge at
+        <span class="mono">execute</span> triggers exactly one of them. All programmed target positions are still
+        reached completely.</p>
+      <div class="box caution"><b>CAUTION</b> bufferMode ignored. In single step mode, every command is executed
+        separately, so no motion transitions take effect and there is no blending between commands. The resulting
+        path can differ from the one driven in automatic mode, owing to the missing blending segments.</div>
+    </div>
+
+    <h3>Behaviour worth knowing before you call it</h3>
+    <div class="pc-behaviour-grid">
+      <div class="card pad">
+        <h4>Triggering multiple commands per call</h4>
+        <p>The FB can trigger more than one command per call, which helps keep the MotionQueue filled and can
+          improve path dynamics. This is enabled by raising the PLC tags
+          <span class="mono">LKINCTRL_NO_OF_START_EXECUTE_CMDS</span> and
+          <span class="mono">LKINCTRL_NO_OF_SEQ_EXECUTE_CMDS</span> in the tag table
+          <span class="mono">LKinCtrl_Configuration</span>.</p>
+        <div class="box"><b>NOTE</b> Increasing the number of commands triggered per call can increase cycle
+          time. To save cycle time, the repetition is not always carried out in full — for example, if the
+          MotionQueue is already full, the loop exits early.</div>
+      </div>
+      <div class="card pad">
+        <h4>Continue at start</h4>
+        <p>An undesired TO Kinematics behaviour can leave blending between two commands incorrect after an
+          interrupted command is aborted with no continue following it. Because an interrupt always needs a
+          matching continue, <span class="mono">LKinCtrl_MC_MovePath</span> executes a continue command before
+          starting the path motion, to guarantee one always follows. This behaviour is controlled by the internal
+          constant <span class="mono">CONTINUE_AT_START</span>.</p>
+      </div>
+    </div>
+  </div>
+</section>

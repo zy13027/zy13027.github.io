@@ -1,0 +1,45 @@
+<section class="sec" id="flags">
+<div class="wrap">
+<header>
+<div class="eyebrow">&sect;3.10 &mdash; Flags</div>
+<h2>Flags</h2>
+<p class="lede">Every command entry can drive actuators through the path itself: up to three Boolean <span class="mono">setFlags</span> and four LREAL <span class="mono">ValueFlags</span> per command, timed by a <span class="mono">flagMode</span> against that command's own motion.</p>
+</header>
+
+<div class="rf-stack">
+
+<div class="card pad">
+<h3>Principle of operation</h3>
+<p>The setFlags/ValueFlags arrays on a command entry refer, by index, into the Boolean <span class="mono">flags</span> and LREAL <span class="mono">valueFlags</span> InOut arrays at the <span class="mono">LKinCtrl_MC_MovePath</span> interface &mdash; typically wired straight to output signals. The default value for every flag entry is <span class="mono">-1</span>, which triggers nothing: it neither sets nor resets. Explanations below refer to <span class="mono">setFlags</span> only; the mechanism is identical for <span class="mono">ValueFlags</span>, except that a value is written instead of a bit being set.</p>
+<div class="scrollx"><table class="rf-reftable"><thead><tr><th>Constant</th><th>Default</th><th>Governs</th></tr></thead><tbody>
+<tr><td class="mono">LKINCTRL_NO_OF_CMD_SETFLAGS</td><td class="mono">3</td><td>Boolean setFlags configurable per command entry.</td></tr>
+<tr><td class="mono">LKINCTRL_NO_OF_CMD_VALUEFLAGS</td><td class="mono">4</td><td>LREAL ValueFlags configurable per command entry.</td></tr>
+<tr><td class="mono">LKINCTRL_NO_OF_LAST_SETFLAG</td><td class="mono">10</td><td>Highest index of the Boolean <span class="mono">flags</span> InOut array at MovePath.</td></tr>
+<tr><td class="mono">LKINCTRL_NO_OF_LAST_VALUEFLAG</td><td class="mono">10</td><td>Highest index of the LREAL <span class="mono">valueFlags</span> InOut array at MovePath.</td></tr>
+</tbody></table></div>
+<div class="box notice"><b>Notice</b> Flags are indexed <span class="mono">flags[0..LKINCTRL_NO_OF_LAST_FLAG]</span> &mdash; because the array starts at 0, the actual number of available flags is one more than the constant's value.</div>
+<div class="box notice"><b>Notice</b> If two PathData structures blend into one another, give each a different <span class="mono">pathDataName</span> so their flag activity can be told apart.</div>
+<p><b>Reset.</b> The flags InOut arrays reset automatically at the start of a PathData and on MovePath's done signal. Set the global tag <span class="mono">LKINCTRL_DISABLE_FLAG_RESET</span> to disable that automatic reset.</p>
+</div>
+
+<div class="card pad">
+<h3>Flag modes</h3>
+<p>The <span class="mono">flagMode</span> on a setFlags/ValueFlags entry chooses when the flag is set or reset relative to its command, and whether execution should wait for an external acknowledge.</p>
+<div class="rf-toolbar"><input class="rf-search" id="rf-flag-search" type="search" placeholder="Search flag modes &mdash; e.g. wait, reset, remaining&hellip;" aria-label="Search flag modes"></div>
+<p class="rf-count" id="rf-flag-count"></p>
+<div class="scrollx"><table class="rf-flagtable"><thead><tr><th>Mode</th><th>Constant</th><th>Behaviour</th></tr></thead><tbody id="rf-flag-body"></tbody></table></div>
+</div>
+
+<div class="card pad">
+<h3>Subtleties worth knowing</h3>
+<div class="rf-stack" style="gap:.8rem">
+<div class="box caution"><b>Caution</b> Combining flagMode&nbsp;5 with flagMode&nbsp;11, 13 or 15 on the <em>same</em> command can interlock that flag so it can never be reset &mdash; avoid programming this combination.</div>
+<div class="box notice"><b>Notice</b> Acknowledging a ValueFlag (modes 5, 15, 25) means writing it back to its default LREAL value, <span class="mono">-1.0</span>. Mode&nbsp;26 is the exception: it is acknowledged by writing <em>any value other than</em> <span class="mono">-1.0</span>.</div>
+<div class="box"><b>Note</b> For modes 10 and 22, remember that a command's &ldquo;end&rdquo; is where the <em>next</em> command's blending radius (<span class="mono">transitionParameter[1]</span>) begins. A reported <span class="mono">remainingDistance</span> of 0.0 therefore does not always mean the literal programmed target has been reached.</div>
+<div class="box"><b>Note</b> Flags reset automatically on a new rising edge at <span class="mono">execute</span> and on MovePath's done signal &mdash; but not on a stop. An actuator held by a flag (a vacuum gripper, say) stays engaged if the path motion is stopped mid-command; that has to be handled deliberately in the user program if it isn't wanted.</div>
+</div>
+</div>
+
+</div>
+</div>
+</section>

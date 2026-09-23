@@ -1,0 +1,102 @@
+/* Interpreter simulator — sim- namespace. Moved verbatim from the artifact's own <style> block. */
+/* ---------- layout ---------- */
+#simulator .sim-controls{display:flex;flex-wrap:wrap;gap:18px 26px;align-items:flex-end;margin-bottom:16px}
+#simulator .sim-cgroup{display:flex;flex-direction:column;gap:7px;min-width:0}
+#simulator .sim-cgroup-label{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim)}
+#simulator .sim-btnrow{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+#simulator .sim-cgroup--override{flex:1 1 200px}
+#simulator .sim-cgroup--override .sim-btnrow{gap:10px}
+#simulator #sim-override{flex:1 1 120px;accent-color:var(--accent);min-width:90px}
+#simulator .sim-override-value{min-width:3.6em;text-align:right;color:var(--text)}
+
+#simulator .sim-btn{border:1px solid var(--line);background:var(--surface-2);color:var(--text);border-radius:100px;padding:6px 13px;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;transition:opacity .15s,transform .1s}
+#simulator .sim-btn:hover:not(:disabled){border-color:var(--accent)}
+#simulator .sim-btn:active:not(:disabled){transform:translateY(1px)}
+#simulator .sim-btn:disabled{opacity:.38;cursor:not-allowed}
+#simulator .sim-btn--go{background:var(--grad);color:#02262A;border-color:transparent;font-weight:600}
+#simulator .sim-btn--warn{border-color:var(--warn);color:var(--warn)}
+#simulator .sim-btn--danger{border-color:var(--err);color:var(--err);font-weight:600}
+#simulator .sim-select{border:1px solid var(--line);background:var(--surface-2);color:var(--text);border-radius:var(--r-s);padding:6px 9px;font-size:13px}
+#simulator .pill{background:var(--surface-2);cursor:pointer;border:1px solid var(--line)}
+#simulator .pill:hover{border-color:var(--accent)}
+#simulator .pill.on{background:var(--grad);color:#02262A;border-color:transparent;font-weight:600}
+
+#simulator .sim-singlestep-note{margin-bottom:16px}
+#simulator .sim-singlestep-note b{display:block}
+
+#simulator .sim-console{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1.55fr) minmax(0,1.05fr);gap:14px;align-items:start}
+@media (max-width:900px){#simulator .sim-console{grid-template-columns:1fr}}
+#simulator .sim-pane-title{font-size:13px;font-family:var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px;font-weight:500}
+
+/* ---------- program list (pane A) ---------- */
+#simulator .sim-proglist{max-height:640px;overflow-y:auto;overflow-x:hidden;padding-right:2px}
+#simulator .sim-row{display:grid;grid-template-columns:34px 26px 1fr;gap:8px;align-items:start;padding:5px 6px;border-radius:var(--r-s)}
+#simulator .sim-row.sim-row--interp{background:color-mix(in srgb, var(--accent) 11%, transparent)}
+#simulator .sim-row.sim-row--motion{box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--ok) 55%, transparent)}
+#simulator .sim-row.sim-row--flash{background:color-mix(in srgb, var(--amber) 26%, transparent)}
+#simulator .sim-gutter{display:flex;align-items:center;gap:3px;height:20px;padding-top:2px}
+#simulator .sim-arrow-i,#simulator .sim-arrow-m{width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:7px solid transparent;opacity:0}
+#simulator .sim-arrow-i{border-left-color:var(--text)}
+#simulator .sim-arrow-m{border-left-color:var(--ok)}
+#simulator .sim-arrow-i.on,#simulator .sim-arrow-m.on{opacity:1}
+#simulator .sim-arrow--static{opacity:1;position:relative;top:0;display:inline-block}
+#simulator .sim-cmdnum{font-family:var(--f-mono);font-size:11px;color:var(--text-dim);padding-top:2px}
+#simulator .sim-cmdtext{display:flex;flex-direction:column;gap:2px;min-width:0}
+#simulator .sim-cmdname{font-family:var(--f-mono);font-size:12.5px;color:var(--text);word-break:break-word}
+#simulator .sim-cmdparams{font-size:12.5px;color:var(--text-2);word-break:break-word}
+#simulator .sim-label-text{color:var(--pink);font-weight:600;letter-spacing:.02em}
+#simulator .sim-ref-text{color:var(--blue);font-weight:500}
+
+#simulator .sim-transition{display:grid;grid-template-columns:34px 26px 1fr;gap:8px;align-items:center;padding:2px 6px 2px 6px}
+#simulator .sim-t-icon{grid-column:1;justify-self:center;width:9px;height:9px}
+#simulator .sim-t-label{grid-column:3;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.05em;color:var(--text-dim)}
+#simulator .sim-transition--fixed .sim-t-icon{background:var(--text-dim);opacity:.55;border-radius:2px}
+#simulator .sim-transition--done .sim-t-icon{background:var(--text);border-radius:2px}
+#simulator .sim-transition--next .sim-t-icon{background:transparent;border:2px solid var(--accent);border-radius:50%}
+#simulator .sim-transition--immediate .sim-t-icon{background:var(--amber);border-radius:2px;transform:rotate(45deg)}
+#simulator .sim-transition--done .sim-t-label{color:var(--text-2)}
+#simulator .sim-transition--next .sim-t-label{color:var(--accent)}
+#simulator .sim-transition--immediate .sim-t-label{color:var(--amber)}
+
+/* ---------- machine (pane B) ---------- */
+#simulator .sim-canvas-wrap{width:100%;aspect-ratio:800/420;border-radius:var(--r-m);overflow:hidden;background:var(--surface-2);border:1px solid var(--line-soft)}
+#simulator .sim-canvas{display:block;width:100%;height:100%;max-width:100%}
+#simulator .sim-readout{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+#simulator .sim-readout-tile{background:var(--surface-2);border:1px solid var(--line-soft);border-radius:var(--r-s);padding:7px 8px;display:flex;flex-direction:column;gap:3px;min-width:0}
+#simulator .sim-readout-label{font-family:var(--f-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim)}
+#simulator .sim-readout-value{font-size:13.5px;color:var(--text)}
+#simulator #sim-gripper-pill{align-self:flex-start}
+#simulator #sim-gripper-pill.on{background:var(--grad);color:#02262A;border-color:transparent}
+@media (max-width:480px){#simulator .sim-readout{grid-template-columns:repeat(2,1fr)}}
+
+/* ---------- core outputs (pane C) ---------- */
+#simulator .sim-status-grid{display:flex;flex-direction:column;gap:1px;border:1px solid var(--line-soft);border-radius:var(--r-s);overflow:hidden}
+#simulator .sim-status-row{display:flex;justify-content:space-between;gap:10px;padding:6px 9px;background:var(--surface-2)}
+#simulator .sim-status-key{font-family:var(--f-mono);font-size:11px;color:var(--text-dim)}
+#simulator .sim-status-value{font-size:12.5px;color:var(--text);text-align:right;white-space:nowrap}
+#simulator .sim-status-value.sim-true{color:var(--ok);font-weight:600}
+#simulator .sim-status-value.sim-err{color:var(--err);font-weight:600}
+#simulator .sim-subsection{margin-top:14px}
+#simulator .sim-subtitle{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:6px;font-weight:500}
+#simulator .sim-empty{font-size:12.5px;color:var(--text-dim);margin:0}
+#simulator .sim-queue{display:flex;flex-direction:column;gap:5px}
+#simulator .sim-queue-item{display:flex;justify-content:space-between;gap:8px;font-size:12px;background:var(--surface-2);border:1px solid var(--line-soft);border-radius:var(--r-s);padding:5px 8px}
+#simulator .sim-queue-item .sim-q-num{font-family:var(--f-mono);color:var(--text-dim)}
+#simulator .sim-errbuf{display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto}
+#simulator .sim-errbuf-item{border-left:3px solid var(--err);background:color-mix(in srgb, var(--err) 9%, transparent);border-radius:0 var(--r-s) var(--r-s) 0;padding:5px 8px}
+#simulator .sim-errbuf-item.sim-errbuf-item--note{border-left-color:var(--text-dim);background:var(--surface-2)}
+#simulator .sim-errbuf-code{font-family:var(--f-mono);font-size:11px;color:var(--err);display:block}
+#simulator .sim-errbuf-item--note .sim-errbuf-code{color:var(--text-dim)}
+#simulator .sim-errbuf-msg{font-size:12px;color:var(--text-2)}
+
+/* ---------- legend ---------- */
+#simulator .sim-legend{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 22px;margin-top:18px;font-size:13px;color:var(--text-2)}
+@media (max-width:700px){#simulator .sim-legend{grid-template-columns:1fr}}
+#simulator .sim-legend-item{display:flex;align-items:center;gap:9px}
+#simulator .sim-cap-note{margin-top:10px;font-size:12.5px;color:var(--text-dim)}
+#simulator .sim-corner-swatch{width:22px;height:14px;flex:0 0 auto;position:relative}
+#simulator .sim-corner-swatch::before{content:"";position:absolute;inset:0;border:2px solid var(--accent);border-right:none;border-bottom:none}
+#simulator .sim-corner-swatch--blend::before{border-top-left-radius:10px}
+#simulator .sim-corner-swatch--sharp::before{border-color:var(--text-2)}
+
+@media (prefers-reduced-motion:reduce){#simulator .sim-btn,#simulator .pill{transition:none}}

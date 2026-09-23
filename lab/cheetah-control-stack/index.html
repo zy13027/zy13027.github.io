@@ -1,0 +1,1039 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style><title>Cheetah Control Stack · Zinan Yang</title>
+</head><body>
+<div class="zylab-bar"><a href="/lab/">&larr; Zinan Yang &middot; lab</a></div>
+<style>
+.zylab-bar{position:relative;z-index:1000;padding:7px 16px;border-bottom:1px solid rgba(128,128,128,.28);
+  font:500 12px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+  letter-spacing:.02em}
+.zylab-bar a{color:inherit;opacity:.78;text-decoration:none}
+.zylab-bar a:hover,.zylab-bar a:focus-visible{opacity:1;text-decoration:underline}
+</style>
+
+
+<style>
+/* ========== tokens : bare :root carries the complete light palette ========== */
+:root{
+  --ground:      #E4E3DE;
+  --panel:       #FAFAF8;
+  --panel-2:     #EDEDE7;
+  --ink:         #1B1E1C;
+  --ink-2:       #454A46;
+  --muted:       #757A73;
+  --line:        #C9C9C0;
+  --line-2:      #AFAFA5;
+  --hazard:      #B57F14;
+  --hazard-soft: #F0E3C2;
+  --estop:       #B0301C;
+  --estop-soft:  #F2D8D2;
+  --stance:      #2C6B58;
+  --stance-soft: #D3E4DD;
+  --swing:       #39679B;
+  --swing-soft:  #D8E3F0;
+  --shadow:      rgba(27,30,28,.13);
+  --grid:        rgba(27,30,28,.07);
+
+  --f-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-body:    "Source Serif 4", Georgia, "Times New Roman", serif;
+  --f-mono:    "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --measure: 65ch;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:      #14171A;
+    --panel:       #1D2124;
+    --panel-2:     #262B2E;
+    --ink:         #E7E9E4;
+    --ink-2:       #B6BAB4;
+    --muted:       #868C86;
+    --line:        #333A3D;
+    --line-2:      #4B5255;
+    --hazard:      #E0B24E;
+    --hazard-soft: #3A3016;
+    --estop:       #E06A50;
+    --estop-soft:  #3B211B;
+    --stance:      #4FAB8D;
+    --stance-soft: #1B322B;
+    --swing:       #6DA2DE;
+    --swing-soft:  #1C2937;
+    --shadow:      rgba(0,0,0,.45);
+    --grid:        rgba(231,233,228,.07);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:      #14171A;
+  --panel:       #1D2124;
+  --panel-2:     #262B2E;
+  --ink:         #E7E9E4;
+  --ink-2:       #B6BAB4;
+  --muted:       #868C86;
+  --line:        #333A3D;
+  --line-2:      #4B5255;
+  --hazard:      #E0B24E;
+  --hazard-soft: #3A3016;
+  --estop:       #E06A50;
+  --estop-soft:  #3B211B;
+  --stance:      #4FAB8D;
+  --stance-soft: #1B322B;
+  --swing:       #6DA2DE;
+  --swing-soft:  #1C2937;
+  --shadow:      rgba(0,0,0,.45);
+  --grid:        rgba(231,233,228,.07);
+}
+
+/* ========== base ========== */
+*{ box-sizing:border-box; }
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--f-body);
+  font-size:17px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{ max-width:1120px; margin:0 auto; padding:0 clamp(1rem,4vw,2.75rem); }
+
+h1,h2,h3,h4{ font-family:var(--f-display); text-wrap:balance; margin:0; line-height:1.08; }
+h1{ font-size:clamp(2.6rem,6.4vw,4.6rem); font-weight:700; letter-spacing:-.03em; }
+h2{ font-size:clamp(1.65rem,3.2vw,2.35rem); font-weight:700; letter-spacing:-.022em; }
+h3{ font-size:1.075rem; font-weight:600; letter-spacing:-.01em; }
+p{ margin:0; max-width:var(--measure); }
+a{ color:inherit; }
+
+.eyebrow{
+  font-family:var(--f-mono); font-size:.685rem; font-weight:500;
+  letter-spacing:.17em; text-transform:uppercase; color:var(--muted);
+}
+.mono{ font-family:var(--f-mono); font-size:.86em; }
+code{
+  font-family:var(--f-mono); font-size:.845em;
+  background:var(--panel-2); padding:.11em .38em; border-radius:2px;
+  border:1px solid var(--line);
+}
+:focus-visible{ outline:2px solid var(--hazard); outline-offset:2px; border-radius:2px; }
+
+.stack{ display:flex; flex-direction:column; }
+.g8{ gap:.5rem } .g12{ gap:.75rem } .g16{ gap:1rem } .g24{ gap:1.5rem } .g32{ gap:2rem }
+
+/* ========== hero ========== */
+.hero{
+  border-bottom:1px solid var(--line);
+  background:
+    linear-gradient(var(--grid) 1px, transparent 1px) 0 0/100% 34px,
+    var(--ground);
+  padding:clamp(2.5rem,6vw,4.25rem) 0 clamp(2rem,4vw,3rem);
+}
+.hero-top{ display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:1.25rem 2rem; }
+.hero h1{ margin-top:.6rem; }
+.hero .lede{
+  font-size:clamp(1.06rem,1.9vw,1.28rem); color:var(--ink-2);
+  margin-top:1.1rem; max-width:56ch;
+}
+.hero .lede b{ color:var(--ink); font-weight:600; }
+.plate{
+  display:flex; flex-direction:column; gap:.15rem; align-items:flex-end;
+  font-family:var(--f-mono); font-size:.7rem; letter-spacing:.06em; color:var(--muted);
+  text-align:right; border-right:2px solid var(--hazard); padding-right:.7rem;
+}
+.plate b{ color:var(--ink); font-weight:500; }
+
+/* ========== instrument panels ========== */
+.rig{
+  margin-top:2.25rem; background:var(--panel);
+  border:1px solid var(--line); border-radius:3px;
+  box-shadow:0 1px 0 var(--shadow);
+  overflow:hidden;
+}
+.rig-head{
+  display:flex; flex-wrap:wrap; gap:.75rem 1.25rem; align-items:center; justify-content:space-between;
+  padding:.7rem 1rem; border-bottom:1px solid var(--line); background:var(--panel-2);
+}
+.rig-title{ font-family:var(--f-mono); font-size:.71rem; letter-spacing:.15em; text-transform:uppercase; color:var(--ink-2); }
+.rig-body{ padding:1rem; }
+canvas{ display:block; width:100%; }
+/* explicit CSS heights: layout must never depend on the height attribute,
+   which the drawing code rewrites when it sizes the backing store */
+#gaitCanvas{ height:230px; }
+#schedCanvas{ height:132px; }
+#hzCanvas{ height:200px; }
+
+.controls{ display:flex; flex-wrap:wrap; gap:.4rem; align-items:center; }
+button.seg{
+  font-family:var(--f-mono); font-size:.71rem; letter-spacing:.07em; text-transform:uppercase;
+  padding:.36rem .62rem; background:var(--panel); color:var(--ink-2);
+  border:1px solid var(--line); border-radius:2px; cursor:pointer;
+  transition:background .18s ease, color .18s ease, border-color .18s ease;
+}
+button.seg:hover{ border-color:var(--line-2); color:var(--ink); }
+button.seg[aria-pressed="true"]{ background:var(--ink); color:var(--ground); border-color:var(--ink); }
+input[type=range]{ accent-color:var(--hazard); width:110px; }
+.rate{ font-family:var(--f-mono); font-size:.72rem; color:var(--muted); font-variant-numeric:tabular-nums; }
+
+.legend{ display:flex; flex-wrap:wrap; gap:.35rem 1.1rem; font-family:var(--f-mono); font-size:.7rem; color:var(--ink-2); }
+.legend i{ width:.62rem; height:.62rem; display:inline-block; border-radius:1px; margin-right:.36rem; vertical-align:-1px; }
+
+/* ========== numbered spine ========== */
+.band{ border-top:1px solid var(--line); padding:clamp(2.5rem,5vw,3.75rem) 0; }
+.band-inner{ display:grid; grid-template-columns:4.25rem minmax(0,1fr); gap:0 clamp(1rem,3vw,2.25rem); }
+.step{
+  font-family:var(--f-mono); font-size:.78rem; font-weight:700; color:var(--hazard);
+  letter-spacing:.04em; padding-top:.3rem;
+  border-right:1px solid var(--line); align-self:stretch;
+}
+.band h2{ margin-bottom:.55rem; }
+.band .sub{ color:var(--muted); font-family:var(--f-mono); font-size:.73rem; letter-spacing:.09em; text-transform:uppercase; }
+@media (max-width:640px){
+  .band-inner{ grid-template-columns:minmax(0,1fr); gap:.6rem; }
+  .step{ border-right:0; border-left:2px solid var(--hazard); padding:0 0 0 .6rem; }
+}
+
+/* ========== tick train ========== */
+.train{ display:grid; gap:.85rem; }
+.train-row{ display:grid; grid-template-columns:8.5rem minmax(0,1fr); gap:.9rem; align-items:center; }
+.train-label{ font-family:var(--f-mono); font-size:.7rem; line-height:1.35; color:var(--ink-2); }
+.train-label b{ display:block; color:var(--ink); font-weight:700; letter-spacing:.04em; }
+.ticks{ display:flex; gap:2px; height:34px; align-items:flex-end; overflow:hidden; }
+.tick{ flex:1 1 0; background:var(--line); border-radius:1px; height:38%; transition:height .1s linear, background .1s linear; }
+.tick.on{ background:var(--swing); height:100%; }
+.tick.mpc{ background:var(--line-2); height:52%; }
+.tick.mpc.on{ background:var(--hazard); height:100%; }
+.counters{ display:flex; flex-wrap:wrap; gap:.3rem 1.5rem; font-family:var(--f-mono); font-size:.72rem; color:var(--muted); font-variant-numeric:tabular-nums; }
+.counters b{ color:var(--ink); font-weight:500; }
+
+/* ========== horizon ========== */
+.horizon-note{ font-family:var(--f-mono); font-size:.72rem; color:var(--muted); }
+
+/* ========== task stack ========== */
+.tasks{ display:grid; gap:.4rem; }
+.task{
+  display:grid; grid-template-columns:2.1rem minmax(0,1fr) auto; align-items:center; gap:.75rem;
+  padding:.6rem .75rem; background:var(--panel-2); border:1px solid var(--line);
+  border-left:3px solid var(--line-2); border-radius:2px; cursor:pointer;
+  transition:border-left-color .2s ease, opacity .2s ease, transform .2s ease, background .2s ease;
+  font-family:var(--f-mono); font-size:.775rem; text-align:left; color:var(--ink);
+}
+.task:hover{ transform:translateX(2px); }
+.task[data-on="true"]{ border-left-color:var(--stance); background:var(--panel); }
+.task[data-on="false"]{ opacity:.42; }
+.task .pri{ color:var(--hazard); font-weight:700; }
+.task .dof{ color:var(--muted); font-variant-numeric:tabular-nums; }
+.task .nm{ line-height:1.3; }
+.task .nm small{ display:block; font-family:var(--f-body); font-size:.86rem; color:var(--muted); }
+.budget{ margin-top:.9rem; }
+.budget-bar{ display:flex; height:20px; gap:2px; border:1px solid var(--line); border-radius:2px; overflow:hidden; padding:2px; background:var(--panel-2); }
+.budget-cell{ flex:1 1 0; background:var(--line); border-radius:1px; transition:background .25s ease; }
+.budget-cell.used{ background:var(--stance); }
+.budget-cell.free{ background:var(--line-2); }
+
+/* ========== FSM ========== */
+.fsm-grid{ display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); gap:1rem; }
+@media (max-width:820px){ .fsm-grid{ grid-template-columns:1fr; } }
+.fsm-svg{ width:100%; height:auto; display:block; }
+.fsm-node rect{ transition:fill .22s ease, stroke .22s ease; }
+.fsm-node text{ font-family:var(--f-mono); font-size:9.2px; letter-spacing:.02em; pointer-events:none; }
+.fsm-node{ cursor:pointer; }
+.fsm-detail{ background:var(--panel-2); border:1px solid var(--line); border-radius:2px; padding:1rem; display:flex; flex-direction:column; gap:.7rem; }
+.fsm-detail h3{ font-family:var(--f-mono); font-size:.86rem; letter-spacing:.04em; }
+.fsm-detail p{ font-size:.94rem; color:var(--ink-2); }
+.chips{ display:flex; flex-wrap:wrap; gap:.35rem; }
+.chip{
+  font-family:var(--f-mono); font-size:.655rem; letter-spacing:.08em; text-transform:uppercase;
+  padding:.2rem .45rem; border-radius:2px; border:1px solid var(--line-2); color:var(--ink-2); background:var(--panel);
+}
+.chip.ok{ color:var(--stance); border-color:var(--stance); background:var(--stance-soft); }
+.chip.warn{ color:var(--estop); border-color:var(--estop); background:var(--estop-soft); }
+.chip.rc{ color:var(--hazard); border-color:var(--hazard); background:var(--hazard-soft); }
+
+/* ========== tables & lists ========== */
+.scroller{ overflow-x:auto; }
+table{ border-collapse:collapse; width:100%; font-size:.88rem; min-width:520px; }
+th,td{ text-align:left; padding:.52rem .7rem; border-bottom:1px solid var(--line); vertical-align:top; }
+th{ font-family:var(--f-mono); font-size:.68rem; letter-spacing:.11em; text-transform:uppercase; color:var(--muted); font-weight:500; }
+td.m{ font-family:var(--f-mono); font-size:.78rem; white-space:nowrap; }
+tbody tr:hover{ background:var(--panel); }
+
+.pair{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:1rem; }
+@media (max-width:760px){ .pair{ grid-template-columns:1fr; } }
+.note{
+  border-left:3px solid var(--hazard); background:var(--hazard-soft);
+  padding:.85rem 1rem; border-radius:0 2px 2px 0; font-size:.95rem; color:var(--ink);
+}
+.note b{ font-family:var(--f-display); font-weight:600; }
+
+.files{ display:grid; gap:.3rem; }
+.file{
+  display:grid; grid-template-columns:minmax(0,1fr) auto; gap:1rem; align-items:baseline;
+  padding:.5rem .1rem; border-bottom:1px solid var(--line);
+}
+.file .p{ font-family:var(--f-mono); font-size:.745rem; color:var(--ink); overflow-wrap:anywhere; }
+.file .w{ font-size:.85rem; color:var(--muted); text-align:right; }
+@media (max-width:640px){ .file{ grid-template-columns:1fr; gap:.15rem; } .file .w{ text-align:left; } }
+
+footer{ border-top:1px solid var(--line); padding:2rem 0 3rem; color:var(--muted); font-size:.84rem; }
+
+@media (prefers-reduced-motion:reduce){
+  *{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+}
+</style>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="hero-top">
+      <div>
+        <div class="eyebrow">MIT Biomimetics · Cheetah-Software</div>
+        <h1>Cheetah Control Stack</h1>
+      </div>
+      <div class="plate">
+        <span>controller_dt <b>0.002 s → 500 Hz</b></span>
+        <span>use_wbc <b>1</b> · use_rc <b>1</b></span>
+      </div>
+    </div>
+    <p class="lede">A quadruped is a machine that is falling over almost all of the time. What stops it is not one clever algorithm but a <b>stack of loops running at different speeds</b> — a slow one that decides where to push, a fast one that works out which motors do the pushing, and a state machine that decides whether any of it should be running at all.</p>
+
+    <div class="rig">
+      <div class="rig-head">
+        <span class="rig-title">Gait · contact schedule</span>
+        <div class="controls" role="group" aria-label="Gait selection">
+          <button class="seg" data-gait="stand" aria-pressed="false">Stand</button>
+          <button class="seg" data-gait="trot" aria-pressed="true">Trot</button>
+          <button class="seg" data-gait="pace" aria-pressed="false">Pace</button>
+          <button class="seg" data-gait="bound" aria-pressed="false">Bound</button>
+          <button class="seg" data-gait="pronk" aria-pressed="false">Pronk</button>
+          <button class="seg" data-gait="gallop" aria-pressed="false">Gallop</button>
+        </div>
+        <div class="controls">
+          <button class="seg" id="playBtn" aria-pressed="true">Pause</button>
+          <label class="rate" for="spd">speed</label>
+          <input type="range" id="spd" min="10" max="200" value="100" aria-label="Animation speed">
+        </div>
+      </div>
+      <div class="rig-body stack g12">
+        <canvas id="gaitCanvas" height="230" aria-label="Top-down animation of a quadruped's four feet cycling between stance and swing"></canvas>
+        <canvas id="schedCanvas" height="132" aria-label="Contact schedule showing stance and swing intervals for each leg"></canvas>
+        <div class="legend">
+          <span><i style="background:var(--stance)"></i>stance — foot loaded, exerts ground reaction force</span>
+          <span><i style="background:var(--swing)"></i>swing — foot in flight, tracking a foot trajectory</span>
+          <span><i style="background:var(--hazard)"></i>now</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- 01 -->
+  <section class="band" style="border-top:0">
+    <div class="band-inner">
+      <div class="step">01</div>
+      <div class="stack g16">
+        <div>
+          <div class="sub">The problem</div>
+          <h2>You cannot push on air</h2>
+        </div>
+        <p>The robot has twelve motors — three per leg — and a body with six degrees of freedom it does not directly control. The only way to move that body is to push against the ground, and the only feet that can push are the ones currently touching it. Every 2 ms the software has to answer one question: <em>given which feet are down right now, what forces should they apply?</em></p>
+        <p>That single sentence is why the architecture looks the way it does. The set of feet on the ground changes several times a second, so the problem being solved changes several times a second too. In the animation above, watch the <span class="mono" style="color:var(--stance)">green</span> feet — those are the only ones with any authority over the body at that instant.</p>
+        <div class="note"><b>Leg order matters.</b> Throughout the codebase legs are indexed <code>FR, FL, HR, HL</code> — front-right, front-left, hind-right, hind-left. Get that order wrong in a contact array and the robot will confidently push with the wrong foot.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 -->
+  <section class="band">
+    <div class="band-inner">
+      <div class="step">02</div>
+      <div class="stack g16">
+        <div>
+          <div class="sub">Architecture</div>
+          <h2>Two clocks, one robot</h2>
+        </div>
+        <p>Planning forces over the next third of a second is expensive — it is a quadratic program with dozens of variables. Converting those forces into motor torques is comparatively cheap. So the stack splits: the expensive planner runs <b>slowly</b>, the cheap converter runs <b>fast</b>, and the fast loop keeps using the planner's last answer until a fresh one arrives.</p>
+
+        <div class="rig">
+          <div class="rig-head">
+            <span class="rig-title">Loop rates · live</span>
+            <div class="counters">
+              <span>control ticks <b id="cFast">0</b></span>
+              <span>MPC solves <b id="cSlow">0</b></span>
+              <span>ratio <b id="cRatio">—</b></span>
+            </div>
+          </div>
+          <div class="rig-body stack g16">
+            <div class="train">
+              <div class="train-row">
+                <div class="train-label"><b>500 Hz</b>WBC + joint PD<br>every 2 ms</div>
+                <div class="ticks" id="fastTrain" aria-hidden="true"></div>
+              </div>
+              <div class="train-row">
+                <div class="train-label"><b>~40 Hz</b>Convex MPC<br>every 13 ticks</div>
+                <div class="ticks" id="slowTrain" aria-hidden="true"></div>
+              </div>
+            </div>
+            <p class="horizon-note">Shown ~40× slower than real time. The fast train is the control loop; the amber tick is a fresh MPC solution landing.</p>
+          </div>
+        </div>
+
+        <div class="pair">
+          <div class="stack g8">
+            <h3>Why not just run MPC at 500 Hz?</h3>
+            <p style="font-size:.95rem;color:var(--ink-2)">Because it would not finish. The QP over a 10-step horizon takes several milliseconds on the on-board computer. Attempting it every 2 ms would blow the deadline, and a missed deadline in a torque loop is a robot on the floor.</p>
+          </div>
+          <div class="stack g8">
+            <h3>Why not run everything slowly?</h3>
+            <p style="font-size:.95rem;color:var(--ink-2)">Because leg dynamics are fast. At 40 Hz the joint controller would be 25 ms behind the leg it is meant to be steering — enough for a swing foot to stub the ground or a stance foot to slip.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 -->
+  <section class="band">
+    <div class="band-inner">
+      <div class="step">03</div>
+      <div class="stack g16">
+        <div>
+          <div class="sub">The slow loop</div>
+          <h2>Convex MPC plans forces, not footsteps</h2>
+        </div>
+        <p>Model Predictive Control treats the body as a <b>single rigid block</b> — mass, inertia, and nothing else. Legs are massless force-applicators. That approximation is what makes the problem convex and therefore solvable in milliseconds.</p>
+        <p>It looks ahead ten steps, decides a ground reaction force for every foot that will be in contact at every step, then throws almost all of it away: only the <b>first</b> step's forces are actually used. Next cycle it re-solves from the new measured state. That is the receding horizon.</p>
+
+        <div class="rig">
+          <div class="rig-head">
+            <span class="rig-title">Receding horizon · 10 steps</span>
+            <div class="controls">
+              <button class="seg" id="hzStep">Step once</button>
+              <button class="seg" id="hzAuto" aria-pressed="true">Auto</button>
+            </div>
+          </div>
+          <div class="rig-body stack g12">
+            <canvas id="hzCanvas" height="200" aria-label="Receding horizon: a predicted body trajectory of ten steps, of which only the first is applied before re-solving"></canvas>
+            <div class="legend">
+              <span><i style="background:var(--hazard)"></i>applied — first step only</span>
+              <span><i style="background:var(--line-2)"></i>predicted then discarded</span>
+              <span><i style="background:var(--ink)"></i>measured state</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="scroller">
+          <table>
+            <thead><tr><th>Element</th><th>What it is</th></tr></thead>
+            <tbody>
+              <tr><td class="m">Decision variables</td><td>Ground reaction force <code>f</code> at each stance foot, at each of 10 horizon steps</td></tr>
+              <tr><td class="m">Objective</td><td>Track the commanded body trajectory; penalise large and jerky forces</td></tr>
+              <tr><td class="m">Constraints</td><td>Friction pyramid (no slipping), force limits, zero force on swing feet</td></tr>
+              <tr><td class="m">Solver</td><td>qpOASES by default — <code>use_jcqp: 0</code> in the controller's user parameters</td></tr>
+              <tr><td class="m">Output</td><td><code>Fr_des[leg]</code> — the desired reaction force handed to the fast loop</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="note"><b>The friction cone is the interesting constraint.</b> It is what stops the optimiser from producing a beautiful trajectory that requires a foot to push sideways harder than friction allows. A cone is not convex-friendly, so it is approximated as a four-sided pyramid — one of several places where the maths is bent to keep the QP fast.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section class="band">
+    <div class="band-inner">
+      <div class="step">04</div>
+      <div class="stack g16">
+        <div>
+          <div class="sub">The fast loop</div>
+          <h2>WBC ranks its wishes</h2>
+        </div>
+        <p>Whole-Body Control takes the MPC's desired forces and the full floating-base dynamics — all eighteen degrees of freedom, real leg masses included — and produces joint torques. But it is usually asked for more than it can deliver, so it obeys a strict <b>priority order</b>: satisfy the first task exactly, then satisfy the second only within whatever freedom the first left over, and so on down the list.</p>
+        <p>That "whatever freedom is left over" is null-space projection. A lower-priority task can never disturb a higher one. The order below is read straight from <code>LocomotionCtrl::_ContactTaskUpdate</code> in the Cheetah-Software source — tasks are pushed onto <code>_task_list</code> in exactly this sequence.</p>
+
+        <div class="rig">
+          <div class="rig-head">
+            <span class="rig-title">Task priority stack · click to toggle</span>
+            <div class="counters"><span>DoF committed <b id="dofUsed">0</b> / 18</span></div>
+          </div>
+          <div class="rig-body stack g16">
+            <div class="tasks" id="taskList"></div>
+            <div class="budget">
+              <div class="budget-bar" id="dofBar" aria-hidden="true"></div>
+              <p class="horizon-note" style="margin-top:.5rem" id="dofNote">18 degrees of freedom: 6 for the floating body, 12 for the joints.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="note"><b>Contacts are constraints, not tasks.</b> A stance foot does not ask to stay put — it is <em>required</em> to. Those feet enter through <code>_contact_list</code> with the MPC's <code>Fr_des</code> attached; only swing feet become tasks that compete for leftover freedom.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 -->
+  <section class="band">
+    <div class="band-inner">
+      <div class="step">05</div>
+      <div class="stack g16">
+        <div>
+          <div class="sub">Supervision</div>
+          <h2>A state machine sits above all of it</h2>
+        </div>
+        <p>Locomotion is only one mode. The robot also has to lie down safely, stand up, balance in place, recover after a fall, and — because it is a research platform — throw itself into a backflip. <code>ControlFSM</code> owns that, and the loop it runs each tick is worth memorising: <span class="mono">safety pre-check → read RC mode → check transition → run state or run transition → safety post-check</span>.</p>
+
+        <div class="rig">
+          <div class="rig-head">
+            <span class="rig-title">ControlFSM · select a state</span>
+            <div class="counters"><span>operating mode <b id="opMode">NORMAL</b></span></div>
+          </div>
+          <div class="rig-body">
+            <div class="fsm-grid">
+              <div class="scroller"><svg class="fsm-svg" id="fsmSvg" viewBox="0 0 460 300" role="img" aria-label="Control state machine diagram"></svg></div>
+              <div class="fsm-detail" id="fsmDetail"></div>
+            </div>
+          </div>
+        </div>
+
+        <p>Transitions are not instantaneous. When <code>checkTransition()</code> returns a different state, the FSM enters <span class="mono">TRANSITIONING</span> and calls <code>transition()</code> every tick until it reports <code>done</code> — only then does <code>onExit()</code> / <code>onEnter()</code> fire. That is what lets the robot lower itself gracefully instead of snapping between modes.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 -->
+  <section class="band">
+    <div class="band-inner">
+      <div class="step">06</div>
+      <div class="stack g16">
+        <div>
+          <div class="sub">Safety</div>
+          <h2>E-STOP means one thing: go limp</h2>
+        </div>
+        <p>The safety checks bracket the control computation. Before it, <code>safetyPreCheck()</code> asks whether the body orientation is still recoverable — if the robot has tipped past the limit, the operating mode becomes <span class="mono" style="color:var(--estop)">ESTOP</span>. After it, <code>safetyPostCheck()</code> sanity-checks what the controller just produced: are the desired foot positions physically reachable, are the feed-forward forces within limits.</p>
+        <div class="pair">
+          <div class="stack g8">
+            <h3>Pre-check — is the robot safe to control?</h3>
+            <p style="font-size:.95rem;color:var(--ink-2)"><code>checkSafeOrientation()</code>, skipped when the mode is <span class="mono">K_RECOVERY_STAND</span> — because recovering from a fall necessarily starts from an unsafe orientation. Fail here and every state is abandoned for Passive.</p>
+          </div>
+          <div class="stack g8">
+            <h3>Post-check — is the output sane?</h3>
+            <p style="font-size:.95rem;color:var(--ink-2)"><code>checkPDesFoot()</code> and <code>checkForceFeedForward()</code>, each opted into per state. These clamp rather than stop — a controller that asks for the impossible gets corrected, not killed.</p>
+          </div>
+        </div>
+        <div class="note" style="border-left-color:var(--estop);background:var(--estop-soft)"><b>Passive is not "off".</b> It is the state where the joints are commanded to near-zero torque so the robot goes limp and folds under its own weight. On a legged machine that is the safe failure — a robot holding position with a fault is far more dangerous than one lying down.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 -->
+  <section class="band">
+    <div class="band-inner">
+      <div class="step">07</div>
+      <div class="stack g16">
+        <div>
+          <div class="sub">Plumbing</div>
+          <h2>LCM, and the bridge that makes simulation honest</h2>
+        </div>
+        <p>There is no ROS here. Messaging is <b>LCM</b> — MIT's own publish/subscribe over UDP multicast, with no master process to start and no scheduler between a message and its handler. For a torque loop with a 2 ms budget, that absence is the point.</p>
+        <p>The other structural idea is the bridge. <code>RobotRunner</code> holds the controller and knows nothing about where its data comes from; <code>HardwareBridge</code> feeds it real SPI, EtherCAT and IMU traffic, <code>SimulationBridge</code> feeds it simulated equivalents. <b>The same controller binary runs in both.</b> A bug reproduced in simulation is genuinely the same bug.</p>
+        <div class="scroller">
+          <table>
+            <thead><tr><th>Layer</th><th>Source file</th><th>Carries</th></tr></thead>
+            <tbody>
+              <tr><td class="m">Messaging</td><td class="m">rt_interface_lcm.cpp</td><td>Operator commands, state estimates, logs</td></tr>
+              <tr><td class="m">Motor bus</td><td class="m">rt_spi.cpp · rt_ethercat.cpp</td><td>Joint commands out, encoder and torque in</td></tr>
+              <tr><td class="m">Radio</td><td class="m">rt_sbus.cpp · rt_rc_interface.cpp</td><td>RC transmitter → <code>RC_mode</code> → control mode</td></tr>
+              <tr><td class="m">Inertial</td><td class="m">rt_vectornav.cpp · lord_imu</td><td>Orientation and angular rate for the estimator</td></tr>
+              <tr><td class="m">Startup</td><td class="m">JPosInitializer.cpp</td><td>Eases joints to a known pose before control begins</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="note"><b>cheater_mode: 0.</b> With it off, the state estimator is doing real work — fusing IMU and leg kinematics. Set it to 1 and the controller is handed perfect ground-truth state from the simulator, which is useful for isolating whether a failure is control or estimation.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 -->
+  <section class="band">
+    <div class="band-inner">
+      <div class="step">08</div>
+      <div class="stack g16">
+        <div>
+          <div class="sub">Further reading</div>
+          <h2>Two papers carry the whole architecture</h2>
+        </div>
+        <p>Start with <em>Dynamic Locomotion in the MIT Cheetah 3 Through Convex Model-Predictive Control</em> for section 03, then <em>Highly Dynamic Quadruped Locomotion via Whole-Body Impulse Control and Model Predictive Control</em> for section 04. The code itself is open source as <a href="https://github.com/mit-biomimetics/Cheetah-Software">mit-biomimetics/Cheetah-Software</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p style="max-width:70ch">Built on the open-source MIT Cheetah-Software architecture — loop rates, solver flags and task ordering follow its controller code and configuration. Gait animation is illustrative; contact schedules are drawn from standard phase offsets, not from recorded logs.</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- theme-aware colour reader ---------- */
+  let C = {};
+  function readColours(){
+    const s = getComputedStyle(document.documentElement);
+    ["ink","ink-2","muted","line","line-2","panel","panel-2","ground",
+     "stance","swing","hazard","estop","stance-soft","swing-soft","grid"].forEach(k=>{
+      C[k] = s.getPropertyValue("--"+k).trim();
+    });
+  }
+  readColours();
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", readColours);
+  new MutationObserver(readColours).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+
+  /* Fixed logical heights. Never read these back off the element: assigning
+     cv.height rewrites the height attribute, so re-reading it compounds by
+     dpr every frame until the backing store exceeds the browser's limit and
+     the canvas silently blanks. */
+  const CH = { gaitCanvas:230, schedCanvas:132, hzCanvas:200 };
+
+  function fit(cv){
+    const dpr = Math.min(window.devicePixelRatio||1, 2);
+    const w = Math.max(cv.clientWidth || 600, 1);
+    const h = CH[cv.id];
+    const bw = Math.round(w*dpr), bh = Math.round(h*dpr);
+    if (cv.width !== bw || cv.height !== bh){ cv.width = bw; cv.height = bh; }
+    cv.style.height = h + "px";
+    const ctx = cv.getContext("2d");
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,w,h);
+    return {ctx, w, h};
+  }
+
+  /* =======================================================
+     GAIT + CONTACT SCHEDULE
+     legs indexed FR, FL, HR, HL — as in the codebase
+     ======================================================= */
+  const LEGS = ["FR","FL","HR","HL"];
+  const GAITS = {
+    stand:  {offs:[0,0,0,0],           duty:1.00, label:"Stand"},
+    trot:   {offs:[0,0.5,0.5,0],       duty:0.50, label:"Trot"},
+    pace:   {offs:[0,0.5,0,0.5],       duty:0.50, label:"Pace"},
+    bound:  {offs:[0,0,0.5,0.5],       duty:0.42, label:"Bound"},
+    pronk:  {offs:[0,0,0,0],           duty:0.42, label:"Pronk"},
+    gallop: {offs:[0,0.12,0.52,0.64],  duty:0.36, label:"Gallop"}
+  };
+  let gait = "trot", phase = 0, playing = !reduce, speed = 1;
+
+  const gaitCv = document.getElementById("gaitCanvas");
+  const schedCv = document.getElementById("schedCanvas");
+
+  // nominal foot positions, top-down: x lateral, y fore-aft
+  const NOM = [[ 1,  1],[-1,  1],[ 1, -1],[-1, -1]]; // FR FL HR HL
+
+  function legPhase(i){
+    const g = GAITS[gait];
+    let p = (phase + g.offs[i]) % 1;
+    if (p < 0) p += 1;
+    return p;
+  }
+  function inStance(i){ return legPhase(i) < GAITS[gait].duty; }
+
+  function drawGait(){
+    const {ctx,w,h} = fit(gaitCv);
+    ctx.clearRect(0,0,w,h);
+    const cx = w/2, cy = h/2;
+    const sx = Math.min(w*0.115, 78), sy = Math.min(h*0.30, 66);
+
+    // ground grid
+    ctx.strokeStyle = C.grid; ctx.lineWidth = 1;
+    for(let gx=(cx%34); gx<w; gx+=34){ ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,h); ctx.stroke(); }
+    for(let gy=(cy%34); gy<h; gy+=34){ ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(w,gy); ctx.stroke(); }
+
+    const g = GAITS[gait];
+    // body bob from number of stance legs
+    let nStance = 0; for(let i=0;i<4;i++) if(inStance(i)) nStance++;
+    const bob = (gait==="stand") ? 0 : (4-nStance)*1.5;
+
+    // body
+    const bw = sx*1.5, bh = sy*1.75;
+    ctx.save();
+    ctx.translate(cx, cy - bob);
+    ctx.fillStyle = C["panel-2"];
+    ctx.strokeStyle = C["line-2"]; ctx.lineWidth = 1.5;
+    roundRect(ctx, -bw/2, -bh/2, bw, bh, 7); ctx.fill(); ctx.stroke();
+    // heading arrow
+    ctx.fillStyle = C.muted;
+    ctx.beginPath(); ctx.moveTo(0,-bh/2-4); ctx.lineTo(-5,-bh/2+5); ctx.lineTo(5,-bh/2+5); ctx.closePath(); ctx.fill();
+    ctx.restore();
+
+    for(let i=0;i<4;i++){
+      const p = legPhase(i), st = p < g.duty;
+      const hipX = cx + NOM[i][0]*sx*0.72;
+      const hipY = (cy - bob) + (-NOM[i][1])*sy*0.78;
+
+      // foot position: stance foot slides backward, swing foot arcs forward
+      let fx, fy, lift = 0;
+      const stride = sy*0.55;
+      if (st){
+        const u = g.duty === 1 ? 0.5 : p/g.duty;
+        fy = hipY - stride*0.5 + stride*u + bob;
+        fx = hipX + NOM[i][0]*sx*0.30;
+      } else {
+        const u = (p - g.duty)/(1-g.duty);
+        fy = hipY + stride*0.5 - stride*u + bob;
+        fx = hipX + NOM[i][0]*sx*0.30;
+        lift = Math.sin(u*Math.PI)*11;
+      }
+
+      // swing trajectory ghost
+      if(!st){
+        ctx.strokeStyle = C["swing-soft"]; ctx.lineWidth = 2.5; ctx.setLineDash([]);
+        ctx.beginPath();
+        for(let k=0;k<=22;k++){
+          const u=k/22;
+          const yy = hipY + stride*0.5 - stride*u + bob - Math.sin(u*Math.PI)*11;
+          if(k===0) ctx.moveTo(fx,yy); else ctx.lineTo(fx,yy);
+        }
+        ctx.stroke();
+      }
+
+      // leg link
+      ctx.strokeStyle = st ? C.stance : C.swing;
+      ctx.lineWidth = st ? 3 : 2;
+      ctx.beginPath(); ctx.moveTo(hipX, hipY); ctx.lineTo(fx, fy - lift); ctx.stroke();
+
+      // ground reaction force arrow on stance feet
+      if(st && gait!=="stand"){
+        const mag = 16 + 16*(nStance? 1/nStance : 0)*2;
+        ctx.strokeStyle = C.hazard; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(fx, fy); ctx.lineTo(fx, fy - mag); ctx.stroke();
+        ctx.fillStyle = C.hazard;
+        ctx.beginPath(); ctx.moveTo(fx, fy-mag-5); ctx.lineTo(fx-3.6, fy-mag+1.5); ctx.lineTo(fx+3.6, fy-mag+1.5); ctx.closePath(); ctx.fill();
+      }
+
+      // foot
+      ctx.beginPath(); ctx.arc(fx, fy - lift, st?6:5, 0, Math.PI*2);
+      if(st){ ctx.fillStyle = C.stance; ctx.fill(); }
+      else { ctx.fillStyle = C.panel; ctx.fill(); ctx.strokeStyle = C.swing; ctx.lineWidth=2; ctx.stroke(); }
+
+      // label
+      ctx.fillStyle = C.muted;
+      ctx.font = "500 10px " + jm();
+      ctx.textAlign = NOM[i][0] > 0 ? "left" : "right";
+      ctx.fillText(LEGS[i], fx + (NOM[i][0]>0?11:-11), fy - lift + 3.5);
+    }
+  }
+
+  function drawSched(){
+    const {ctx,w,h} = fit(schedCv);
+    ctx.clearRect(0,0,w,h);
+    const padL = 34, padR = 10, padT = 16, rowH = (h-padT-16)/4, barH = Math.min(rowH*0.56, 17);
+    const W = w - padL - padR;
+    const g = GAITS[gait];
+    const CYCLES = 2;
+
+    ctx.font = "500 10px " + jm();
+    for(let i=0;i<4;i++){
+      const y = padT + i*rowH;
+      // baseline
+      ctx.strokeStyle = C.line; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(padL, y+barH/2+0.5); ctx.lineTo(padL+W, y+barH/2+0.5); ctx.stroke();
+
+      ctx.fillStyle = C.muted; ctx.textAlign="left";
+      ctx.fillText(LEGS[i], 6, y+barH/2+3.5);
+
+      for(let c=0;c<CYCLES;c++){
+        const cw = W/CYCLES;
+        const x0 = padL + c*cw;
+        let s = (-g.offs[i]) % 1; if (s<0) s+=1;
+        // stance block may wrap
+        const segs = [[s, s+g.duty]];
+        segs.forEach(([a,b])=>{
+          const parts = b>1 ? [[a,1],[0,b-1]] : [[a,b]];
+          parts.forEach(([pa,pb])=>{
+            ctx.fillStyle = C.stance;
+            const rx = x0+pa*cw, rw = Math.max((pb-pa)*cw, 1.5);
+            roundRect(ctx, rx, y, rw, barH, 2); ctx.fill();
+          });
+        });
+        // swing marked as a dashed rail beneath the stance blocks
+        ctx.strokeStyle = C.swing; ctx.lineWidth = 1;
+        ctx.setLineDash([2,3]);
+        ctx.beginPath(); ctx.moveTo(x0, y+barH+3.5); ctx.lineTo(x0+cw, y+barH+3.5); ctx.stroke();
+        ctx.setLineDash([]);
+      }
+    }
+    // playhead
+    const px = padL + ((phase%1)/CYCLES)*W;
+    ctx.strokeStyle = C.hazard; ctx.lineWidth = 1.75;
+    ctx.beginPath(); ctx.moveTo(px, 6); ctx.lineTo(px, h-12); ctx.stroke();
+    ctx.fillStyle = C.hazard;
+    ctx.beginPath(); ctx.moveTo(px,4); ctx.lineTo(px-4,-1); ctx.lineTo(px+4,-1); ctx.closePath(); ctx.fill();
+    // axis
+    ctx.fillStyle = C.muted; ctx.textAlign="left";
+    ctx.fillText("one gait cycle", padL, h-2);
+    ctx.textAlign="right";
+    ctx.fillText("duty "+Math.round(g.duty*100)+"%", w-padR, h-2);
+  }
+
+  function jm(){ return '"JetBrains Mono", ui-monospace, Consolas, monospace'; }
+  function roundRect(ctx,x,y,w,h,r){
+    r = Math.min(r, w/2, h/2);
+    ctx.beginPath();
+    ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+  }
+
+  document.querySelectorAll("[data-gait]").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      gait = b.dataset.gait;
+      document.querySelectorAll("[data-gait]").forEach(o=>o.setAttribute("aria-pressed", String(o===b)));
+      drawGait(); drawSched();
+    });
+  });
+  const playBtn = document.getElementById("playBtn");
+  playBtn.textContent = playing ? "Pause" : "Play";
+  playBtn.setAttribute("aria-pressed", String(playing));
+  playBtn.addEventListener("click", ()=>{
+    playing = !playing;
+    playBtn.textContent = playing ? "Pause" : "Play";
+    playBtn.setAttribute("aria-pressed", String(playing));
+  });
+  document.getElementById("spd").addEventListener("input", e=>{ speed = e.target.value/100; });
+
+  /* =======================================================
+     TICK TRAIN  (500 Hz vs MPC every 13 ticks)
+     ======================================================= */
+  const NTICK = 39;               // 3 MPC periods on screen
+  const RATIO = 13;
+  const fastTrain = document.getElementById("fastTrain");
+  const slowTrain = document.getElementById("slowTrain");
+  const fastCells = [], slowCells = [];
+  for(let i=0;i<NTICK;i++){
+    const a = document.createElement("div"); a.className="tick"; fastTrain.appendChild(a); fastCells.push(a);
+    const b = document.createElement("div"); b.className="tick mpc"; slowTrain.appendChild(b); slowCells.push(b);
+  }
+  let tickIdx = 0, fastCount = 0, slowCount = 0, tickAcc = 0;
+  const elFast=document.getElementById("cFast"), elSlow=document.getElementById("cSlow"), elRatio=document.getElementById("cRatio");
+  function stepTick(){
+    fastCells.forEach(c=>c.classList.remove("on"));
+    slowCells.forEach(c=>c.classList.remove("on"));
+    fastCells[tickIdx].classList.add("on");
+    if (tickIdx % RATIO === 0){ slowCells[tickIdx].classList.add("on"); slowCount++; }
+    fastCount++;
+    tickIdx = (tickIdx+1) % NTICK;
+    elFast.textContent = fastCount.toLocaleString();
+    elSlow.textContent = slowCount.toLocaleString();
+    elRatio.textContent = slowCount ? (fastCount/slowCount).toFixed(1)+" : 1" : "—";
+  }
+  // static resting state so the diagram reads before any animation
+  slowCells.forEach((c,i)=>{ if(i%RATIO===0) c.style.background="var(--hazard)"; });
+
+  /* =======================================================
+     RECEDING HORIZON
+     ======================================================= */
+  const hzCv = document.getElementById("hzCanvas");
+  const N = 10;
+  let hzT = 0, hzAuto = !reduce, hzAcc = 0;
+  function bodyY(t){ return Math.sin(t*0.55)*0.55 + Math.sin(t*0.23+1.1)*0.3; }
+  function drawHz(){
+    const {ctx,w,h} = fit(hzCv);
+    ctx.clearRect(0,0,w,h);
+    const padL=44, padR=18, padT=22, padB=34;
+    const W=w-padL-padR, H=h-padT-padB;
+    const midY = padT + H/2;
+
+    // grid + axis
+    ctx.strokeStyle=C.grid; ctx.lineWidth=1;
+    for(let k=0;k<=N;k++){ const x=padL+(k/N)*W; ctx.beginPath(); ctx.moveTo(x,padT); ctx.lineTo(x,padT+H); ctx.stroke(); }
+    ctx.strokeStyle=C.line; ctx.beginPath(); ctx.moveTo(padL,midY); ctx.lineTo(padL+W,midY); ctx.stroke();
+
+    ctx.font="500 10px "+jm(); ctx.fillStyle=C.muted; ctx.textAlign="center";
+    for(let k=0;k<=N;k+=2){ ctx.fillText("k+"+k, padL+(k/N)*W, padT+H+15); }
+    ctx.textAlign="left"; ctx.fillText("body height", 4, padT-8);
+    ctx.textAlign="right"; ctx.fillText("horizon = 10 × 30 ms ≈ 0.3 s", w-padR, padT-8);
+
+    // predicted trajectory
+    const pts=[];
+    for(let k=0;k<=N;k++){ pts.push([padL+(k/N)*W, midY - bodyY(hzT+k*0.5)*H*0.34]); }
+    ctx.strokeStyle=C["line-2"]; ctx.lineWidth=2; ctx.setLineDash([4,4]);
+    ctx.beginPath(); pts.forEach((p,i)=> i? ctx.lineTo(p[0],p[1]) : ctx.moveTo(p[0],p[1])); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // applied segment
+    ctx.strokeStyle=C.hazard; ctx.lineWidth=3.5;
+    ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]); ctx.lineTo(pts[1][0],pts[1][1]); ctx.stroke();
+
+    // nodes
+    pts.forEach((p,k)=>{
+      ctx.beginPath(); ctx.arc(p[0],p[1], k===0?5.5:3.4, 0, Math.PI*2);
+      if(k===0){ ctx.fillStyle=C.ink; ctx.fill(); }
+      else if(k===1){ ctx.fillStyle=C.hazard; ctx.fill(); }
+      else { ctx.fillStyle=C.panel; ctx.fill(); ctx.strokeStyle=C["line-2"]; ctx.lineWidth=1.5; ctx.stroke(); }
+    });
+
+    // force bars under first two steps
+    for(let k=0;k<2;k++){
+      const x=pts[k][0], base=padT+H;
+      const mag = 12 + 16*Math.abs(bodyY(hzT+k*0.5));
+      ctx.fillStyle = k===1 ? C.hazard : C.stance;
+      ctx.globalAlpha = k===1 ? 1 : .45;
+      ctx.fillRect(x-4, base-mag, 8, mag);
+      ctx.globalAlpha = 1;
+    }
+    ctx.fillStyle=C.muted; ctx.textAlign="left"; ctx.font="500 9.5px "+jm();
+    ctx.fillText("Fr_des", padL-2, padT+H-2);
+  }
+
+  document.getElementById("hzStep").addEventListener("click", ()=>{ hzT += 0.5; drawHz(); });
+  const hzAutoBtn = document.getElementById("hzAuto");
+  hzAutoBtn.setAttribute("aria-pressed", String(hzAuto));
+  hzAutoBtn.addEventListener("click", ()=>{
+    hzAuto = !hzAuto; hzAutoBtn.setAttribute("aria-pressed", String(hzAuto));
+  });
+
+  /* =======================================================
+     WBC TASK PRIORITY STACK
+     ======================================================= */
+  const TASKS = [
+    {id:"ori",  name:"BodyOriTask",  dof:3, note:"Body orientation — keep the torso level", on:true},
+    {id:"pos",  name:"BodyPosTask",  dof:3, note:"Body position — track the commanded height and drift", on:true},
+    {id:"sw1",  name:"LinkPosTask · FR", dof:3, note:"Swing foot trajectory, front-right", on:true},
+    {id:"sw2",  name:"LinkPosTask · HL", dof:3, note:"Swing foot trajectory, hind-left", on:true}
+  ];
+  const taskList = document.getElementById("taskList");
+  const dofBar = document.getElementById("dofBar");
+  const dofUsed = document.getElementById("dofUsed");
+  const dofNote = document.getElementById("dofNote");
+  for(let i=0;i<18;i++){ const c=document.createElement("div"); c.className="budget-cell"; dofBar.appendChild(c); }
+
+  function renderTasks(){
+    taskList.innerHTML="";
+    let pri=0;
+    TASKS.forEach(t=>{
+      if(t.on) pri++;
+      const b=document.createElement("button");
+      b.className="task"; b.type="button"; b.dataset.on=String(t.on);
+      b.setAttribute("aria-pressed", String(t.on));
+      b.innerHTML = '<span class="pri">'+(t.on?String(pri).padStart(2,"0"):"--")+'</span>'+
+                    '<span class="nm">'+t.name+'<small>'+t.note+'</small></span>'+
+                    '<span class="dof">'+t.dof+' DoF</span>';
+      b.addEventListener("click", ()=>{ t.on=!t.on; renderTasks(); });
+      taskList.appendChild(b);
+    });
+    const used = TASKS.filter(t=>t.on).reduce((a,t)=>a+t.dof,0);
+    dofUsed.textContent = used;
+    [...dofBar.children].forEach((c,i)=>{
+      c.className = "budget-cell " + (i<used ? "used" : (i<12 ? "free" : ""));
+    });
+    dofNote.textContent = used>=12
+      ? "Tasks now claim "+used+" of the 12 joint DoF. Anything lower in the list gets only what the null space leaves — which may be nothing."
+      : "Tasks claim "+used+" DoF; "+(12-used)+" joint DoF remain free for lower-priority objectives.";
+  }
+  renderTasks();
+
+  /* =======================================================
+     CONTROL FSM
+     ======================================================= */
+  const STATES = [
+    {id:"PASSIVE",  x:20,  y:128, w:86, h:30, label:"Passive",       rc:"OFF",            kind:"safe",
+     d:"Joints commanded to near-zero torque. The robot folds and rests. This is where the FSM initialises and where an E-STOP forcibly sends it.", checks:["entry state","E-STOP target"]},
+    {id:"JOINT_PD", x:136, y:22,  w:86, h:30, label:"Joint PD",      rc:"READY",          kind:"norm",
+     d:"Direct joint-space PD control. Used for bring-up and for holding a known pose before anything dynamic starts.", checks:["checkPDesFoot"]},
+    {id:"STAND_UP", x:136, y:75,  w:86, h:30, label:"Stand Up",      rc:"STAND_UP",       kind:"norm",
+     d:"Pushes the body up from the folded pose to nominal standing height on a fixed profile.", checks:["checkSafeOrientation"]},
+    {id:"BALANCE",  x:136, y:128, w:86, h:30, label:"Balance Stand", rc:"QP_STAND",       kind:"norm",
+     d:"Standing still, but actively — the QP holds the body level against pushes with all four feet in contact. The pure-stance case of the same machinery locomotion uses.", checks:["checkSafeOrientation","checkForceFeedForward"]},
+    {id:"LOCO",     x:136, y:181, w:86, h:30, label:"Locomotion",    rc:"LOCOMOTION",     kind:"norm",
+     d:"The full stack: gait scheduler → convex MPC → WBC → joint torques. Everything in sections 03 and 04 is running here.", checks:["checkSafeOrientation","checkPDesFoot","checkForceFeedForward"]},
+    {id:"RECOVER",  x:136, y:234, w:86, h:30, label:"Recovery Stand",rc:"RECOVERY_STAND", kind:"warn",
+     d:"Righting the robot after a fall. Uniquely, the orientation safety check is skipped for this state — recovery necessarily begins from an orientation the check would call unsafe.", checks:["orientation check SKIPPED"]},
+    {id:"VISION",   x:252, y:128, w:86, h:30, label:"Vision",        rc:"VISION",         kind:"norm",
+     d:"Locomotion driven by a height map rather than an operator stick — a terrain height map feeds this path.", checks:["checkSafeOrientation"]},
+    {id:"BFLIP",    x:252, y:181, w:86, h:30, label:"Back Flip",     rc:"BACKFLIP",       kind:"warn",
+     d:"Plays a pre-computed trajectory open-loop. There is no feedback that can save a flip mid-air, which is why it is a separate state rather than a locomotion mode.", checks:["trajectory playback"]},
+    {id:"FJUMP",    x:252, y:234, w:86, h:30, label:"Front Jump",    rc:"FRONT_JUMP",     kind:"warn",
+     d:"Same idea as the flip, replaying a pre-computed front-jump trajectory from a .dat file.", checks:["trajectory playback"]},
+    {id:"ESTOP",    x:352, y:60,  w:86, h:30, label:"E-STOP",        rc:"—",              kind:"estop",
+     d:"Not a state but an operating mode. Set by safetyPreCheck() when orientation fails. The FSM abandons whatever it was doing and drops straight into Passive.", checks:["forces → Passive"]}
+  ];
+  const EDGES = [
+    ["PASSIVE","JOINT_PD"],["PASSIVE","STAND_UP"],["PASSIVE","RECOVER"],
+    ["STAND_UP","BALANCE"],["BALANCE","LOCO"],["LOCO","BALANCE"],
+    ["BALANCE","VISION"],["BALANCE","BFLIP"],["BALANCE","FJUMP"],
+    ["RECOVER","BALANCE"],["LOCO","RECOVER"]
+  ];
+  const svg = document.getElementById("fsmSvg");
+  const detail = document.getElementById("fsmDetail");
+  const opMode = document.getElementById("opMode");
+  let sel = "LOCO";
+  const byId = Object.fromEntries(STATES.map(s=>[s.id,s]));
+
+  function kindFill(k, active){
+    if(k==="estop") return active ? "var(--estop)" : "var(--estop-soft)";
+    if(k==="warn")  return active ? "var(--hazard)" : "var(--hazard-soft)";
+    if(k==="safe")  return active ? "var(--ink)" : "var(--panel-2)";
+    return active ? "var(--stance)" : "var(--panel-2)";
+  }
+  function kindStroke(k){
+    if(k==="estop") return "var(--estop)";
+    if(k==="warn")  return "var(--hazard)";
+    if(k==="safe")  return "var(--line-2)";
+    return "var(--stance)";
+  }
+  function renderFSM(){
+    let s = "";
+    EDGES.forEach(([a,b])=>{
+      const A=byId[a], B=byId[b];
+      const x1=A.x+A.w, y1=A.y+A.h/2, x2=B.x, y2=B.y+B.h/2;
+      const hot = (a===sel||b===sel);
+      const mx=(x1+x2)/2;
+      s += '<path d="M'+x1+' '+y1+' C'+mx+' '+y1+' '+mx+' '+y2+' '+x2+' '+y2+
+           '" fill="none" stroke="'+(hot?"var(--hazard)":"var(--line-2)")+'" stroke-width="'+(hot?1.8:1)+'" opacity="'+(hot?1:.6)+'"/>';
+    });
+    // estop edge back to passive
+    s += '<path d="M352 75 C300 75 60 60 63 128" fill="none" stroke="var(--estop)" stroke-width="1.4" stroke-dasharray="4 3" opacity=".8"/>';
+    STATES.forEach(st=>{
+      const active = st.id===sel;
+      s += '<g class="fsm-node" data-id="'+st.id+'" tabindex="0" role="button" aria-label="'+st.label+'">'+
+           '<rect x="'+st.x+'" y="'+st.y+'" width="'+st.w+'" height="'+st.h+'" rx="3" fill="'+kindFill(st.kind,active)+
+           '" stroke="'+kindStroke(st.kind)+'" stroke-width="'+(active?2:1)+'"/>'+
+           '<text x="'+(st.x+st.w/2)+'" y="'+(st.y+st.h/2+3.4)+'" text-anchor="middle" fill="'+
+           (active?"var(--ground)":"var(--ink)")+'">'+st.label+'</text></g>';
+    });
+    svg.innerHTML = s;
+    svg.querySelectorAll(".fsm-node").forEach(n=>{
+      const pick = ()=>{ sel = n.dataset.id; renderFSM(); };
+      n.addEventListener("click", pick);
+      n.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); pick(); } });
+    });
+    const st = byId[sel];
+    opMode.textContent = st.kind==="estop" ? "ESTOP" : "NORMAL";
+    opMode.style.color = st.kind==="estop" ? "var(--estop)" : "var(--ink)";
+    detail.innerHTML =
+      '<h3>'+st.label+'</h3>'+
+      '<div class="chips">'+
+        (st.rc!=="—" ? '<span class="chip rc">RC · '+st.rc+'</span>' : '')+
+        st.checks.map(c=>'<span class="chip '+(st.kind==="estop"||/SKIP/.test(c)?"warn":"ok")+'">'+c+'</span>').join("")+
+      '</div>'+
+      '<p>'+st.d+'</p>';
+  }
+  renderFSM();
+
+  /* =======================================================
+     MASTER CLOCK
+     ======================================================= */
+  let last = performance.now();
+  function frame(now){
+    const dt = Math.min((now-last)/1000, 0.05); last = now;
+    if(playing){ phase = (phase + dt*0.55*speed) % 1; drawGait(); drawSched(); }
+    tickAcc += dt;
+    if(tickAcc > 0.075){ tickAcc = 0; stepTick(); }
+    if(hzAuto){ hzAcc += dt; if(hzAcc > 0.28){ hzAcc = 0; hzT += 0.5; drawHz(); } }
+    requestAnimationFrame(frame);
+  }
+  function boot(){ drawGait(); drawSched(); drawHz(); }
+  boot();
+  if(!reduce) requestAnimationFrame(frame);
+
+  let rt;
+  window.addEventListener("resize", ()=>{ clearTimeout(rt); rt = setTimeout(boot, 120); });
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(boot);
+})();
+</script>
+
+</body></html>

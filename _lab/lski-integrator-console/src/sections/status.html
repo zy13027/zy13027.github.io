@@ -1,0 +1,29 @@
+<section class="sec" id="status">
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">Chapter 20</div>
+      <h2>Status &amp; error codes</h2>
+      <p class="lede">Two separate code spaces. <span class="tag">16#7xxx</span> are status words for no&nbsp;call / first&nbsp;call / subsequent&nbsp;call / invalid operation mode. <span class="tag">16#8xxx</span> are errors &mdash; Table 20&#8209;1 covers the Core and its plugins, Table 20&#8209;2 covers the PLC programming functions of chapter&nbsp;19.4. A handful of names repeat across the two tables with a <em>different</em> value &mdash; e.g. <span class="tag mono">ERR_UNDEFINED_STATE</span> is <span class="mono">16#8700</span> in Table&nbsp;20&#8209;1 but <span class="mono">16#8600</span> in Table&nbsp;20&#8209;2 &mdash; so always read the code together with which block raised it.</p>
+    </header>
+
+    <div class="rf-toolbar">
+      <input type="text" id="rf-status-search" class="rf-search" placeholder="Type a code (e.g. 8103) or a word (e.g. motion)&hellip;" aria-label="Search status and error codes">
+      <span class="rf-count" id="rf-status-count"></span>
+    </div>
+    <div class="rf-legend">
+      <span><span class="rf-status-dot rf-sev-ok"></span>Normal state</span>
+      <span><span class="rf-status-dot rf-sev-warn"></span>Flagged state (not yet an error)</span>
+      <span><span class="rf-status-dot rf-sev-err"></span>Error</span>
+    </div>
+
+    <div class="rf-tblhead"><h3>Table 20&#8209;1 &middot; Core and plugin status/error codes</h3><span id="rf-status1-label"></span></div>
+    <div class="card scrollx">
+      <table><thead><tr><th>Name</th><th>Value</th><th>Comment</th></tr></thead><tbody id="rf-status1-tbody"></tbody></table>
+    </div>
+
+    <div class="rf-tblhead"><h3>Table 20&#8209;2 &middot; Error codes of the programming functions</h3><span id="rf-status2-label"></span></div>
+    <div class="card scrollx">
+      <table><thead><tr><th>Name</th><th>Value</th><th>Comment</th></tr></thead><tbody id="rf-status2-tbody"></tbody></table>
+    </div>
+  </div>
+</section>

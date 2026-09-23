@@ -1,0 +1,83 @@
+# Lab pages: single-page interactive study notes, listed on /lab/ and in the
+# 交互式学习笔记 section of /zh/. Order here is display order.
+#
+# To add a page:
+#   1. put its source in _lab/<slug>/ (a Vite package, or one self-contained index.html)
+#   2. add an entry below with the same slug
+#   3. run `npm run lab:build`, then commit both _lab/<slug>/ and lab/<slug>/
+# The build refuses private paths and internal-only markings — see SETUP.md "Lab pages".
+#
+# kind: lab | console | field guide
+# unofficial (per group): notes on Siemens products — flagged on the page and in the list
+groups:
+  - title: Control & robotics
+    zh_title: 控制与机器人
+    pages:
+      - slug: control-theory-bench
+        title: Control Theory Bench
+        kind: lab
+        blurb: Live simulations from a second-order plant through PID, feedforward, wind-up and LQR, to the point where MPC takes over.
+        tags: [PID, LQR, MPC]
+        zh_title: 控制理论实验台
+        zh_blurb: 从二阶对象到 PID、前馈、积分饱和与 LQR 的实时仿真，并说明 MPC 在何处接手。
+      - slug: reflex-and-imagination
+        title: Reflex & Imagination
+        kind: lab
+        blurb: Vision-language-action models versus world models — where each closes its loop, with a maze you can block mid-run.
+        tags: [VLA, world models, robot learning]
+        zh_title: 反射与想象
+        zh_blurb: 对比视觉-语言-动作模型与世界模型：二者各在何处闭合控制回路，附可中途封堵通道的迷宫演示。
+      - slug: cheetah-control-stack
+        title: Cheetah Control Stack
+        kind: field guide
+        blurb: The MIT Cheetah locomotion stack — gait scheduling, convex MPC at ~40 Hz, whole-body control at 500 Hz, and the state machine above them.
+        tags: [quadruped, convex MPC, WBC]
+        zh_title: Cheetah 四足控制栈
+        zh_blurb: MIT Cheetah 运动控制架构：步态调度、约 40 Hz 的凸 MPC、500 Hz 的全身控制，以及位于其上的状态机。
+
+  - title: Siemens motion & automation
+    zh_title: 西门子 · 非官方笔记
+    unofficial: true
+    pages:
+      - slug: lkinctrl-motion-control
+        title: Path Motion Control — LKinCtrl V5.3
+        kind: field guide
+        blurb: The S7-1500T kinematics library in which one function block executes a PathData command list, with an editable path lab.
+        tags: [S7-1500T, TO Kinematics, PathData]
+        zh_title: 路径运动控制 LKinCtrl V5.3
+        zh_blurb: S7-1500T 运动机构库：由一个功能块执行 PathData 指令列表，附可编辑的路径实验。
+      - slug: lski-integrator-console
+        title: Kinematics Integrator Console — LSKI V4.1
+        kind: console
+        blurb: Program tables, interpreter and motion pointers, plugins, and a simulated interpreter driving a Cartesian portal.
+        tags: [LSKI, WinCC Unified, interpreter]
+        zh_title: 运动机构集成器 LSKI V4.1
+        zh_blurb: 程序表、解释器指针与运动指针、插件体系，以及驱动笛卡尔龙门的解释器仿真。
+      - slug: motion-interpreter-lab
+        title: Motion Interpreter Lab — V10.0
+        kind: lab
+        blurb: How an S7-1500T Interpreter program sequences motion without step conditions, with a path simulator and status-word decoder.
+        tags: [S7-1500T, Motion Interpreter, STEP 7 V21]
+        zh_title: 运动解释器实验室 V10.0
+        zh_blurb: S7-1500T 解释器程序如何在无需步进条件的情况下编排运动，附路径仿真与状态字解析。
+      - slug: lprodreg-register-console
+        title: Product Register Console — LProdReg V3.2
+        kind: console
+        blurb: The product-tracking library — flow objects, one central register, and a live pick-and-place register simulation.
+        tags: [LProdReg, conveyor tracking, pick & place]
+        zh_title: 产品登记控制台 LProdReg V3.2
+        zh_blurb: 产品跟踪库：流对象、中央登记表，以及实时的取放登记仿真。
+      - slug: roxsie-architecture-lab
+        title: ROXSIE Architecture Lab
+        kind: lab
+        blurb: A ROS 2 graph and an S7-1500 Software Controller in one box — with a lifetime-buffer simulator and a message-budget calculator.
+        tags: [ROS 2, RIB, Software Controller]
+        zh_title: ROXSIE 架构实验室
+        zh_blurb: ROS 2 计算图与 S7-1500 软件控制器同机运行，附生命周期缓冲区仿真与消息预算计算。
+      - slug: simatic-target-simulink
+        title: SIMATIC Target for Simulink
+        kind: field guide
+        blurb: From a Simulink model to ODK code running inside an S7-1500 CPU or on Industrial Edge, with the worked PID example live.
+        tags: [Simulink, ODK 1500S, code generation]
+        zh_title: SIMATIC Target for Simulink
+        zh_blurb: 从 Simulink 模型到在 S7-1500 CPU 或 Industrial Edge 上运行的 ODK 代码，附可交互的 PID 示例。

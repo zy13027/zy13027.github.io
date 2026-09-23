@@ -1,0 +1,113 @@
+<section class="sec" id="demo">
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">Getting Started manual &middot; demo project on disk</div>
+      <h2>The Getting Started project</h2>
+      <p class="lede">Two example sections ship in the demo project, growing from one channel on a small CPU to four channels driven through an OMAC state manager.</p>
+    </header>
+
+    <div class="rf-demo-tabs" role="group" aria-label="Demo project">
+      <button type="button" class="pill on rf-demo-tab" data-target="rf-demo-basic">01_Basic</button>
+      <button type="button" class="pill rf-demo-tab" data-target="rf-demo-advanced">02_Advanced</button>
+    </div>
+
+    <div class="rf-demo-panel" id="rf-demo-basic">
+      <div class="card pad scrollx">
+        <table class="rf-hw-table"><thead><tr><th>Component</th><th>Article no.</th><th>Note</th></tr></thead>
+          <tbody>
+            <tr><td>CPU 1515T&#8209;2 PN</td><td>6ES7 515&#8209;2TN03&#8209;0AB0</td><td>FW 4.0</td></tr>
+            <tr><td>MTP1200 Unified Comfort PRO</td><td>6AV2 128&#8209;3MB27&#8209;0AX0</td><td>&mdash;</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card pad">
+        <h3 style="margin-bottom:8px">One channel, four plugins</h3>
+        <div class="rf-chipset" style="margin-bottom:10px">
+          <span class="tag">Programming</span><span class="tag">Commissioning</span><span class="tag">Teach</span><span class="tag">Diagnostics</span>
+        </div>
+        <p style="font-size:14.5px;color:var(--text-2)">A Cartesian portal 4D (kinematics <span class="tag">CartesianPortal3DA</span>, axis TOs <span class="tag">A1_CartesianPortal3DA</span>&hellip;<span class="tag">A4_CartesianPortal3DA</span>) runs a pick&#8209;and&#8209;place. Scenario&nbsp;1 places at a static position; scenario&nbsp;2 places according to the current product counter, using <span class="tag">LSKI_CmdMovePickAndPlace</span> with a point and a variable reference.</p>
+      </div>
+
+      <div class="card pad">
+        <h3 style="margin-bottom:10px">Operate it</h3>
+        <ol class="rf-steps">
+          <li><span class="num">01</span>Set the operation mode to Automatic.</li>
+          <li><span class="num">02</span>Select the scenario by including or excluding the corresponding jump command.</li>
+          <li><span class="num">03</span>Set the override to the desired value.</li>
+          <li><span class="num">04</span>Press and hold Initialize.</li>
+          <li><span class="num">05</span>Press Start.</li>
+          <li><span class="num">06</span>Press Stop.</li>
+          <li><span class="num">07</span>Try a Cycle stop &mdash; the product already in hand is placed before the program actually stops.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="rf-demo-panel" id="rf-demo-advanced" hidden>
+      <div class="card pad scrollx">
+        <table class="rf-hw-table"><thead><tr><th>Component</th><th>Article no. / setting</th><th>Note</th></tr></thead>
+          <tbody>
+            <tr><td>SIMATIC S7&#8209;1517T&#8209;3 PN</td><td>6ES7 517&#8209;3TQ10&#8209;0AB0</td><td>FW 4.0, four channels</td></tr>
+            <tr><td>MTP2200 Unified Comfort PRO</td><td>6AV2 128&#8209;3XB27&#8209;1BX0</td><td>&mdash;</td></tr>
+            <tr><td>PLCSIM Advanced V7.0</td><td>instance <span class="tag">LSKI_Demo</span></td><td>192.168.0.1 / 255.255.255.0, TCP/IP single adapter</td></tr>
+            <tr><td>Drives</td><td>SINAMICS S210 on PROFINET</td><td>GSDML files ship in the project; plus a Siemens MC encoder</td></tr>
+            <tr><td>NX MCD (optional)</td><td>digital twin</td><td>see version note below</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="rf-chgrid">
+        <div class="rf-chcard">
+          <h4>CH0 &middot; Packaging</h4>
+          <div class="rf-chmeta">Scara 3D+A, product belt, container belt.</div>
+          <div class="rf-chto">CH0_A1_Scara3DA &hellip; CH0_A4_Scara3DA</div>
+        </div>
+        <div class="rf-chcard">
+          <h4>CH1 &middot; Palletizing</h4>
+          <div class="rf-chmeta">Articulated arm 3D+A. <span class="tag">Palletizing</span> plugin.</div>
+          <div class="rf-chto">CH1_A1&hellip;A4_ArticulatedArm3DA</div>
+        </div>
+        <div class="rf-chcard">
+          <h4>CH2 &middot; Processing</h4>
+          <div class="rf-chmeta">Cartesian portal 3D, cover belt. <span class="tag">GCode</span> plugin &mdash; engraves a cover from <span class="tag">SKI.nc</span> read from <span class="tag">\SIMATIC_MC\UserFiles</span>.</div>
+          <div class="rf-chto">CH2_A1&hellip;A3_CartesianPortal</div>
+        </div>
+        <div class="rf-chcard">
+          <h4>CH3 &middot; Sorting</h4>
+          <div class="rf-chmeta">Delta picker 3D+A, sorting belt. <span class="tag">LSKI_Plugin_ProductRegister_Channel</span> &mdash; the product register Unit block and the OMAC state manager live together in a shared <span class="tag">Unit</span> software unit.</div>
+          <div class="rf-chto">CH3_A1&hellip;A4_DeltaPicker3DA</div>
+        </div>
+      </div>
+
+      <div class="card pad">
+        <h3 style="margin-bottom:10px">Operate it &mdash; through the OMAC page</h3>
+        <ol class="rf-steps">
+          <li><span class="num">01</span>Enable the state manager.</li>
+          <li><span class="num">02</span>Request unit mode <span class="tag">Production</span>.</li>
+          <li><span class="num">03</span>Home all axes.</li>
+          <li><span class="num">04</span>Set the unit override to 100%.</li>
+          <li><span class="num">05</span><span class="tag">Reset</span> &mdash; Stopped &rarr; Resetting &rarr; Idle.</li>
+          <li><span class="num">06</span><span class="tag">Start</span> &mdash; Idle &rarr; Starting &rarr; Execute.</li>
+        </ol>
+        <div class="scrollx" style="margin-top:14px">
+          <table class="rf-omac-table"><thead><tr><th>OMAC mode</th><th>SKI operation mode</th></tr></thead>
+            <tbody>
+              <tr><td>Production</td><td>Automatic</td></tr>
+              <tr><td>Manual</td><td>Manual (only while in Execute)</td></tr>
+              <tr><td>Maintenance</td><td>Test run (only while in Execute)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="box notice" style="margin-top:12px"><b>Any other OMAC state</b>Outside Execute &mdash; or while OMAC is enabled but not yet in one of the three mapped modes &mdash; every channel is forced to No operation.</div>
+      </div>
+
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+        <div class="box"><b>Optional &middot; run the GCode file</b>Copy <span class="tag">SKI.nc</span> onto the virtual memory card (<span class="tag">LSKI_Demo</span> &rarr; <span class="tag">userFiles</span>) and enable the commented-out commands in Processing's slot <span class="tag">1: Engrave Cover</span>.</div>
+        <div class="box"><b>Optional &middot; pallet-full message</b>The Palletizing channel's slot <span class="tag">1: Start Palletize</span> has a commented-out command that raises a message when the pallet is full; it must be acknowledged from that channel's status bar to continue.</div>
+      </div>
+
+      <div class="box caution"><b>Digital twin is off by default</b>With MCD disabled the PLC simulates the feedback itself. Switching the twin on from the Overview page requires restarting the MCD simulation and re&#8209;homing all axes.</div>
+      <div class="box notice"><b>The manual disagrees with itself on the NX MCD version</b>The components table (chapter 1.2) says "NX MCD 2506 or higher"; the setup instructions for the digital twin (chapter 3.1) say "2560 or higher". Treat 2560+ as the safer bar.</div>
+    </div>
+  </div>
+</section>

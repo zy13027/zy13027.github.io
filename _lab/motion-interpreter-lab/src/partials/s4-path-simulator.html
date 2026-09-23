@@ -1,0 +1,79 @@
+<!-- ============================================================
+     S4 — MCL PATH SIMULATOR
+     ============================================================ -->
+<section class="section" id="s4">
+  <div class="wrap">
+    <p class="eyebrow">Centrepiece</p>
+    <h2>MCL path simulator</h2>
+    <p class="section-intro">Step or scrub through three real MCL programs and watch the TCP path build up, coloured by velocity. The source line executing right now is highlighted, TIA-monitoring style.</p>
+
+    <div class="preset-tabs" role="tablist" aria-label="MCL program preset">
+      <button class="btn is-active" id="presetTab0" type="button" role="tab" aria-selected="true">1 &middot; Getting Started: pick &amp; place</button>
+      <button class="btn" id="presetTab1" type="button" role="tab" aria-selected="false">2 &middot; Blending</button>
+      <button class="btn" id="presetTab2" type="button" role="tab" aria-selected="false">3 &middot; Modal parameters</button>
+    </div>
+
+    <div class="mcl-panel">
+      <div class="mcl-source" id="mclSource" tabindex="0" aria-label="MCL source listing"></div>
+
+      <div class="mcl-canvas-side">
+        <div class="mcl-canvas-wrap">
+          <canvas id="mclCanvas" role="img" aria-label="TCP path in the XY plane, stroked with the velocity colour ramp"></canvas>
+          <div class="z-gauge" id="zGauge">
+            <span class="lbl">Z</span>
+            <div class="track"><div class="fill" id="zGaugeFill"></div></div>
+            <span class="val tabular" id="zGaugeVal">0</span>
+          </div>
+        </div>
+        <div class="gripper-lamp" id="gripperLamp" data-state="idle">
+          <span class="dot"></span><span id="gripperLampLabel">gripper idle</span>
+        </div>
+        <div class="scrub-row">
+          <button class="btn icon-only" id="mclReset" type="button" aria-label="Reset">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4v6h6M20 20v-6h-6"/><path d="M5.5 15a8 8 0 1 0 1-9.5L4 8M18.5 9a8 8 0 0 1-1 9.5L20 16"/></svg>
+          </button>
+          <button class="btn icon-only" id="mclPlay" type="button" aria-pressed="false" aria-label="Play">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path id="mclPlayIcon" d="M8 5v14l11-7z"></path></svg>
+          </button>
+          <button class="btn icon-only" id="mclStep" type="button" aria-label="Step">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4l10 8-10 8V4zM19 5v14"/></svg>
+          </button>
+          <input type="range" id="mclScrub" min="0" max="1000" step="1" value="0" aria-label="Scrub through cycle">
+          <span class="tabular" id="mclTimeVal" style="font-family:var(--font-mono);font-size:0.78rem;color:var(--ix-soft);min-width:5.5em;text-align:right;">0.0 / 0.0s</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mcl-controls">
+      <div class="control-group">
+        <label for="mclOvr">setOvr &mdash; program override <span class="val tabular" id="mclOvrVal">100%</span></label>
+        <input type="range" id="mclOvr" min="1" max="100" step="1" value="100">
+      </div>
+      <div class="control-group">
+        <label>setTrans &mdash; motion transition</label>
+        <div class="control-row" role="group" aria-label="setTrans">
+          <button class="btn is-active" id="mclTrans0" type="button" data-trans="0">0 &middot; append</button>
+          <button class="btn" id="mclTrans1" type="button" data-trans="1">1 &middot; lower v</button>
+          <button class="btn" id="mclTrans2" type="button" data-trans="2">2 &middot; higher v</button>
+        </div>
+      </div>
+      <div class="control-group">
+        <label>setBlend &mdash; blending mode</label>
+        <div class="control-row" role="group" aria-label="setBlend">
+          <button class="btn" id="mclBlend0" type="button" data-blend="0">0 &middot; direct</button>
+          <button class="btn" id="mclBlend1" type="button" data-blend="1">1 &middot; reserved</button>
+          <button class="btn is-active" id="mclBlend2" type="button" data-blend="2">2 &middot; geometric</button>
+        </div>
+      </div>
+      <div class="control-group">
+        <label for="mclBlendDist">setBlendDist <span class="val tabular" id="mclBlendDistVal">max</span></label>
+        <input type="range" id="mclBlendDist" min="-1" max="60" step="1" value="-1">
+      </div>
+    </div>
+
+    <p class="formula-strip" id="mclFormula" data-live>program 100% &times; TO 50% = 50% velocity &middot; 50% accel</p>
+    <p class="canvas-caption">In MCL, blending is defined in the PRECEDING job &mdash; the opposite of the Motion Control instructions.</p>
+
+    <div class="mcl-side-note" id="presetNote"></div>
+  </div>
+</section>

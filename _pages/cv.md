@@ -3,7 +3,7 @@ layout: cv
 permalink: /cv/
 title: CV
 nav: true
-nav_order: 3
+nav_order: 4
 cv_format: rendercv
 description: Robotics and motion control — experience, education and skills.
 toc:

@@ -1,0 +1,258 @@
+<section class="sec" id="manager"><div class="wrap">
+  <header>
+    <div class="eyebrow">Chapter 2.1&ndash;2.6</div>
+    <h2>FB LProdReg_RegisterManager</h2>
+    <p class="lede">The register itself is <span class="tag">FB LProdReg_ProductDataBaseManager</span> plus a set of flow objects, but almost nobody wires those by hand. <span class="tag">LProdReg_RegisterManager</span> is the streamlined, single&#8209;block alternative: one FB that configures, calls and diagnoses the whole application. This is the block you actually call.</p>
+  </header>
+
+  <p class="rf-mgr-intro">RegisterManager owns the flow objects it needs &mdash; conveyors, cameras, light switches, actuators, sinks and zones &mdash; and initialises them from one configuration structure. What you connect from your own program is sensor data in, actuator interaction out.</p>
+
+  <div class="rf-h3row"><h3>Block interface</h3><span class="tag">chapter 2.2.1</span></div>
+  <div class="grid rf-iface-grid">
+    <div>
+      <h4><span class="pill">In</span> Inputs</h4>
+      <div class="scrollx"><table class="rf-tbl">
+        <thead><tr><th>Name</th><th>Data type</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>enable</td><td class="rf-dtype">Bool</td><td>Enables the manager and, in turn, every flow object it owns.</td></tr>
+          <tr><td>useRetainedValues</td><td class="rf-dtype">Bool</td><td>TRUE resumes from whatever is already in the retentive <span class="mono">ProductDataBase</span> DB after a stop/restart; FALSE clears it on enable.</td></tr>
+          <tr><td>lightSwitchTrigger</td><td class="rf-dtype">Array of Bool</td><td>One rising edge per configured light switch, for manual/digital triggering.</td></tr>
+          <tr><td>lightSwitchObjectData</td><td class="rf-dtype">Array of <span class="mono">typeObjectDataEntry</span></td><td>The object (position + characteristics) each light switch spawns when it fires.</td></tr>
+          <tr><td>lightSwitchDisable</td><td class="rf-dtype">Array of Bool</td><td>Temporarily disables one light switch sensor during operation.</td></tr>
+          <tr><td>cameraTrigger</td><td class="rf-dtype">Array of Bool</td><td>Manual reference&#8209;data trigger per camera; only used in triggerMode&nbsp;1.</td></tr>
+          <tr><td>cameraData</td><td class="rf-dtype">Array of <span class="mono">typeSensorCameraData</span></td><td>Incoming object list from the vision system for each camera.</td></tr>
+          <tr><td>cameraDisable</td><td class="rf-dtype">Array of Bool</td><td>Temporarily disables one camera sensor.</td></tr>
+          <tr><td>actuatorRuntimeConfig</td><td class="rf-dtype">Array of <span class="mono">typeConfigActuatorRuntime</span></td><td>Per&#8209;actuator runtime changes: disable, mode, and pick/place zone re&#8209;assignment with optional property overwrite.</td></tr>
+          <tr><td>transferDataProductConveyor</td><td class="rf-dtype">Array of <span class="mono">typeTransferDataFoConveyorBelt</span></td><td>Cross&#8209;PLC position feed for product conveyors with <span class="mono">useTransferData</span> = TRUE.</td></tr>
+          <tr><td>transferDataContainerConveyor</td><td class="rf-dtype">Array of <span class="mono">typeTransferDataFoConveyorBelt</span></td><td>Same, for container conveyors.</td></tr>
+          <tr><td>config</td><td class="rf-dtype"><span class="mono">typeConfigManager</span></td><td>The entire configuration &mdash; see below.</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div>
+      <h4><span class="pill">Out</span> Outputs</h4>
+      <div class="scrollx"><table class="rf-tbl">
+        <thead><tr><th>Name</th><th>Data type</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>valid</td><td class="rf-dtype">Bool</td><td>A valid set of outputs is available.</td></tr>
+          <tr><td>busy</td><td class="rf-dtype">Bool</td><td>Still processing; more output values will follow.</td></tr>
+          <tr><td>error</td><td class="rf-dtype">Bool</td><td>An error occurred &mdash; see <a href="#errors">Errors</a>.</td></tr>
+          <tr><td>status</td><td class="rf-dtype">Word</td><td>16#0000&ndash;16#7FFF status, 16#8000&ndash;16#FFFF error identifier.</td></tr>
+          <tr><td>diagnostics</td><td class="rf-dtype"><span class="mono">typeManagerDiagnostics</span></td><td>Product/container counts per conveyor, state of every internally called flow object, and &mdash; on <span class="mono">ERR_IN_FLOW_OBJECT</span> &mdash; the name and status of the first faulted one via <span class="mono">foInError</span>.</td></tr>
+          <tr><td>transferDataActuator</td><td class="rf-dtype">Array of <span class="mono">typeTransferDataFoActuator</span></td><td>Cross&#8209;PLC feed when an actuator&rsquo;s kinematics control logic runs on a secondary PLC.</td></tr>
+        </tbody>
+      </table></div>
+      <p class="rf-note-small"><span class="mono">diagnostics.numberOfFlowObjects</span> tells you exactly how many flow objects the manager checked in &mdash; read it after first enable and use it to size <span class="mono">LPRODREG_NO_OF_ACTIVE_FLOW_OBJECTS</span> and the request/response buffer (plus any externally called blocks).</p>
+    </div>
+    <div>
+      <h4><span class="pill">InOut</span> InOut</h4>
+      <div class="scrollx"><table class="rf-tbl">
+        <thead><tr><th>Name</th><th>Data type</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td>actuatorInterface</td><td class="rf-dtype">Array of <span class="mono">typeActuatorInterface</span></td><td>The full pick/place interface per actuator &mdash; this is what your kinematics&#8209;control program connects to (see <a href="#engineering">Engineering</a> 3.7).</td></tr>
+          <tr><td>dataExchange</td><td class="rf-dtype"><span class="mono">typeDataExchange</span></td><td>The request/response channel between flow objects and the database manager, exposed so externally called flow objects (e.g. FO&#8209;Station) can join it &mdash; see 3.8.</td></tr>
+          <tr><td>productDatabase</td><td class="rf-dtype"><span class="mono">typeProductDataBase</span></td><td>The register itself, exposed so <span class="mono">LProdReg_Hmi_Main</span> can be called externally.</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <div class="rf-h3row"><h3>Configuration</h3><span class="tag">chapter 2.2.2</span><span class="tag mono">config : typeConfigManager</span></div>
+  <p class="rf-lede">One structure, six parts. This is the part you will keep coming back to while commissioning.</p>
+  <div class="grid rf-cfg-grid">
+    <details class="rf-cfg-card card" open>
+      <summary><span class="rf-cfg-n">1</span>Product conveyor(s)</summary>
+      <div class="rf-cfg-body">
+        <p>One entry per real belt or static storage that carries products. Sizes at <span class="mono">LPRODREG_NO_OF_PRODUCT_CONVEYORS</span>.</p>
+        <ul>
+          <li><b class="mono">isAvailable / ID</b> &mdash; initialise the FO and give it the ID used to assign it to actuators.</li>
+          <li><b class="mono">coordSystemIndex</b> &mdash; which coordinate frame this conveyor's positions are expressed in.</li>
+          <li><b class="mono">staticStorage</b> &mdash; TRUE gives FO&#8209;ConveyorStaticStorage instead of FO&#8209;ConveyorBelt.</li>
+          <li><b class="mono">priority</b> &mdash; standard prioritisation mode 0&ndash;6 (table below) or a user&#8209;defined index &ge;7.</li>
+          <li><b class="mono">useTransferData / useSetPointValues / leadScrew / positionWindow</b> &mdash; cross&#8209;PLC feed, setpoint vs. actual, rotary&#8209;axis conversion, position tolerance.</li>
+          <li><b class="mono">camera</b> &mdash; optional FO&#8209;SensorCamera: <span class="mono">isAvailable</span>, <span class="mono">triggerMode</span> 1&ndash;4, <span class="mono">coordSystemIndex</span>, <span class="mono">multipleObjectToleranceLength</span>, <span class="mono">minObjectGap</span>.</li>
+          <li><b class="mono">lightSwitch</b> &mdash; optional FO&#8209;SensorLightSwitch: <span class="mono">isAvailable</span>, <span class="mono">triggerMode</span> 0&ndash;2, <span class="mono">coordSystemIndex</span>. Mutually exclusive with camera on the same conveyor.</li>
+          <li><b class="mono">sinkZone</b> &mdash; optional FO&#8209;Sink + FO&#8209;Zone pair for automatic deletion of missed objects, defined by <span class="mono">zonePosition</span> / <span class="mono">zoneDimension</span>.</li>
+          <li><b class="mono">toReference</b> &mdash; the TO_PositioningAxis / TO_SynchronousAxis / TO_ExternalEncoder driving the belt.</li>
+        </ul>
+        <div class="scrollx"><table class="rf-modetbl">
+          <thead><tr><th>#</th><th>Prioritisation</th><th>User tag</th></tr></thead>
+          <tbody>
+            <tr><td>0</td><td>No prioritisation</td><td class="mono">LPRODREG_PRIO_NO_PRIO</td></tr>
+            <tr><td>1</td><td>Highest X (conveyor CS)</td><td class="mono">LPRODREG_PRIO_X_HIGHEST</td></tr>
+            <tr><td>2</td><td>Smallest X</td><td class="mono">LPRODREG_PRIO_X_SMALLEST</td></tr>
+            <tr><td>3</td><td>Smallest Y</td><td class="mono">LPRODREG_PRIO_Y_SMALLEST</td></tr>
+            <tr><td>4</td><td>Highest Y</td><td class="mono">LPRODREG_PRIO_Y_HIGHEST</td></tr>
+            <tr><td>5</td><td>Smallest Z</td><td class="mono">LPRODREG_PRIO_Z_SMALLEST</td></tr>
+            <tr><td>6</td><td>Highest Z</td><td class="mono">LPRODREG_PRIO_Z_HIGHEST</td></tr>
+            <tr><td>&ge;7</td><td>User&#8209;defined (see below)</td><td class="mono">&mdash;</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </details>
+
+    <details class="rf-cfg-card card">
+      <summary><span class="rf-cfg-n">2</span>Container conveyor(s)</summary>
+      <div class="rf-cfg-body">
+        <p>Same shape as a product conveyor, for belts that carry containers. Sizes at <span class="mono">LPRODREG_NO_OF_CONTAINER_CONVEYORS</span>.</p>
+        <ul>
+          <li>Every field above applies unchanged &mdash; <span class="mono">isAvailable</span>, <span class="mono">ID</span>, <span class="mono">coordSystemIndex</span>, <span class="mono">staticStorage</span>, <span class="mono">priority</span>, transfer&#8209;data trio, camera/lightSwitch, sinkZone, toReference.</li>
+          <li>Camera and light switch here also carry <b class="mono">numberOfContainerPockets</b> &mdash; this is what actually sizes the container group created for this conveyor.</li>
+          <li>A conveyor can be both product and container conveyor at once &mdash; count it in both tags if so.</li>
+        </ul>
+        <div class="box notice"><b>Note</b><span class="mono">LPRODREG_NO_OF_DIFFERENT_CONTAINER_GROUPS</span> must equal <span class="mono">LPRODREG_NO_OF_CONTAINER_CONVEYORS</span> &mdash; one container group is auto&#8209;assigned per container conveyor.</div>
+      </div>
+    </details>
+
+    <details class="rf-cfg-card card">
+      <summary><span class="rf-cfg-n">3</span>Actuator(s)</summary>
+      <div class="rf-cfg-body">
+        <p>The interconnection between the register and one kinematics. Sizes at <span class="mono">LPRODREG_NO_OF_ACTUATORS</span> &mdash; every configured actuator must be used, or the manager errors.</p>
+        <ul>
+          <li><b class="mono">isAvailable / mode</b> &mdash; see the six operating modes below.</li>
+          <li><b class="mono">objectPickPriority</b> &mdash; which object wins when several sit in the pick zone at once (0&ndash;6 or user&#8209;defined).</li>
+          <li><b class="mono">waitForContainer</b> &mdash; for mode 2/5, hold the pick until a valid place container is present.</li>
+          <li><b class="mono">maxPicksPerCycle</b> &mdash; multi&#8209;pick before placement (default 1 = disabled), capped by <span class="mono">LPRODREG_NO_OF_MAX_PICKS_PER_CYCLE</span>.</li>
+          <li><b class="mono">pickZone[] / placeZone[]</b> &mdash; one or more non&#8209;overlapping zones per side (<span class="mono">conveyorID</span>, <span class="mono">zonePosition</span>, <span class="mono">zoneDimension</span>, <span class="mono">zoneApproach</span>, <span class="mono">zoneExtension</span>); the first of each is the default, others are switched in at runtime via <span class="mono">actuatorRuntimeConfig</span>.</li>
+        </ul>
+        <div class="scrollx"><table class="rf-modetbl">
+          <thead><tr><th>#</th><th>Pick from</th><th>Place to</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Conveyor</td><td>Conveyor</td></tr>
+            <tr><td>2</td><td>Conveyor</td><td>Container pocket</td></tr>
+            <tr><td>3</td><td>Conveyor</td><td>Station</td></tr>
+            <tr><td>4</td><td>Container pocket</td><td>Conveyor</td></tr>
+            <tr><td>5</td><td>Container pocket</td><td>Container pocket</td></tr>
+            <tr><td>6</td><td>Container pocket</td><td>Station</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </details>
+
+    <details class="rf-cfg-card card">
+      <summary><span class="rf-cfg-n">4</span>Coordinate system(s)</summary>
+      <div class="rf-cfg-body">
+        <p>An array of frames, each referenced to the world coordinate system, used to place conveyors, cameras and light switches relative to one another. Sizes at <span class="mono">LPRODREG_NO_OF_COORD_SYSTEMS</span> &mdash; you need one frame per conveyor and one per sensor (unless they coincide).</p>
+      </div>
+    </details>
+
+    <details class="rf-cfg-card card">
+      <summary><span class="rf-cfg-n">5</span>Stations</summary>
+      <div class="rf-cfg-body">
+        <p>An array of station FO&#8209;IDs. FO&#8209;Station cannot be configured from inside the RegisterManager &mdash; it is always called externally (3.8) &mdash; this array just tells the manager which IDs to expect, so it can be sized and referenced consistently.</p>
+      </div>
+    </details>
+
+    <details class="rf-cfg-card card">
+      <summary><span class="rf-cfg-n">6</span>Data base</summary>
+      <div class="rf-cfg-body">
+        <p>Parameters passed straight through to the core FB ProductDataBaseManager:</p>
+        <ul>
+          <li><b class="mono">multipleProductToleranceLength</b> &mdash; global duplicate detection across all conveyors.</li>
+          <li><b class="mono">minProductGap</b> &mdash; global minimum&#8209;gap check, which also switches on gap checking in every actuator handling products.</li>
+          <li><b class="mono">numberOfContainerPockets</b> &mdash; only used when containers are inserted by an <em>externally</em> called flow object; when a conveyor's own camera/light switch already sets it, that value wins.</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <div class="rf-h3row"><h3>DB LProdReg_ProductDataBase</h3><span class="tag">chapter 2.1</span></div>
+  <p class="rf-lede">The register's actual storage. Every detected product and container lives here, and the size of every array is entirely a function of the configuration tags above.</p>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:16px">
+    <div class="card pad">
+      <h4 style="font-family:var(--f-mono);font-size:12.5px;color:var(--accent);margin-bottom:8px">Per&#8209;product / per&#8209;container storage</h4>
+      <ul class="rf-kv">
+        <li><b>Conveyor&#8209;array</b>&nbsp;productOnConveyor / containerOnConveyor &mdash; 2D: [conveyor index][order on belt].</li>
+        <li><b>Pocket&#8209;array</b>&nbsp;productInPocket / containerInPocket &mdash; 1D; a container's <span class="mono">pocketOccupiedByIndex</span> points into it. Positions here are offsets from the parent container's position.</li>
+        <li><b>Station&#8209;array</b>&nbsp;productInStation / containerInStation &mdash; 2D: [station index][FIFO order].</li>
+      </ul>
+    </div>
+    <div class="card pad">
+      <h4 style="font-family:var(--f-mono);font-size:12.5px;color:var(--accent);margin-bottom:8px">typeProduct fields</h4>
+      <ul class="rf-kv">
+        <li><b>User&#8209;set</b> iD, actPosition, characteristics, name</li>
+        <li><b>Core&#8209;managed</b> priority, assignedZone, minGapViolated, assignedFlowObject, blocked, restrictedForFO, assignedContainer</li>
+      </ul>
+    </div>
+    <div class="card pad">
+      <h4 style="font-family:var(--f-mono);font-size:12.5px;color:var(--accent);margin-bottom:8px">typeContainer &mdash; adds</h4>
+      <ul class="rf-kv">
+        <li><b>containerFull</b> all pockets occupied</li>
+        <li><b>groupIndex</b> which container group</li>
+        <li><b>occupiedPocketsBitmask</b> per&#8209;pocket occupancy</li>
+        <li><b>pocketsOccupiedByProduct</b> pockets hold products (TRUE) or containers (FALSE)</li>
+        <li><b>pocketOccupiedByIndex[]</b> index into the pocket&#8209;array per pocket</li>
+      </ul>
+    </div>
+    <div class="card pad">
+      <h4 style="font-family:var(--f-mono);font-size:12.5px;color:var(--accent);margin-bottom:8px">Flow&#8209;object storage &amp; retention</h4>
+      <ul class="rf-kv">
+        <li><b>flowObjects[]</b> sized by <span class="mono">LPRODREG_NO_OF_ACTIVE_FLOW_OBJECTS</span> (+2 with the HMI block)</li>
+        <li><b>retainedValues</b> internal state kept when the whole DB is set retentive and <span class="mono">useRetainedValues</span> = TRUE</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="rf-h3row"><h3>User&#8209;definable functions</h3><span class="tag">chapter 2.3</span></div>
+  <p class="rf-lede">Four hooks, all already called internally &mdash; you extend them, you never call them yourself.</p>
+  <div class="grid rf-fn-grid">
+    <div class="card pad rf-fn-card">
+      <h4>FB LProdReg_UserDefinedActuatorPrioritization</h4>
+      <p>Extends the standard pick&#8209;order modes 0&ndash;6 for a FO&#8209;Actuator's picking zone. Position <em>and</em> user&#8209;defined characteristics can both drive the choice &mdash; e.g. pick only blue products. Three example strategies ship pre&#8209;written; add more at any index &ge;7.</p>
+      <div class="rf-fn-via"><b>Configured via</b> <span class="mono">config.actuator[&hellip;].objectPickPriority</span></div>
+    </div>
+    <div class="card pad rf-fn-card">
+      <h4>FB LProdReg_UserDefinedObjectConveyorPrioritization</h4>
+      <p>Extends modes 0&ndash;6 for how newly inserted products/containers are ordered in the register on a conveyor, again by position or characteristics. One example strategy (by <span class="mono">colour</span>) ships pre&#8209;written.</p>
+      <div class="rf-fn-via"><b>Configured via</b> <span class="mono">config.productConveyor[&hellip;].priority</span> / <span class="mono">containerConveyor[&hellip;].priority</span></div>
+    </div>
+    <div class="card pad rf-fn-card">
+      <h4>FC LProdReg_UserDefinedDeleteProductsByCharacteristics</h4>
+      <p>Lets an FO&#8209;Sink delete products by a user&#8209;added characteristic. Set <span class="mono">configSinkProduct.deletionByCharacteristics</span> and the target value, then trigger <span class="mono">digitalTriggerInput</span> on the sink.</p>
+      <div class="rf-fn-via"><b>Not reachable from the RegisterManager</b> &mdash; needs its own, externally instantiated FO&#8209;Sink (3.8).</div>
+    </div>
+    <div class="card pad rf-fn-card">
+      <h4>FC LProdReg_UserDefinedDeleteContainerByCharacteristics</h4>
+      <p>The same mechanism for containers &mdash; identical principle, its own FO&#8209;Sink.</p>
+      <div class="rf-fn-via"><b>Configured via</b> <span class="mono">configSinkContainer.deletionByCharacteristics</span></div>
+    </div>
+  </div>
+
+  <div class="rf-h3row"><h3>PLC tags that size everything</h3><span class="tag">chapter 2.5</span></div>
+  <p class="rf-lede">Two tag tables ship with the library: <span class="mono">LProdReg_InternalTags</span> (leave alone) and <span class="mono">LProdReg_ConfigurationTags</span> (yours to set). The manager's own memory footprint is a direct function of these.</p>
+  <div class="scrollx" style="margin-top:14px"><table class="rf-tbl">
+    <thead><tr><th>Tag</th><th>Default</th><th>Sizes&hellip;</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">LPRODREG_NO_OF_PRODUCT_CONVEYORS</td><td class="num">1</td><td>Product conveyor array</td></tr>
+      <tr><td class="mono">LPRODREG_NO_OF_CONTAINER_CONVEYORS</td><td class="num">1</td><td>Container conveyor array</td></tr>
+      <tr><td class="mono">LPRODREG_NO_OF_MAX_PRODUCTS_PER_CONVEYOR</td><td class="num">10</td><td>Product storage per product conveyor</td></tr>
+      <tr><td class="mono">LPRODREG_NO_OF_MAX_CONTAINERS_PER_CONVEYOR</td><td class="num">10</td><td>Container storage per container conveyor</td></tr>
+      <tr><td class="mono">LPRODREG_NO_ACTUATORS</td><td class="num">2</td><td>Actuator array</td></tr>
+      <tr><td class="mono">LPRODREG_NO_OF_CAMERAS</td><td class="num">1</td><td>Camera sensor array</td></tr>
+      <tr><td class="mono">LPRODREG_NO_OF_LIGHTSWITCHES</td><td class="num">2</td><td>Light switch sensor array</td></tr>
+      <tr><td class="mono">LPRODREG_NO_OF_COORD_SYSTEMS</td><td class="num">4</td><td>Coordinate&#8209;frame array</td></tr>
+      <tr><td class="mono">LPRODREG_NO_OF_STATIONS</td><td class="num">1</td><td>Station ID array</td></tr>
+      <tr><td class="mono">LPRODREG_NO_OF_DIFFERENT_CONTAINER_GROUPS</td><td class="num">1</td><td>Container groups &mdash; must match container conveyor count</td></tr>
+      <tr><td class="mono">LPRODREG_LENGTH_OF_PRODUCT_POCKET_ARRAY</td><td class="num">10</td><td>Products stored in container pockets</td></tr>
+      <tr><td class="mono">LPRODREG_LENGTH_OF_CONTAINER_POCKET_ARRAY</td><td class="num">10</td><td>Containers stored in container pockets</td></tr>
+      <tr><td class="mono">LPRODREG_NO_OF_ACTIVE_FLOW_OBJECTS</td><td class="num">16</td><td>Flow&#8209;object array (+2 with Hmi_Main)</td></tr>
+      <tr><td class="mono">LPRODREG_NO_OF_REQUEST_RESPONSE_BUFFER_ELEMENTS</td><td class="num">16</td><td>Request/response buffer &mdash; must equal active&#8209;FO count</td></tr>
+      <tr><td class="mono">LPRODREG_NO_OF_MAX_PICKS_PER_CYCLE</td><td class="num">1</td><td>Multi&#8209;pick ceiling per actuator</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="rf-h3row"><h3>PLC types worth knowing by name</h3><span class="tag">chapter 2.6</span></div>
+  <div class="rf-plctypes">
+    <div class="rf-plctype"><b>LProdReg_type_ProductDataBase</b><span>The whole register: products, containers, flow objects, retained values.</span></div>
+    <div class="rf-plctype"><b>LProdReg_typeProduct / typeContainer</b><span>One storage entry each &mdash; see the DB card above.</span></div>
+    <div class="rf-plctype"><b>LProdReg_typeObjectDataEntry</b><span>Position + characteristics for one incoming object.</span></div>
+    <div class="rf-plctype"><b>LProdReg_typeObjectCharacteristics</b><span>Name + user&#8209;defined properties.</span></div>
+    <div class="rf-plctype"><b>LProdReg_typeObjectUserDefinedProperties</b><span>Where you add your own characteristics (colour, shape, &hellip;).</span></div>
+    <div class="rf-plctype"><b>LProdReg_typeFrame</b><span>A coordinate&#8209;system frame entry.</span></div>
+    <div class="rf-plctype"><b>LProdReg_typeConfigManager</b><span>The manager's whole configuration structure.</span></div>
+    <div class="rf-plctype"><b>LProdReg_typeConfigManagerConveyor / Camera / LightSwitch / SinkZone / Actuator</b><span>The per&#8209;part configuration sub&#8209;structures behind the six config cards above.</span></div>
+    <div class="rf-plctype"><b>LProdReg_typeSensorCameraData</b><span>Vision&#8209;system object list shape at input <span class="mono">cameraData</span>.</span></div>
+    <div class="rf-plctype"><b>LProdReg_typeActuatorInterface (+ In / Out)</b><span>The full pick/place interface exposed per actuator.</span></div>
+    <div class="rf-plctype"><b>LProdReg_typeManagerDiagnostics</b><span>Counts, FO states, and <span class="mono">foInError</span>.</span></div>
+  </div>
+</div></section>

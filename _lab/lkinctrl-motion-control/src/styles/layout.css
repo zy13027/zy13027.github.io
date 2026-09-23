@@ -1,0 +1,24 @@
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:0}
+.sec{padding-block:56px;border-top:1px solid var(--line-soft);scroll-margin-top:calc(56px + env(safe-area-inset-top,0px))}
+.sec>.wrap>header{margin-bottom:26px;display:flex;flex-direction:column;gap:8px}
+.sec h2{font-size:clamp(26px,3.4vw,38px);letter-spacing:-.01em}
+.sec h3{font-size:19px;letter-spacing:.01em}
+
+/* ---------- masthead ---------- */
+.mast{position:relative;overflow:hidden;background:var(--surface);border-bottom:1px solid var(--line)}
+.mast::before{content:"";position:absolute;inset:-40% -10% auto -10%;height:120%;background:
+  radial-gradient(60% 70% at 18% 20%,rgba(21,183,176,.30),transparent 62%),
+  radial-gradient(55% 65% at 82% 8%,rgba(0,134,138,.26),transparent 60%),
+  radial-gradient(50% 60% at 60% 95%,rgba(240,163,43,.14),transparent 60%);
+  animation:drift 22s ease-in-out infinite alternate;pointer-events:none}
+@keyframes drift{from{transform:translate3d(-2%,0,0) scale(1)}to{transform:translate3d(3%,3%,0) scale(1.08)}}
+.mast .wrap{position:relative;padding-block:52px 44px}
+.mast h1{font-size:clamp(34px,6.4vw,64px);letter-spacing:-.02em;margin:10px 0 14px}
+.mast h1 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line-soft)}
+.topbar .wrap{display:flex;align-items:center;gap:14px;padding-block:9px;overflow-x:auto;scrollbar-width:none}
+.topbar .wrap::-webkit-scrollbar{display:none}
+.navlink{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;white-space:nowrap;padding:4px 0;border-bottom:2px solid transparent}
+.navlink:hover,.navlink.cur{color:var(--accent);border-bottom-color:var(--accent)}
+@media(max-width:700px){.sec{padding-block:40px}}

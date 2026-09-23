@@ -1,0 +1,87 @@
+<section class="sec" id="integrate"><div class="wrap">
+  <header>
+    <div class="eyebrow">Chapters 2&ndash;6 &middot; Getting LSKI into a project</div>
+    <h2>Bringing LSKI into a project</h2>
+    <p class="lede">The path from an empty TIA Portal project to a downloaded, running kinematics program. Steps 1&ndash;4 are prerequisites the library assumes are already in place; open any step for what it actually involves.</p>
+  </header>
+
+  <div class="cx-flowlist">
+
+    <details class="cx-step">
+      <summary><span class="cx-stepnum num">01</span><span class="cx-summary-text">Open the TIA Portal project</span><span class="pill">Prerequisite</span></summary>
+      <div class="cx-stepbody">
+        <p>A STEP 7 V20 Update 4 project with SINAMICS Startdrive and WinCC Unified Engineering V20 Update 4 installed. LSKI is imported as a global library into this project, not the other way round.</p>
+      </div>
+    </details>
+
+    <details class="cx-step">
+      <summary><span class="cx-stepnum num">02</span><span class="cx-summary-text">Hardware configuration and communication</span><span class="pill">Prerequisite</span></summary>
+      <div class="cx-stepbody">
+        <p>PLC hardware configured (S7&#8209;1511T or higher, firmware 4.0; an S7&#8209;1518T or 1507D plus the KinPlus option for 5&ndash;6 axes), and communication established to the drives and to the WinCC Unified panel that will host the HMI.</p>
+      </div>
+    </details>
+
+    <details class="cx-step">
+      <summary><span class="cx-stepnum num">03</span><span class="cx-summary-text">Drive commissioning and optimisation</span><span class="pill">Prerequisite</span></summary>
+      <div class="cx-stepbody">
+        <p>Parameterise and optimise whichever Siemens drives the machine uses &mdash; SINAMICS V90, S210 or S120 &mdash; using functions such as one-button tuning. LSKI itself is drive-agnostic: it only ever talks to the technology objects sitting on top of the drives.</p>
+      </div>
+    </details>
+
+    <details class="cx-step">
+      <summary><span class="cx-stepnum num">04</span><span class="cx-summary-text">Technology object configuration and optimisation</span><span class="pill">Prerequisite</span></summary>
+      <div class="cx-stepbody">
+        <p>Configure and test <span class="tag">TO_Kinematics</span>, <span class="tag">TO_PositioningAxis</span>, <span class="tag">TO_SynchronousAxis</span> and <span class="tag">TO_SpeedAxis</span> fully in TIA Portal first &mdash; drive/encoder connection, mechanics, leading-value interconnections, homing, control loop and hardware limit switches are all TIA-only settings with no HMI equivalent.</p>
+        <p>Commission with the kinematics control panel until jogging to target positions works correctly. Only after that should further configuration or extension move to the HMI's Configuration plugin.</p>
+      </div>
+    </details>
+
+    <details class="cx-step" open>
+      <summary><span class="cx-stepnum num">05</span><span class="cx-summary-text">LSKI Core integration</span></summary>
+      <div class="cx-stepbody">
+        <p>From the global library: <span class="mono">Master copies &rarr; PLC</span>. Drag <span class="tag">LSKI_Tags_V4_1_0</span> and <span class="tag">LSKI_Types_V4_1_0</span> into your PLC's (or software unit's) tag and data-type folders, then <span class="mono">LSKI_Blocks_V4_1_0 &rarr; LSKI_Core_Blocks</span> into Program blocks.</p>
+        <p>Call <span class="tag">LSKI_Core</span> once, in any OB, and wire its three mandatory in/outs &mdash; <span class="tag">projectData</span>, <span class="tag">projectConfiguration</span>, <span class="tag">dataExchange</span> &mdash; to the matching channel blocks from <span class="tag">LSKI_ExampleBlocks_V4_1_0</span>.</p>
+      </div>
+    </details>
+
+    <details class="cx-step">
+      <summary><span class="cx-stepnum num">06</span><span class="cx-summary-text">Project configuration tags</span></summary>
+      <div class="cx-stepbody">
+        <p>Size the installation through the constants in <span class="tag">LSKI_ProjectConfiguration</span> &mdash; <span class="tag">LSKI_NO_OF_CHANNELS</span>, program slots, commands, parallel sequences and the rest. Each one is retain memory committed up front, per channel.</p>
+        <div class="box caution"><b>Changing a constant reinitialises project data</b>Any change here reinitialises <span class="tag">LSKI_ProjectData</span> in every channel, and a download with data-block reinitialisation overwrites the online data outright. Save the project data into <span class="tag">LSKI_ProjectData</span>'s start values before you change a constant.</div>
+      </div>
+    </details>
+
+    <details class="cx-step">
+      <summary><span class="cx-stepnum num">07</span><span class="cx-summary-text">Assignment of technology objects in OB Startup</span></summary>
+      <div class="cx-stepbody">
+        <p>Call <span class="tag">LSKI_RegisterKinematics</span> (it also registers the axes attached to that kinematics), <span class="tag">LSKI_RegisterAdditionalAxis</span> for any extra axis, and <span class="tag">LSKI_RegisterTrackingTO</span> plus <span class="tag">LSKI_UpdateConveyorOrigin</span> / <span class="tag">LSKI_UpdateTrackingPosition</span> for conveyor tracking &mdash; each function called exactly once, only in a Startup OB. A worked example ships under <span class="tag">LSKI_ExampleBlocks_V4_1_0</span>.</p>
+      </div>
+    </details>
+
+    <details class="cx-step">
+      <summary><span class="cx-stepnum num">08</span><span class="cx-summary-text">Plugin integration</span><span class="pill">Optional</span></summary>
+      <div class="cx-stepbody">
+        <p><b style="color:var(--text)">PLC side:</b> drag each plugin's folder from <span class="mono">LSKI_Blocks_V4_1_0 &rarr; LSKI_Plugin_Blocks &rarr; HMI</span> or <span class="mono">Technology</span> into Program blocks. Any plugin from the HMI folder brings <span class="tag">LSKI_Core_HMI</span> with it as a requirement.</p>
+        <p><b style="color:var(--text)">HMI side:</b> <span class="tag">LSKI_HMI_Tags_V4_1_0</span> into HMI tags, screens <span class="tag">LSKI_Start</span> and <span class="tag">LSKI_Core_HMI</span> into Screens, then the chosen plugin's own tag and screen folders. Re-establish any HMI connection the import broke and resynchronise the tags; for more than one channel, multiplex the HMI tags on <span class="tag">LSKI_ChannelNavigation_ActiveChannel</span> so the tag count stays flat. Using software units &mdash; publish the LSKI blocks and types first.</p>
+        <p class="cx-detail-small">Screens are built for a resolution of 1920&times;1080.</p>
+      </div>
+    </details>
+
+    <details class="cx-step">
+      <summary><span class="cx-stepnum num">09</span><span class="cx-summary-text">User administration on the HMI</span><span class="pill">Optional</span></summary>
+      <div class="cx-stepbody">
+        <p>In <span class="mono">Security settings &rarr; Users and roles</span>, assign each user one or more of the four LSKI roles &mdash; <span class="tag">LSKI_Teach</span>, <span class="tag">LSKI_Programming</span>, <span class="tag">LSKI_Commissioning</span>, <span class="tag">LSKI_ProgramControl</span>. Nothing is enforced until <span class="tag">LSKI_UserAuthorization_Active</span> is switched to <span class="mono">true</span> &mdash; it defaults to <span class="mono">false</span>.</p>
+      </div>
+    </details>
+
+    <details class="cx-step">
+      <summary><span class="cx-stepnum num">10</span><span class="cx-summary-text">Project download to PLC and HMI</span></summary>
+      <div class="cx-stepbody">
+        <p>Download both the PLC and the HMI. If HMI configuration changes were made to any technology object since the last download, upload the technology objects first &mdash; otherwise a plain download discards them.</p>
+        <div class="box notice"><b>Reinitialisation can lose channel identity</b>Kinematics and axis DB numbers, and the sub-navigation's tab registrations, live in non-retain data blocks. Downloading with the option "reinitialisation of data blocks" can wipe them &mdash; if that happens, a PLC restart restores data integrity.</div>
+      </div>
+    </details>
+
+  </div>
+</div></section>

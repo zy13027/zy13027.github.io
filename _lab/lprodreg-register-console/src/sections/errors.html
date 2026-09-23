@@ -1,0 +1,26 @@
+<section class="sec" id="errors"><div class="wrap">
+  <header>
+    <div class="eyebrow">Chapter 3.10.1 &amp; 3.10.2</div>
+    <h2>Error &amp; warning identifiers</h2>
+    <p class="lede">Every identifier the RegisterManager and its flow objects can raise, reconstructed from the manual's own tables. Errors set <span class="mono">status</span> to 16#8000&ndash;16#FFFF; warnings sit in 16#7004&ndash;16#7FFF and don't stop operation.</p>
+  </header>
+
+  <div class="rf-err-toolbar">
+    <input type="search" class="rf-err-search" id="rf-err-search" placeholder="Search identifier or message&hellip;" aria-label="Search errors and warnings">
+    <div class="rf-err-sevbtns" role="group" aria-label="Severity">
+      <button type="button" class="rf-on" data-sev="">All</button>
+      <button type="button" data-sev="err">Errors</button>
+      <button type="button" data-sev="warn">Warnings</button>
+    </div>
+    <select class="rf-err-sel" id="rf-err-cat" aria-label="Category"><option value="">All categories</option></select>
+    <span class="rf-err-count" id="rf-err-count"></span>
+  </div>
+
+  <div class="scrollx card">
+    <table class="rf-err-tbl">
+      <thead><tr><th style="width:30%">Identifier</th><th style="width:11%">Value</th><th>Meaning &amp; remedy</th></tr></thead>
+      <tbody id="rf-err-body"></tbody>
+    </table>
+    <div class="rf-err-empty" id="rf-err-empty" hidden>No identifiers match that filter.</div>
+  </div>
+</div></section>

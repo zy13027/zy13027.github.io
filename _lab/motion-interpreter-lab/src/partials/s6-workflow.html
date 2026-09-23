@@ -1,0 +1,141 @@
+<!-- ============================================================
+     S6 — HOW TO USE IT
+     ============================================================ -->
+<section class="section" id="s6">
+  <div class="wrap">
+    <p class="eyebrow">Workflow</p>
+    <h2>How to use it</h2>
+    <p class="section-intro">A real, ordered procedure &mdash; from mechanics to the first monitored run.</p>
+
+    <div class="stepper" id="stepper">
+
+      <div class="step" data-open="true">
+        <button class="step-head" aria-expanded="true">
+          <span class="step-num">1</span>
+          <span class="step-title">Configure the mechanics &mdash; axes and kinematics</span>
+          <svg class="step-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Add the positioning-axis TOs, activate simulation on each if you are running without hardware, assign the drive interface, then add the TO_Kinematics and set its type (the Getting Started basic example uses &ldquo;Cartesian portal 3D&rdquo; with three positioning axes) and its interconnections and geometry.</p>
+            <p class="tip">Tip from the manual: adding a PROFIdrive device such as a SINAMICS S210 and configuring IRT improves behaviour under PLCSIM Advanced.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-open="false">
+        <button class="step-head" aria-expanded="false">
+          <span class="step-num">2</span>
+          <span class="step-title">Add the TO_Interpreter and connect the kinematics</span>
+          <svg class="step-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Basic parameters &gt; Connected kinematics &mdash; or pick the kinematics in the &ldquo;Add technology object&rdquo; dialog, or drag the Interpreter onto the kinematics in the project tree. One Interpreter binds to exactly one kinematics TO.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-open="false">
+        <button class="step-head" aria-expanded="false">
+          <span class="step-num">3</span>
+          <span class="step-title">Set the Extended parameters</span>
+          <svg class="step-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Interpreter job sequence &mdash; max jobs prepared, <code>&lt;TO&gt;.Parameter.MaxNumberOfCommands</code>, 10&ndash;100.</p>
+            <p>Program preparation &gt; Maximum wait time &mdash; <code>&lt;TO&gt;.Parameter.StartTimeout</code>, 0.0&ndash;2.0 s.</p>
+            <p>Program preparation &gt; Start value program override &mdash; <code>&lt;TO&gt;.Parameter.ProgramOverride</code>, 1&ndash;100 %.</p>
+            <p>Clipboard &mdash; start values for CbBool[1..300], CbDint[1..100], CbLreal[1..100].</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-open="false">
+        <button class="step-head" aria-expanded="false">
+          <span class="step-num">4</span>
+          <span class="step-title">Add the TO_InterpreterMapping and declare what MCL may touch</span>
+          <svg class="step-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Mapping &gt; Mapping of technology objects: name in interpreter program + the TO. Mapping &gt; Mapping of variables: name + data block variable (+ Read only where required).</p>
+            <p>In the Getting Started project this is where the gripper signals live &mdash; a &ldquo;BasicMappingDB&rdquo; DB whose BOOLs are mapped one-for-one.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-open="false">
+        <button class="step-head" aria-expanded="false">
+          <span class="step-num">5</span>
+          <span class="step-title">Add the TO_InterpreterProgram and write the MCL</span>
+          <svg class="step-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Open its programming editor, pick the Interpreter and the Mapping in the two drop-downs at the top, and write the program. The editor has configuration dialogs for instruction parameters, bookmarks, and a 3D visualisation of the kinematics.</p>
+            <p>The program is interpreted at runtime &mdash; it is not compiled in TIA Portal.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-open="false">
+        <button class="step-head" aria-expanded="false">
+          <span class="step-num">6</span>
+          <span class="step-title">Drive it from the cyclic user program</span>
+          <svg class="step-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Add MC_LoadProgram, MC_RunProgram and MC_StopProgram to the main OB from the instruction browser and wire their instance interfaces. Rising edge on Execute starts each job.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-open="false">
+        <button class="step-head" aria-expanded="false">
+          <span class="step-num">7</span>
+          <span class="step-title">Download, run, observe</span>
+          <svg class="step-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Compile and download to the CPU or a PLCSIM Advanced instance (enable simulation support in the project settings). Drive Execute from a watch table.</p>
+            <p>Switch on &ldquo;Monitoring on/off&rdquo; and &ldquo;Monitor program execution&rdquo; in the programming editor &mdash; the active line is highlighted in orange; for a loaded but not yet started program that highlight sits on PROGRAM main. Record the TCP with the Kinematics trace under the kinematics TO.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="call-ref">
+      <div class="call-ref-col">
+        <h4>MC_LoadProgram</h4>
+        <div class="row"><b>Interpreter</b> (TO_Interpreter) &middot; <b>Execute</b> (BOOL, rising edge)</div>
+        <div class="row"><b>Mode</b> (DINT, default 1): 1 = load the Interpreter program into the Interpreter TO (the program is then disabled for changes) &middot; 0 = unload</div>
+        <div class="row"><b>Program</b> (STRING): name of the Interpreter program TO, e.g. 'InterpreterProgram_1' (Mode 1 only)</div>
+        <div class="row"><b>ProgramSource</b> (DINT, default 1): 1 = Interpreter program technology object &middot; 2 = reserved</div>
+        <div class="row"><b>Mapping</b> (STRING): name of the Interpreter mapping TO, e.g. 'InterpreterMapping_1' (optional)</div>
+        <div class="row"><b>MappingSource</b> (DINT, default 1): 1 = Interpreter mapping technology object &middot; 2,3 = reserved</div>
+        <div class="row">Out: Done &middot; Busy &middot; CommandAborted &middot; Error &middot; ErrorID (WORD)</div>
+        <div class="row">Requirement: no Motion Control job active at the Interpreter (&lt;TO&gt;.StatusWord.X0 = FALSE).</div>
+      </div>
+      <div class="call-ref-col">
+        <h4>MC_RunProgram</h4>
+        <div class="row"><b>Interpreter</b> &middot; <b>Execute</b>. Out: Done &middot; Busy &middot; Active &middot; CommandAborted &middot; Error &middot; ErrorID.</div>
+        <div class="row">You may issue Run while loading is still in progress (X9 Loading) &mdash; execution starts as soon as X10 Loaded is set.</div>
+        <div class="row">Done = TRUE means the program ran AND has been prepared for another run.</div>
+      </div>
+      <div class="call-ref-col">
+        <h4>MC_StopProgram</h4>
+        <div class="row"><b>Interpreter</b> &middot; <b>Execute</b> &middot; <b>Mode</b> (DINT, default 0):</div>
+        <div class="row">0 = stop single axis/kinematics with maximum dynamics</div>
+        <div class="row">1 = stop with the dynamics of the motion job being interrupted</div>
+        <div class="row">2 = stop after the current motion job or the current motion sequence</div>
+        <div class="row">Out: Done &middot; Busy &middot; CommandAborted &middot; Error &middot; ErrorID.</div>
+        <div class="row">MC_StopProgram aborts an active MC_LoadProgram or MC_RunProgram job.</div>
+      </div>
+    </div>
+  </div>
+</section>

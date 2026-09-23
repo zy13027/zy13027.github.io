@@ -1,0 +1,30 @@
+<section class="sec" id="modes"><div class="wrap">
+  <header>
+    <div class="eyebrow">Section 1.2.3 &middot; Operation modes</div>
+    <h2>Who gets to do what</h2>
+    <p class="lede">Pick a mode and toggle motion enable to see which of the four core capabilities open up. Teaching always needs motion enable, whatever mode you're in.</p>
+  </header>
+
+  <div class="cx-modebar" role="group" aria-label="Operation mode">
+    <button type="button" class="cx-modebtn" data-mode="full">Full operation</button>
+    <button type="button" class="cx-modebtn" data-mode="auto">Automatic</button>
+    <button type="button" class="cx-modebtn" data-mode="manual">Manual</button>
+    <button type="button" class="cx-modebtn" data-mode="test">Test run</button>
+    <button type="button" class="cx-modebtn" data-mode="none">No operation</button>
+    <button type="button" class="cx-metoggle" id="cx-metoggle" aria-pressed="false"><span class="cx-dot" aria-hidden="true"></span><span id="cx-metoggle-label">Motion enable: off</span></button>
+  </div>
+
+  <div class="cx-caps" id="cx-caps"></div>
+
+  <div class="cx-rolebar">
+    <span><b>Role to switch into this mode</b></span>
+    <span id="cx-rolenote"></span>
+  </div>
+
+  <div class="cx-modenotes">
+    <div class="box notice"><b>Full operation isn't on the HMI</b>It bypasses the whole operation-mode concept, so the HMI never offers it as a choice. It's what you get by default when <span class="tag">externalOperationMode</span> is left unset and the OMAC plugin is not in use.</div>
+    <div class="box caution"><b>Don't rename the four roles</b>The roles live in Security settings &rarr; Users and roles. Rename one and it is simply never evaluated again &mdash; the authorisation for that level silently stops working.</div>
+    <div class="box"><b>Authorisation is off by default</b><span class="tag">LSKI_UserAuthorization_Active</span> (default <span class="mono">false</span>) is the single switch that turns role checking on across the HMI.</div>
+    <div class="box notice"><b>OMAC takes over mode control</b>Enabling the OMAC plugin hands operation-mode control to the OMAC state manager &mdash; both the HMI popup and the <span class="tag">externalOperationMode</span> input stop having any effect.</div>
+  </div>
+</div></section>

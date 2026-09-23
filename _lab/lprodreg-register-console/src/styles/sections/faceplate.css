@@ -1,0 +1,12 @@
+/* ---- section 3: faceplate ---- */
+.rf-fp-grid2{grid-template-columns:1.1fr .9fr;margin-top:18px}
+@media(max-width:760px){.rf-fp-grid2{grid-template-columns:1fr}}
+.rf-fp-func{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;font-size:13.5px;color:var(--text-2)}
+.rf-fp-func li{padding-left:18px;position:relative}
+.rf-fp-func li::before{content:"";position:absolute;left:0;top:.55em;width:6px;height:6px;border-radius:50%;background:var(--grad)}
+.rf-op-list{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
+.rf-op-list li{display:flex;gap:12px}
+.rf-op-list .rf-op-n{flex:0 0 auto;width:24px;height:24px;border-radius:50%;background:var(--surface-3);color:var(--text);font-family:var(--f-mono);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.rf-op-list .rf-op-b{font-family:var(--f-disp);font-weight:700;font-size:14.5px;margin-bottom:3px}
+.rf-op-list p{font-size:13.5px;color:var(--text-2);margin:0}
+.rf-cat-chips{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 4px}

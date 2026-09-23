@@ -1,2 +1,18 @@
 # Force LF line endings, needed for Docker to work on Windows
 *.sh text eol=lf
+
+# Text files are stored and checked out with LF on every platform. The site is
+# built on Linux; this also silences Git's "LF will be replaced by CRLF" warning
+# on Windows machines that have core.autocrlf=true.
+* text=auto eol=lf
+
+# Never touch binary assets.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary

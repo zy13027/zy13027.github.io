@@ -1,0 +1,19 @@
+/* ---- section 4: scenarios ---- */
+.rf-scn-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.rf-scn-tabs button{background:var(--surface-2);border:1px solid var(--line);border-radius:100px;padding:7px 15px;font-family:var(--f-mono);font-size:12px;letter-spacing:.04em;color:var(--text-2)}
+.rf-scn-tabs button.rf-on{background:var(--grad);color:var(--accent-ink);border-color:transparent;font-weight:600}
+.rf-scn-panel{margin-top:20px}
+.rf-scn-lead{font-size:14px;color:var(--text-2);max-width:80ch;margin-bottom:16px}
+.rf-scn-badge-row{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px}
+.rf-scn-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);margin-top:4px}
+.rf-scn-grid>*{min-width:0}
+@media(max-width:760px){.rf-scn-grid{grid-template-columns:minmax(0,1fr)}}
+.rf-scn-grid h4{font-family:var(--f-mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-dim);font-weight:600;margin-bottom:10px}
+.rf-scn-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.rf-scn-steps li{display:flex;gap:10px;font-size:13px;color:var(--text-2)}
+.rf-scn-steps .rf-op-n{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--surface-3);color:var(--text);font-family:var(--f-mono);font-size:10.5px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.rf-ob-table{margin-top:2px}
+.rf-modeboard{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.rf-modeboard .rf-station{background:var(--surface-2);border:1px solid var(--line-soft);border-radius:var(--r-m);padding:10px 13px;font-size:12.5px}
+.rf-modeboard .rf-station b{color:var(--text);font-family:var(--f-mono);font-size:12px;display:block;margin-bottom:4px}
+.rf-modeboard .rf-station span{color:var(--text-dim)}

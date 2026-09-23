@@ -1,0 +1,36 @@
+/* footer.css — S9 footer styles (includes the trailing @media max-width:400px block), extracted verbatim from the original inline <style> block */
+
+/* ============================================================
+   S9 — FOOTER
+   ============================================================ */
+.site-footer{
+  padding-block:var(--sp-8);
+  border-top:1px solid var(--ix-bdr);
+  color:var(--ix-soft);
+  font-size:0.85rem;
+}
+.site-footer h4{
+  font-family:var(--font-display);
+  font-size:0.95rem;
+  color:var(--ix-text);
+  margin-bottom:var(--sp-2);
+}
+.site-footer ul{ margin:0 0 var(--sp-5); padding-left:1.1em; }
+.site-footer li{ margin-bottom:var(--sp-1); }
+.sources{
+  font-size:0.8rem;
+  font-family:var(--font-mono);
+  display:flex; flex-direction:column; gap:var(--sp-1);
+}
+.footnote{
+  margin-top:var(--sp-5);
+  padding-top:var(--sp-4);
+  border-top:1px solid var(--ix-bdr);
+  font-size:0.78rem;
+  color:var(--ix-weak);
+}
+
+@media (max-width:400px){
+  .spec-chip{ flex-basis:120px; }
+  .bit-cell{ width:56px; }
+}

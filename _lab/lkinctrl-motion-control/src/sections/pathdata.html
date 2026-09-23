@@ -1,0 +1,86 @@
+<section class="sec" id="pathdata">
+<div class="wrap">
+<header>
+<div class="eyebrow">&sect;2.3 &mdash; Data structure</div>
+<h2>The PathData list</h2>
+<p class="lede">Every path LKinCtrl drives is one array &mdash; <span class="mono">LKinCtrl_typePathData</span>, a library UDT instantiated in a global DB. Each element is one command: a target, its dynamics and blending, and up to three Boolean and four LREAL flags to fire alongside it.</p>
+</header>
+
+<div class="rf-stack">
+
+<div class="card pad">
+<h3>Top level</h3>
+<p>The structure that MovePath's <span class="mono">pathData</span> input points to. It holds the path's name and the command array itself.</p>
+<div class="scrollx"><table class="rf-reftable"><thead><tr><th>Name</th><th>Type</th><th>Comment</th></tr></thead><tbody>
+<tr><td class="mono">pathDataName</td><td class="mono">String[LKINCTRL_LENGTH_OF_PATHDATA_NAME]</td><td>Name of the PathData; shown as the active path data at MovePath.</td></tr>
+<tr><td class="mono">LKinLangInterface</td><td class="mono">LKinCtrl_typeAdvPointers</td><td>Interface to the LKinLang application; pointers used to handle PathData as a ring buffer.</td></tr>
+<tr><td class="mono">commands[1..LKINCTRL_NO_OF_PATHDATA_ELEMENTS]</td><td class="mono">Array of LKinCtrl_typePathDataElement</td><td>The command list &mdash; one entry per array index, detailed below.</td></tr>
+</tbody></table></div>
+</div>
+
+<div class="card pad">
+<h3>Inside one command entry &mdash; field reference</h3>
+<p>Every array element is an <span class="mono">LKinCtrl_typePathDataElement</span>. Fields not relevant to a command's <span class="mono">cmdType</span> are simply left at their defaults.</p>
+<div class="rf-toolbar"><input class="rf-search" id="rf-pd-search" type="search" placeholder="Filter fields &mdash; e.g. bufferMode, circMode, flag&hellip;" aria-label="Filter PathData fields"></div>
+<p class="rf-count" id="rf-pd-count"></p>
+<div class="scrollx"><table class="rf-reftable"><thead><tr><th>Field</th><th>Type</th><th>Comment</th></tr></thead><tbody id="rf-pd-body"></tbody></table></div>
+</div>
+
+<div class="rf-examples">
+<div class="card pad">
+<h3>Worked example &mdash; linear move with flags</h3>
+<pre class="rf-example">// illustrative field values, not a manual screenshot
+commands[3].cmdType                      := 1     // absolute linear
+commands[3].cmdName                      := 'ToPick'
+commands[3].point                        := 2     // resolved from Point Table
+commands[3].cmdCoordinates.coordSystem   := 1     // OCS1
+commands[3].cmdParameters.pathDynamics.velocity   := -1.0  // TO default
+commands[3].cmdParameters.bufferMode     := 2     // blend, lower speed
+commands[3].cmdParameters.transitionParameter[1]  := 40.0  // mm
+commands[3].setFlags[1].flag             := 2
+commands[3].setFlags[1].flagMode         := 1     // SET_BEFORE_AND_NO_RESET
+commands[3].setFlags[2].flag             := 4
+commands[3].setFlags[2].flagMode         := 21    // RESET_AFTER</pre>
+</div>
+<div class="card pad">
+<h3>Worked example &mdash; circular, CircMode&nbsp;1</h3>
+<pre class="rf-example">// illustrative field values, not a manual screenshot
+commands[4].cmdType                                    := 3      // absolute circular
+commands[4].cmdParameters.circleParameters.circMode     := 1      // auxPoint = centre
+commands[4].cmdParameters.circleParameters.auxPoint[1]  := 250.0  // centre, coord. 1
+commands[4].cmdParameters.circleParameters.auxPoint[2]  := 0.0    // centre, coord. 2
+commands[4].cmdParameters.circleParameters.arc          := 180.0  // opening angle
+commands[4].cmdParameters.circleParameters.pathChoice   := 0      // positive / CCW
+commands[4].cmdParameters.circleParameters.circlePlane  := 2      // X-Y plane</pre>
+</div>
+</div>
+
+<div class="card pad">
+<h3>Point reference <span class="tag">&sect;3.2</span></h3>
+<p>Rather than writing coordinates inline, a command can reference a row of the Point Table attached at MovePath. The reference is resolved to real coordinates when the command is copied into the internal buffer.</p>
+<ul style="margin:.3rem 0 .3rem;padding-left:1.2rem;color:var(--text-2);display:flex;flex-direction:column;gap:.35rem">
+<li>Any value &ge; 0 in <span class="mono">point</span> is read as a point-table index. Exactly <span class="mono">-1</span> means &ldquo;no reference, use <span class="mono">cmdCoordinates</span> as written.&rdquo;</li>
+<li>An out-of-range point number throws an error &mdash; it is never silently ignored.</li>
+<li>Circular commands can reference their <span class="mono">AuxPoint</span> the same way, via <span class="mono">circleParameters.point</span>.</li>
+</ul>
+<p>Point references apply to: linear commands &middot; circular commands with aux-point mode 0 or 1 &middot; the pick-and-place command &middot; MoveDirect / sPTP &middot; the OCS frame command &middot; the UCS frame command &middot; Define Tool.</p>
+</div>
+
+<div class="card pad">
+<h3>End of path <span class="tag">&sect;3.1</span></h3>
+<p>A command with <span class="mono">cmdType = -1</span> marks the end of the list. Nothing after it is executed &mdash; unused trailing array elements can simply stay at their default cmdType of &minus;1.</p>
+</div>
+
+<div class="card pad">
+<h3>Configuration <span class="tag">&sect;2.3.2</span></h3>
+<p>PathData is a UDT: define a DB variable of type <span class="mono">LKinCtrl_typePathData</span>, fill it either by pointing and clicking in the DB view or by writing SCL networks ahead of the MovePath call (a running command-index variable, incremented after each definition, keeps the array order easy to reorder by dragging networks). Run that definition logic once &mdash; e.g. on PLC startup &mdash; not every cycle.</p>
+<div class="scrollx"><table class="rf-reftable"><thead><tr><th>Library constant</th><th>Governs</th><th>Value</th></tr></thead><tbody>
+<tr><td class="mono">LKINCTRL_NO_OF_PATHDATA_ELEMENTS</td><td>Length of the <span class="mono">commands</span> array per PathData.</td><td class="mono">20</td></tr>
+<tr><td class="mono">LKINCTRL_LENGTH_OF_PATHDATA_NAME</td><td>Character length of <span class="mono">pathDataName</span>.</td><td class="mono">20</td></tr>
+</tbody></table></div>
+<p style="margin-top:.6rem">Both are library constants: raise <span class="mono">LKINCTRL_NO_OF_PATHDATA_ELEMENTS</span> for longer paths, or the name length if <span class="mono">pathDataName</span> needs to carry more than 20 characters.</p>
+</div>
+
+</div>
+</div>
+</section>

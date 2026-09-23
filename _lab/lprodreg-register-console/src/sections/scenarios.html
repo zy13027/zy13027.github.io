@@ -1,0 +1,103 @@
+<section class="sec" id="scenarios"><div class="wrap">
+  <header>
+    <div class="eyebrow">Chapter 4</div>
+    <h2>The three example scenarios</h2>
+    <p class="lede">One example project, three projected PLCs, each demonstrating a different shape of application &mdash; from the simplest possible register to full conveyor tracking to the purely stationary mode.</p>
+  </header>
+
+  <div class="rf-scn-tabs" role="tablist" aria-label="Scenario">
+    <button type="button" class="rf-on" data-rf-scn="1">Scenario 1 &middot; Conveyor + light switch</button>
+    <button type="button" data-rf-scn="2">Scenario 2 &middot; Conveyor tracking</button>
+    <button type="button" data-rf-scn="3">Scenario 3 &middot; Stations</button>
+  </div>
+
+  <div class="rf-scn-panel" data-rf-scnpanel="1">
+    <p class="rf-scn-lead">A single conveyor belt with a light switch. Products spawn, get detected, are tracked along the register while the belt runs, and are deleted once they reach the end &mdash; the smallest possible register application, and the one to read first.</p>
+    <div class="rf-scn-badge-row"><span class="tag">LProdReg_Scenario_1</span><span class="pill">1 conveyor</span><span class="pill">1 light switch</span><span class="pill">no actuator</span></div>
+    <div class="grid rf-scn-grid">
+      <div class="card pad">
+        <h4>Line &amp; principle of operation</h4>
+        <p style="font-size:13px;color:var(--text-2);margin-bottom:10px">The light switch trigger is simulated as a rising edge every 50&nbsp;mm of belt travel: a product is inserted every 50&nbsp;mm, each rotated 60&deg; and offset 20&nbsp;mm in Y from the last, cycling every 6 products. An externally called FO&#8209;Sink lets the operator manually delete by product ID, source conveyor ID, name, or a characteristic (e.g. colour = blue).</p>
+        <h4 style="margin-top:14px">Structure &mdash; Main OB</h4>
+        <div class="scrollx"><table class="rf-ob-table">
+          <tbody>
+            <tr><td>Axes</td><td>Reset, power, home Belt_1</td></tr>
+            <tr><td>Motion</td><td class="mono">MC_MoveVelocity</td></tr>
+            <tr><td>Blocks</td><td><span class="mono">LProdReg_RegisterManager</span> (1&times;), <span class="mono">LProdReg_FoSinkProduct</span> (1&times;, external)</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div class="card pad">
+        <h4>Running it &mdash; watch table <span class="mono">LProdReg_Watchtable</span></h4>
+        <ol class="rf-scn-steps">
+          <li><span class="rf-op-n">1</span>Enable, reset and home Belt_1 (<span class="mono">Controls.Enable/Reset/Home_Belt</span>).</li>
+          <li><span class="rf-op-n">2</span>Enable the RegisterManager &mdash; status switches to <span class="mono">16#7003</span> on success.</li>
+          <li><span class="rf-op-n">3</span>Execute Belt_1 (<span class="mono">Controls.Execute_Belt1</span>); optionally change <span class="mono">Controls.Belt_Velocity</span>.</li>
+          <li><span class="rf-op-n">4</span>Monitor products in <span class="mono">DB LProdReg_ProductDataBase</span>; optionally trigger the FO&#8209;Sink via <span class="mono">Controls.Trigger_Sink</span> after setting a <span class="mono">deletionBy&hellip;</span> input.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <div class="rf-scn-panel" data-rf-scnpanel="2" hidden>
+    <p class="rf-scn-lead">Three conveyors, a camera, two light switches, and two delta pickers &mdash; the fullest example, and the one that demonstrates <b>conveyor tracking</b> through the example <span class="mono">FB TrackConveyor</span>.</p>
+    <div class="rf-scn-badge-row"><span class="tag">LProdReg_Scenario_2</span><span class="pill">3 conveyors</span><span class="pill">1 camera + 2 light switches</span><span class="pill">2 actuators &middot; FB TrackConveyor</span></div>
+    <div class="grid rf-scn-grid">
+      <div class="card pad">
+        <h4>Line &amp; principle of operation</h4>
+        <p style="font-size:13px;color:var(--text-2);margin-bottom:8px">One product conveyor (camera detects blue/red products), two container conveyors (light switches detect boxes = group&nbsp;1, then pallets = group&nbsp;2). Both conveyor prioritisations are set to mode&nbsp;1 (highest X). Picker&nbsp;1 uses a user&#8209;defined priority (<span class="mono">&hellip;_CASE_2</span>) so it only ever picks <b>blue</b> products into the 4&#8209;pocket boxes; picker&nbsp;2 has no such filter and moves any full box onto a pallet. Both pickers are driven through the example <span class="mono">FB TrackConveyor</span> (see <a href="#crossplc">7.2</a>), called in <span class="mono">OB132 TrackConv_Call</span>, which also does the path planning via <span class="mono">MC_MovePath</span> from LKinCtrl.</p>
+        <h4>Structure &mdash; OBs</h4>
+        <div class="scrollx"><table class="rf-ob-table">
+          <tbody>
+            <tr><td>Main (1)</td><td>Axis funcs Belt_1&ndash;3; output&#8209;cam trigger logic for both light switches; TON to simulate camera response; <span class="mono">MC_MoveVelocity</span> &times;3; RegisterManager; Hmi_Main</td></tr>
+            <tr><td>TrackConv_Call (132)</td><td><span class="mono">TrackConv</span> &times;2, <span class="mono">LKinCtrl_MC_GroupReset</span> &times;2</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div class="card pad">
+        <h4>Running it &mdash; watch table</h4>
+        <ol class="rf-scn-steps">
+          <li><span class="rf-op-n">1</span>Enable both <span class="mono">TrackConv</span> instances &mdash; kinematics enable, reset, home and move to base position; status <span class="mono">16#7002</span> on success.</li>
+          <li><span class="rf-op-n">2</span>Enable, reset, home Belt_1&ndash;3.</li>
+          <li><span class="rf-op-n">3</span>Enable the RegisterManager &mdash; status <span class="mono">16#7003</span>.</li>
+          <li><span class="rf-op-n">4</span>Execute all three belts &mdash; sensor simulation starts; velocity auto&#8209;overrides down once the first object enters actuator&nbsp;1's zone.</li>
+          <li><span class="rf-op-n">5</span>Monitor the database, or the included HMI, plus each actuator's pick/place interface.</li>
+          <li><span class="rf-op-n">6</span><i>(optional)</i> Open the kinematic trace to watch synchronising and path motion.</li>
+        </ol>
+        <div class="box notice" style="margin-top:12px"><b>Note</b>If <span class="mono">allowPickInExitArea</span>/<span class="mono">allowPlaceInExitArea</span> is on and the extension zone is too short, TrackConv moves to a &ldquo;dump position&rdquo; and auto&#8209;triggers deletion of the falsely picked object via <span class="mono">deleteProduct</span>.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rf-scn-panel" data-rf-scnpanel="3" hidden>
+    <p class="rf-scn-lead">One static storage, three processing stations and two sources &mdash; the station&#8209;based mode, entirely without conveyor tracking or an actuator. Products and containers are shifted between stations by hand&#8209;triggered requests, and characteristics update as they move.</p>
+    <div class="rf-scn-badge-row"><span class="tag">LProdReg_Scenario_3</span><span class="pill">1 static storage</span><span class="pill">3 stations</span><span class="pill">2 sources &middot; station&#8209;based mode</span></div>
+    <div class="grid rf-scn-grid">
+      <div class="card pad">
+        <h4>Line &amp; operating modes</h4>
+        <p style="font-size:13px;color:var(--text-2);margin-bottom:10px">FO&#8209;SourceStation and FO&#8209;Station cannot be configured through the RegisterManager, so they're always called externally &mdash; the manager's own configuration here holds just the one static&#8209;storage conveyor.</p>
+        <div class="rf-modeboard">
+          <div class="rf-station"><b>Station 1</b><span>Products: shift to next station (mode 1) &middot; Containers: &mdash;</span></div>
+          <div class="rf-station"><b>Station 2</b><span>Products: shift to next station (mode 1) &middot; Containers: shift to next station (mode 1)</span></div>
+          <div class="rf-station"><b>Station 3</b><span>Products: place in container pocket (mode 3) &middot; Containers: place on conveyor (mode 2)</span></div>
+        </div>
+        <h4 style="margin-top:14px">Structure &mdash; Main OB</h4>
+        <div class="scrollx"><table class="rf-ob-table">
+          <tbody><tr><td>Blocks</td><td><span class="mono">LProdReg_RegisterManager</span> (1&times;), <span class="mono">LProdReg_FoSourceStation</span> (2&times;), <span class="mono">LProdReg_FoStation</span> (3&times;)</td></tr></tbody>
+        </table></div>
+      </div>
+      <div class="card pad">
+        <h4>Running it &mdash; watch table</h4>
+        <ol class="rf-scn-steps">
+          <li><span class="rf-op-n">1</span>Enable every flow object then the core FB, in that order &mdash; status <span class="mono">16#7003</span>.</li>
+          <li><span class="rf-op-n">2</span>Trigger product creation at station&nbsp;1 (ID&nbsp;3) and container creation at station&nbsp;2 (ID&nbsp;4); max 5 per station.</li>
+          <li><span class="rf-op-n">3</span>Watch <span class="mono">productData.productAvailable</span>; shift station 1&rarr;2, then 2&rarr;3.</li>
+          <li><span class="rf-op-n">4</span>Watch <span class="mono">containerData.containerAvailable</span>; shift station 2&rarr;3.</li>
+          <li><span class="rf-op-n">5</span>At station 3, place products into container pockets 1&ndash;3 by <span class="mono">placePocketNumber</span>; an occupied pocket warns rather than errors.</li>
+          <li><span class="rf-op-n">6</span>Once the container is full, place it onto the static storage &mdash; it then lives in the conveyor storage area, since a static storage is an FO of type Conveyor.</li>
+          <li><span class="rf-op-n">7</span><i>(optional)</i> Use the FO&#8209;Station delete functions &mdash; first product, first container, or everything in a station.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div></section>

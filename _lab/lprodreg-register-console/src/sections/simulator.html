@@ -1,0 +1,115 @@
+<section class="sec" id="simulator"><div class="wrap">
+  <header>
+    <div class="eyebrow">Chapter 5.1 &middot; Flow objects at work</div>
+    <h2>Watch the register fill and empty</h2>
+    <p class="lede">A running model of the scenario in Figure 1&#8209;3: products and containers arrive on two conveyors, a camera and a light switch detect them, an <span class="tag">FoActuatorKinematic</span> packs products into container pockets, and every object&rsquo;s life &mdash; from first detection to deletion &mdash; plays out as a row in <span class="tag">LProdReg_ProductDataBase</span> on the right.</p>
+  </header>
+
+  <div class="card sim-controls">
+    <div class="sim-crow">
+      <div class="sim-btns">
+        <button type="button" id="sim-btn-run" class="sim-btn sim-btn-primary">Pause</button>
+        <button type="button" id="sim-btn-step" class="sim-btn">Step</button>
+        <button type="button" id="sim-btn-reset" class="sim-btn">Reset</button>
+      </div>
+      <div class="sim-field">
+        <label for="sim-speed-product">Product belt speed</label>
+        <input type="range" id="sim-speed-product" class="sim-range" min="20" max="140" step="5" value="70">
+        <span class="sim-val" id="sim-speed-product-val">70 mm/s</span>
+      </div>
+      <div class="sim-field">
+        <label for="sim-speed-container">Container belt speed</label>
+        <input type="range" id="sim-speed-container" class="sim-range" min="20" max="140" step="5" value="45">
+        <span class="sim-val" id="sim-speed-container-val">45 mm/s</span>
+      </div>
+      <div class="sim-field">
+        <label for="sim-arrival">Product arrival rate</label>
+        <input type="range" id="sim-arrival" class="sim-range" min="0.4" max="3" step="0.1" value="1.3">
+        <span class="sim-val" id="sim-arrival-val">avg. 1.3 s apart</span>
+      </div>
+    </div>
+
+    <div class="sim-crow">
+      <div class="sim-field sim-field-wide">
+        <label>Fault injection &middot; sensor-granular checks</label>
+        <div class="sim-btns">
+          <button type="button" id="sim-btn-gap" class="sim-btn sim-btn-warn" title="Spawns the next two products closer together than configData.minProductGap, so the library flags minGapViolated on both.">Force minimum-gap violation</button>
+          <button type="button" id="sim-btn-dup" class="sim-btn sim-btn-warn" title="Re-fires FoSensorCamera_1 on the object it just saw, as an overlapping image would. The main FB recognises the duplicate and discards the second request.">Force duplicate detection</button>
+        </div>
+      </div>
+      <div class="sim-field sim-field-wide">
+        <label>Actuator picking strategy &middot; FoActuatorKinematic_1</label>
+        <div class="sim-chipgroup" id="sim-strategy-group" role="group" aria-label="Picking strategy">
+          <button type="button" class="pill on" data-strategy="position" id="sim-strat-position" aria-pressed="true" title="The library's own default: within the picking zone, the actuator takes the object that is already first in register order (LPRODREG_PRIO_X_HIGHEST).">Position-based &middot; library default</button>
+          <button type="button" class="pill" data-strategy="nearest" id="sim-strat-nearest" aria-pressed="false" title="A user-defined strategy (LProdReg_UserDefinedActuatorPrioritization, index &ge; 7) that ignores register order and picks whichever object is physically closest to the actuator.">Nearest to actuator</button>
+          <button type="button" class="pill" data-strategy="characteristic" id="sim-strat-characteristic" aria-pressed="false" title="LProdReg_UserDefinedActuatorPrioritization filtering by the user-defined characteristic colour &mdash; the same approach LProdReg_Scenario2 uses to pick only blue products.">By characteristic &middot; colour = blue</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sim-crow">
+      <div class="sim-field sim-field-wide">
+        <label for="sim-delete-select">Manual deletion &middot; FoSinkProduct_1 / FoSinkContainer_1</label>
+        <div class="sim-delete-row">
+          <select id="sim-delete-select" class="sim-select"><option value="">No trackable objects yet</option></select>
+          <button type="button" id="sim-btn-delete" class="sim-btn sim-btn-danger">Delete selected</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sim-stage">
+    <div class="card sim-canvas-card">
+      <div class="sim-canvas-wrap">
+        <canvas id="sim-canvas" width="1200" height="640" role="img" aria-label="Animated top-down diagram of the pick-and-place cell: a product conveyor and a container conveyor, each with a source, a sensor and a deletion zone, and a kinematic actuator moving objects between them."></canvas>
+      </div>
+      <p class="sim-cap">Camera <span class="tag">FoSensorCamera_1</span> matches colour/shape object data against the product belt&rsquo;s reference position the instant it triggers; light switch <span class="tag">FoSensorLightSwitch_1</span> does the same for containers. The actuator tracks the still-moving belt via the system function <span class="tag">MC_TrackConveyorBelt</span> while it picks and places.</p>
+      <div class="sim-status">
+        <span>Actuator &middot; <b id="sim-actuator-status">idle</b></span>
+        <span>Sim time &middot; <b class="num" id="sim-clock">0.0 s</b></span>
+      </div>
+      <div class="sim-legend" aria-label="Register state legend">
+        <span class="sim-legend-item"><span class="sim-dot" style="background:var(--accent-2)"></span>detected / prioritised</span>
+        <span class="sim-legend-item"><span class="sim-dot" style="background:var(--text-dim)"></span>registered</span>
+        <span class="sim-legend-item"><span class="sim-dot" style="background:var(--pink)"></span>reserved / picked</span>
+        <span class="sim-legend-item"><span class="sim-dot" style="background:var(--ok)"></span>placed</span>
+        <span class="sim-legend-item"><span class="sim-dot" style="background:var(--err)"></span>deleted</span>
+        <span class="sim-legend-item"><span class="sim-dot" style="background:var(--warn)"></span>min-gap / duplicate flag</span>
+      </div>
+    </div>
+
+    <div class="card sim-register-card">
+      <div class="sim-register-head">
+        <h3>LProdReg_ProductDataBase &middot; live register</h3>
+        <p>One row per checked-in object; position updates every tick and state follows the flow object that last touched it. Register order here uses the library&rsquo;s standard modes (X&#8209;highest on the product conveyor, call order on the container conveyor) &mdash; a user-defined rule via <span class="tag">LProdReg_UserDefinedObjectConveyorPrioritization</span> could replace either.</p>
+      </div>
+      <div class="sim-register-body-wrap scrollx">
+        <table class="sim-table">
+          <thead><tr><th>#</th><th>Object</th><th>Characteristics</th><th>Position</th><th>State</th><th>Flags</th><th>Last FO</th></tr></thead>
+          <tbody id="sim-register-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="sim-counters">
+    <div class="card sim-stat"><b class="num" id="sim-c-reg">0</b><span>Products registered</span></div>
+    <div class="card sim-stat"><b class="num" id="sim-c-pick">0</b><span>Products picked</span></div>
+    <div class="card sim-stat"><b class="num" id="sim-c-place">0</b><span>Products placed</span></div>
+    <div class="card sim-stat"><b class="num" id="sim-c-del">0</b><span>Products deleted</span></div>
+    <div class="card sim-stat"><b class="num" id="sim-c-creg">0</b><span>Containers registered</span></div>
+    <div class="card sim-stat"><b class="num" id="sim-c-cfill">0</b><span>Containers filled</span></div>
+  </div>
+
+  <div class="sim-lower">
+    <div class="card sim-monitor">
+      <h3>LProdReg_DataExchange &middot; request / response traffic</h3>
+      <p>Illustrative traffic between flow objects and <span class="tag">LProdReg_ProductDataBaseManager</span> over the client&#8209;server channel &mdash; not a byte-accurate protocol trace. Newest entry at the bottom.</p>
+      <ul class="sim-monlist" id="sim-monitor-list" aria-live="off"></ul>
+    </div>
+    <div class="box notice sim-note">
+      <b>Model, not the library</b>
+      Everything above runs in the browser and reconstructs LProdReg&rsquo;s documented behaviour &mdash; flow objects, request/response traffic, prioritisation and deletion rules &mdash; from the V3.2 manual (entry 109782462). Belt speeds, distances, zone sizes and timings are illustrative; they are not the library&rsquo;s real-time performance.
+    </div>
+  </div>
+</div></section>

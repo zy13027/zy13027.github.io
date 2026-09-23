@@ -1,0 +1,271 @@
+<section class="sec" id="flowobjects"><div class="wrap">
+  <header>
+    <div class="eyebrow">Chapter 5 &middot; Description of modular library blocks</div>
+    <h2>The flow-object catalogue</h2>
+    <p class="lede">Eleven flow objects, grouped into the six FO types, plus the core manager, the wrapper and the HMI faceplate that sit around them. Pick a block below to see what it models, how it works, and what it costs to run.</p>
+  </header>
+
+  <div class="pc-h3row" style="margin-top:8px"><h3>Library footprint</h3></div>
+  <p class="pc-fp-intro">All fourteen blocks shipped with V3.2, in code work-memory and load memory on an S7-1500T CPU. Each column shares one scale across every block, so the gap between the core manager and the smallest flow object is the real gap.</p>
+  <div class="grid pc-fp-grid">
+    <div class="pc-fp-panel">
+      <h3>Code work-memory (kB)</h3>
+      <ul class="pc-bars">
+        <li class="pc-bar-group">Core &amp; wrapper</li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">LProdReg_ProductDataBaseManager</span><span class="pc-bar-val num">75.6</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:100%"></div></div></li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">LProdReg_RegisterManager</span><span class="pc-bar-val num">config.</span></div><div class="pc-bar-track"><div class="pc-bar-fill pc-bar-var"></div></div></li>
+        <li class="pc-bar-group">Conveyors</li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoConveyorBelt</span><span class="pc-bar-val num">8.26</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:10.9%"></div></div></li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoConveyorStaticStorage</span><span class="pc-bar-val num">1.62</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:2.1%"></div></div></li>
+        <li class="pc-bar-group">Sources</li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoSource</span><span class="pc-bar-val num">2.98</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:3.9%"></div></div></li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoSourceStation</span><span class="pc-bar-val num">2.31</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:3.1%"></div></div></li>
+        <li class="pc-bar-group">Sensors</li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoSensorLightSwitch</span><span class="pc-bar-val num">5.80</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:7.7%"></div></div></li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoSensorZone</span><span class="pc-bar-val num">2.27</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:3.0%"></div></div></li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoSensorCamera</span><span class="pc-bar-val num">17.0</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:22.5%"></div></div></li>
+        <li class="pc-bar-group">Actuators</li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoActuatorKinematic</span><span class="pc-bar-val num">26.1</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:34.5%"></div></div></li>
+        <li class="pc-bar-group">Stations</li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoStation</span><span class="pc-bar-val num">6.42</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:8.5%"></div></div></li>
+        <li class="pc-bar-group">Sinks</li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoSinkProduct</span><span class="pc-bar-val num">2.49</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:3.3%"></div></div></li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoSinkContainer</span><span class="pc-bar-val num">2.51</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:3.3%"></div></div></li>
+        <li class="pc-bar-group">HMI</li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">LProdReg_Hmi_Main</span><span class="pc-bar-val num">20.8</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:27.5%"></div></div></li>
+      </ul>
+    </div>
+    <div class="pc-fp-panel">
+      <h3>Load memory (kB)</h3>
+      <ul class="pc-bars">
+        <li class="pc-bar-group">Core &amp; wrapper</li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">LProdReg_ProductDataBaseManager</span><span class="pc-bar-val num">1096</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:100%"></div></div></li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">LProdReg_RegisterManager</span><span class="pc-bar-val num">config.</span></div><div class="pc-bar-track"><div class="pc-bar-fill pc-bar-var"></div></div></li>
+        <li class="pc-bar-group">Conveyors</li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoConveyorBelt</span><span class="pc-bar-val num">85.3</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:7.8%"></div></div></li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoConveyorStaticStorage</span><span class="pc-bar-val num">41.1</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:3.7%"></div></div></li>
+        <li class="pc-bar-group">Sources</li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoSource</span><span class="pc-bar-val num">69.2</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:6.3%"></div></div></li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoSourceStation</span><span class="pc-bar-val num">54.5</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:5.0%"></div></div></li>
+        <li class="pc-bar-group">Sensors</li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoSensorLightSwitch</span><span class="pc-bar-val num">98.0</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:8.9%"></div></div></li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoSensorZone</span><span class="pc-bar-val num">54.7</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:5.0%"></div></div></li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoSensorCamera</span><span class="pc-bar-val num">232</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:21.2%"></div></div></li>
+        <li class="pc-bar-group">Actuators</li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoActuatorKinematic</span><span class="pc-bar-val num">498</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:45.4%"></div></div></li>
+        <li class="pc-bar-group">Stations</li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoStation</span><span class="pc-bar-val num">125</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:11.4%"></div></div></li>
+        <li class="pc-bar-group">Sinks</li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoSinkProduct</span><span class="pc-bar-val num">63.2</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:5.8%"></div></div></li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">FoSinkContainer</span><span class="pc-bar-val num">64.0</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:5.8%"></div></div></li>
+        <li class="pc-bar-group">HMI</li>
+        <li class="pc-bar-row"><div class="pc-bar-head"><span class="pc-bar-name mono">LProdReg_Hmi_Main</span><span class="pc-bar-val num">376</span></div><div class="pc-bar-track"><div class="pc-bar-fill" style="width:34.3%"></div></div></li>
+      </ul>
+    </div>
+  </div>
+  <p class="pc-fp-note">LProdReg_RegisterManager has no fixed size (hatched bar): it wraps and calls only the blocks a given application configures, so its footprint is whatever the sum of those blocks comes to.</p>
+
+  <div class="pc-h3row"><h3>Every flow object, by type</h3></div>
+  <div class="pc-fo-groups">
+    <div class="pc-fo-group">
+      <span class="pc-gl">Conveyors</span>
+      <div class="pc-fo-pillrow">
+        <button type="button" class="pill pc-fo-pill on" data-fo="conveyorbelt" aria-pressed="true" aria-controls="pc-panel-conveyorbelt">FoConveyorBelt</button>
+        <button type="button" class="pill pc-fo-pill" data-fo="conveyorstaticstorage" aria-pressed="false" aria-controls="pc-panel-conveyorstaticstorage">FoConveyorStaticStorage</button>
+      </div>
+    </div>
+    <div class="pc-fo-group">
+      <span class="pc-gl">Sources</span>
+      <div class="pc-fo-pillrow">
+        <button type="button" class="pill pc-fo-pill" data-fo="source" aria-pressed="false" aria-controls="pc-panel-source">FoSource</button>
+        <button type="button" class="pill pc-fo-pill" data-fo="sourcestation" aria-pressed="false" aria-controls="pc-panel-sourcestation">FoSourceStation</button>
+      </div>
+    </div>
+    <div class="pc-fo-group">
+      <span class="pc-gl">Sensors</span>
+      <div class="pc-fo-pillrow">
+        <button type="button" class="pill pc-fo-pill" data-fo="sensorlightswitch" aria-pressed="false" aria-controls="pc-panel-sensorlightswitch">FoSensorLightSwitch</button>
+        <button type="button" class="pill pc-fo-pill" data-fo="sensorzone" aria-pressed="false" aria-controls="pc-panel-sensorzone">FoSensorZone</button>
+        <button type="button" class="pill pc-fo-pill" data-fo="sensorcamera" aria-pressed="false" aria-controls="pc-panel-sensorcamera">FoSensorCamera</button>
+      </div>
+    </div>
+    <div class="pc-fo-group">
+      <span class="pc-gl">Actuators</span>
+      <div class="pc-fo-pillrow">
+        <button type="button" class="pill pc-fo-pill" data-fo="actuatorkinematic" aria-pressed="false" aria-controls="pc-panel-actuatorkinematic">FoActuatorKinematic</button>
+      </div>
+    </div>
+    <div class="pc-fo-group">
+      <span class="pc-gl">Stations</span>
+      <div class="pc-fo-pillrow">
+        <button type="button" class="pill pc-fo-pill" data-fo="station" aria-pressed="false" aria-controls="pc-panel-station">FoStation</button>
+      </div>
+    </div>
+    <div class="pc-fo-group">
+      <span class="pc-gl">Sinks</span>
+      <div class="pc-fo-pillrow">
+        <button type="button" class="pill pc-fo-pill" data-fo="sinkproduct" aria-pressed="false" aria-controls="pc-panel-sinkproduct">FoSinkProduct</button>
+        <button type="button" class="pill pc-fo-pill" data-fo="sinkcontainer" aria-pressed="false" aria-controls="pc-panel-sinkcontainer">FoSinkContainer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card pc-fo-panel" id="pc-panel-conveyorbelt">
+    <div class="pc-fo-head"><span class="pc-name">LProdReg_FoConveyorBelt</span><span class="tag">FB 35752</span><span class="tag">Conveyors</span></div>
+    <p class="pc-fo-models">Models a single physical conveyor belt.</p>
+    <div class="pc-fo-block"><h4>Principle of operation</h4><p>One instance per real belt, connected to a TO_PositioningAxis, TO_SynchronousAxis or TO_ExternalEncoder at its <span class="mono">conveyorTO</span> input, plus an individual coordinate frame defined at the main FB and referenced via <span class="mono">coordSystemIndex</span>. Once enabled it cyclically sends requests to the core FB to keep every product's and container's position on that belt current in the register, every call cycle. At the main FB it is assigned as a &ldquo;product-conveyor&rdquo; and/or a &ldquo;container-conveyor&rdquo;, depending on what it carries.</p></div>
+    <div class="pc-fo-block"><h4>Supported functionalities</h4><ul>
+      <li>Definable position-tolerance window between the FO's and the register's saved position, to catch a setpoint jump</li>
+      <li>Choice of setpoint or actual axis position for tracking (actual is recommended for conveyor tracking)</li>
+      <li>Lead-screw conversion for rotatory axes</li>
+      <li>Transfer-data mode, when the connected TO axis runs on a secondary PLC</li>
+    </ul></div>
+    <div class="pc-fo-block"><h4>Memory cost</h4><div class="pc-fo-mem">
+      <div class="pc-row"><div class="pc-h"><span>Code work-memory</span><span class="num">8.26 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:10.9%"></div></div></div>
+      <div class="pc-row"><div class="pc-h"><span>Load memory</span><span class="num">85.3 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:7.8%"></div></div></div>
+    </div></div>
+  </div>
+
+  <div class="card pc-fo-panel" id="pc-panel-conveyorstaticstorage" hidden>
+    <div class="pc-fo-head"><span class="pc-name">LProdReg_FoConveyorStaticStorage</span><span class="tag">FB 35759</span><span class="tag">Conveyors</span></div>
+    <p class="pc-fo-models">Models a static, non-moving storage surface &mdash; a table or a platform &mdash; handled as a conveyor for register purposes.</p>
+    <div class="pc-fo-block"><h4>Principle of operation</h4><p>Represents a &ldquo;static storage&rdquo; area on which objects can be detected, created or processed, exactly as on a moving conveyor, even though nothing here moves. It is configured as a product- and/or container-conveyor under the same rules as FoConveyorBelt, and still needs its own coordinate frame defined at the main FB, referenced via <span class="mono">coordSystemIndex</span>.</p></div>
+    <div class="pc-fo-block"><h4>Supported functionalities</h4><p>The manual lists no separate functionalities section for this block &mdash; it reuses FoConveyorBelt's conveyor-role configuration in full.</p></div>
+    <div class="pc-fo-block"><h4>Memory cost</h4><div class="pc-fo-mem">
+      <div class="pc-row"><div class="pc-h"><span>Code work-memory</span><span class="num">1.62 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:2.1%"></div></div></div>
+      <div class="pc-row"><div class="pc-h"><span>Load memory</span><span class="num">41.1 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:3.7%"></div></div></div>
+    </div><p style="font-size:12px;color:var(--text-dim);margin-top:8px">The lightest block in the library.</p></div>
+  </div>
+
+  <div class="card pc-fo-panel" id="pc-panel-source" hidden>
+    <div class="pc-fo-head"><span class="pc-name">LProdReg_FoSource</span><span class="tag">FB 35758</span><span class="tag">Sources</span></div>
+    <p class="pc-fo-models">Models the insertion point that writes one detected &mdash; or manually specified &mdash; object into the register.</p>
+    <div class="pc-fo-block"><h4>Principle of operation</h4><p>On a rising edge at <span class="mono">sensorTrigger</span>, sends the object at index <span class="mono">configSource.indexObjectData</span> of the connected object-data array to the core FB, which validates it and inserts it into the storage area of the conveyor named at <span class="mono">sensorConveyorID</span>, where it is prioritised and sorted per that conveyor's configuration. Each FO-Source instance inserts only one array element per trigger &mdash; a camera reporting several objects per image needs one FO-Source per detectable-object index.</p></div>
+    <div class="pc-fo-block"><h4>Supported functionalities</h4><ul>
+      <li>Automatic operation, chained directly to a FO-Sensor's outputs (camera or light switch)</li>
+      <li>Manual operation, supplying object data, conveyor ID and trigger by hand</li>
+    </ul></div>
+    <div class="pc-fo-block"><h4>Memory cost</h4><div class="pc-fo-mem">
+      <div class="pc-row"><div class="pc-h"><span>Code work-memory</span><span class="num">2.98 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:3.9%"></div></div></div>
+      <div class="pc-row"><div class="pc-h"><span>Load memory</span><span class="num">69.2 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:6.3%"></div></div></div>
+    </div></div>
+  </div>
+
+  <div class="card pc-fo-panel" id="pc-panel-sourcestation" hidden>
+    <div class="pc-fo-head"><span class="pc-name">LProdReg_FoSourceStation</span><span class="tag">FB 35766</span><span class="tag">Sources</span></div>
+    <p class="pc-fo-models">Models the insertion point for a FO-Station, rather than for a conveyor.</p>
+    <div class="pc-fo-block"><h4>Principle of operation</h4><p>On a rising edge at <span class="mono">digitalInputTrigger</span>, inserts a product or container &mdash; of the configured object type, characteristics, and for containers, container group &mdash; directly into the station named at <span class="mono">configSourceStation.stationID</span>. The object joins that station's storage area on the FIFO principle. Not configurable or manageable via LProdReg_RegisterManager; it must be wired into the TIA project alongside it.</p></div>
+    <div class="pc-fo-block"><h4>Supported functionalities</h4><p>The manual lists no separate functionalities section for this block beyond its principle of operation.</p></div>
+    <div class="pc-fo-block"><h4>Memory cost</h4><div class="pc-fo-mem">
+      <div class="pc-row"><div class="pc-h"><span>Code work-memory</span><span class="num">2.31 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:3.1%"></div></div></div>
+      <div class="pc-row"><div class="pc-h"><span>Load memory</span><span class="num">54.5 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:5.0%"></div></div></div>
+    </div></div>
+  </div>
+
+  <div class="card pc-fo-panel" id="pc-panel-sensorlightswitch" hidden>
+    <div class="pc-fo-head"><span class="pc-name">LProdReg_FoSensorLightSwitch</span><span class="tag">FB 35754</span><span class="tag">Sensors</span></div>
+    <p class="pc-fo-models">Models a single-object presence sensor &mdash; typically a photoelectric light switch mounted over a belt.</p>
+    <div class="pc-fo-block"><h4>Principle of operation</h4><p>Detects one object via a trigger signal and matches the conveyor's actual position (reference data) with the object data supplied at its <span class="mono">objectData</span> input at the instant of triggering. Chained to a FO-Source, the matched object is then inserted into the register automatically.</p></div>
+    <div class="pc-fo-block"><h4>Supported functionalities</h4><ul>
+      <li>Trigger via TO_MeasuringInput &mdash; high-precision, with an optional cyclic mode and configurable off-time</li>
+      <li>Trigger via a simple digital input &mdash; no technology object required, but less precise</li>
+    </ul></div>
+    <div class="pc-fo-block"><h4>Memory cost</h4><div class="pc-fo-mem">
+      <div class="pc-row"><div class="pc-h"><span>Code work-memory</span><span class="num">5.80 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:7.7%"></div></div></div>
+      <div class="pc-row"><div class="pc-h"><span>Load memory</span><span class="num">98.0 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:8.9%"></div></div></div>
+    </div></div>
+  </div>
+
+  <div class="card pc-fo-panel" id="pc-panel-sensorzone" hidden>
+    <div class="pc-fo-head"><span class="pc-name">LProdReg_FoSensorZone</span><span class="tag">FB 35755</span><span class="tag">Sensors</span></div>
+    <p class="pc-fo-models">Models a rectangular x/y detection area painted onto a conveyor &mdash; not a physical sensor at all.</p>
+    <div class="pc-fo-block"><h4>Principle of operation</h4><p>Defines a rectangular zone on a conveyor from a cartesian start position and an x/y dimension, attached to a conveyor ID and coordinate frame. Products or containers passing through it are marked in the register (<span class="mono">assignedZone</span>). Other FOs then read that marking: a FO-Actuator uses a zone as its picking or placing zone, a FO-Sink uses one as a deletion zone.</p></div>
+    <div class="pc-fo-block"><h4>Supported functionalities</h4><p>The manual lists no separate functionalities section for this block &mdash; the zone definition itself, above, is the whole of its behaviour.</p></div>
+    <div class="pc-fo-block"><h4>Memory cost</h4><div class="pc-fo-mem">
+      <div class="pc-row"><div class="pc-h"><span>Code work-memory</span><span class="num">2.27 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:3.0%"></div></div></div>
+      <div class="pc-row"><div class="pc-h"><span>Load memory</span><span class="num">54.7 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:5.0%"></div></div></div>
+    </div></div>
+  </div>
+
+  <div class="card pc-fo-panel" id="pc-panel-sensorcamera" hidden>
+    <div class="pc-fo-head"><span class="pc-name">LProdReg_FoSensorCamera</span><span class="tag">FB 35753</span><span class="tag">Sensors</span></div>
+    <p class="pc-fo-models">Models a vision system that detects several objects at once on a moving belt.</p>
+    <div class="pc-fo-block"><h4>Principle of operation</h4><p>Matches the camera's reported object data (positions, characteristics) with the conveyor's reference position at the moment of triggering, across a definable array of detected objects. Offers three trigger modes: manual digital input (low precision), a TO_OutputCam for equidistant high-precision triggers, or a TO_MeasuringInput for event-based high-precision triggers. Its outputs then feed one FO-Source per detectable-object index, up to <span class="mono">LPRODREG_CAMERA_MAX_NO_OF_DETECTABLE_OBJECTS</span>.</p></div>
+    <div class="pc-fo-block"><h4>Supported functionalities</h4><ul>
+      <li>Trigger signal generation via TO_OutputCam, or via digital input, or via TO_MeasuringInput</li>
+      <li>Detection of multiple detected objects across overlapping images &mdash; a tolerance radius suppresses duplicate inserts</li>
+      <li>Detection of a minimum gap between objects, within and across overlapping images</li>
+      <li>Reset of internal buffers (<span class="mono">resetInternalBuffer</span>) after a conveyor stop, so stale buffered objects are not re-inserted when it restarts</li>
+    </ul></div>
+    <div class="pc-fo-block"><h4>Memory cost</h4><div class="pc-fo-mem">
+      <div class="pc-row"><div class="pc-h"><span>Code work-memory</span><span class="num">17.0 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:22.5%"></div></div></div>
+      <div class="pc-row"><div class="pc-h"><span>Load memory</span><span class="num">232 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:21.2%"></div></div></div>
+    </div><p style="font-size:12px;color:var(--text-dim);margin-top:8px">The heaviest sensor in the library.</p></div>
+  </div>
+
+  <div class="card pc-fo-panel" id="pc-panel-actuatorkinematic" hidden>
+    <div class="pc-fo-head"><span class="pc-name">LProdReg_FoActuatorKinematic</span><span class="tag">FB 35751</span><span class="tag">Actuators</span></div>
+    <p class="pc-fo-models">Models a handling device &mdash; a kinematic or manipulator &mdash; that picks objects off a conveyor and places them elsewhere.</p>
+    <div class="pc-fo-block"><h4>Principle of operation</h4><p>Watches a &ldquo;picking zone&rdquo;, and in container modes a &ldquo;placing zone&rdquo;, each defined by a FO-Zone, and hands the user position data for the highest-priority object inside &mdash; plus a &ldquo;zone extension&rdquo; grace length so a kinematic riding <span class="mono">MC_TrackConveyorBelt</span> can still finish a grip after the object leaves the strict zone. The user drives a five-state processing sequence at output <span class="mono">controllingIndex</span> (idle &middot; searching &middot; object found, waiting for <span class="mono">objectPicked</span> &middot; picked, waiting for a place target &middot; waiting for <span class="mono">objectPlaced</span>) by triggering those two inputs at the right moments. Six operation modes cover picking from a conveyor or from inside a container pocket, and placing onto a conveyor, into a container pocket, or into a station.</p></div>
+    <div class="pc-fo-block"><h4>Supported functionalities</h4><ul>
+      <li>Provision of object, pick and place-container data; applying new characteristics after processing</li>
+      <li>Considering a minimum gap before processing; waiting for a place-container to arrive</li>
+      <li>Configurable order of object detection; multi-pick &mdash; picking several objects before one placement</li>
+      <li>User-programmable picking/detection strategy layered on top of register prioritisation</li>
+      <li>All six operation modes, switchable at runtime; skipping objects or containers; process counters</li>
+      <li>Operating the kinematic from a secondary PLC, via transfer-data</li>
+    </ul></div>
+    <div class="pc-fo-block"><h4>Memory cost</h4><div class="pc-fo-mem">
+      <div class="pc-row"><div class="pc-h"><span>Code work-memory</span><span class="num">26.1 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:34.5%"></div></div></div>
+      <div class="pc-row"><div class="pc-h"><span>Load memory</span><span class="num">498 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:45.4%"></div></div></div>
+    </div><p style="font-size:12px;color:var(--text-dim);margin-top:8px">The heaviest flow object in the library.</p></div>
+  </div>
+
+  <div class="card pc-fo-panel" id="pc-panel-station" hidden>
+    <div class="pc-fo-head"><span class="pc-name">LProdReg_FoStation</span><span class="tag">FB 35767</span><span class="tag">Stations</span></div>
+    <p class="pc-fo-models">Models one processing station in a station-based, FIFO-ordered line.</p>
+    <div class="pc-fo-block"><h4>Principle of operation</h4><p>Represents a single processing station with its own FIFO storage area for products and containers in the register. Objects arrive via a FO-SourceStation, or are picked into it by a FO-Actuator (modes 3/6), and become available for processing in arrival order. Triggering <span class="mono">processProduct</span> / <span class="mono">processContainer</span> processes the object at the front of the queue per the station's configured mode; the next object then advances into that slot.</p></div>
+    <div class="pc-fo-block"><h4>Supported functionalities</h4><ul>
+      <li>Provision of product and container data &mdash; availability, ID, position, characteristics, and for containers, pocket-fill status</li>
+      <li>Mode 1: shift the object to the next station</li>
+      <li>Mode 2: place the object on a conveyor belt</li>
+      <li>Mode 3: place a product into a pocket of a container in the same station (products only)</li>
+      <li>Switching modes at runtime; applying new characteristics on processing; strict FIFO ordering</li>
+      <li>Deleting the front product, the front container, or everything in the station</li>
+    </ul></div>
+    <div class="pc-fo-block"><h4>Memory cost</h4><div class="pc-fo-mem">
+      <div class="pc-row"><div class="pc-h"><span>Code work-memory</span><span class="num">6.42 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:8.5%"></div></div></div>
+      <div class="pc-row"><div class="pc-h"><span>Load memory</span><span class="num">125 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:11.4%"></div></div></div>
+    </div></div>
+  </div>
+
+  <div class="card pc-fo-panel" id="pc-panel-sinkproduct" hidden>
+    <div class="pc-fo-head"><span class="pc-name">LProdReg_FoSinkProduct</span><span class="tag">FB 35757</span><span class="tag">Sinks</span></div>
+    <p class="pc-fo-models">Models the automatic or manual deletion point for products leaving the process.</p>
+    <div class="pc-fo-block"><h4>Principle of operation</h4><p>Deletes products from the register in one of two modes: automatic deletion by zone, where every product entering a linked FO-Zone is removed each cycle, or manual deletion by product property, where the user activates one or more &ldquo;deletionBy&hellip;&rdquo; property inputs and fires <span class="mono">digitalTriggerInput</span> to delete every product that matches. <span class="mono">configSinkProduct.allPropertiesLinked</span> chooses whether all activated properties must match, or any one is enough.</p></div>
+    <div class="pc-fo-block"><h4>Supported functionalities</h4><ul>
+      <li>Automatic deletion by zone</li>
+      <li>Manual deletion by one or more product properties, AND- or OR-linked</li>
+    </ul></div>
+    <div class="pc-fo-block"><h4>Memory cost</h4><div class="pc-fo-mem">
+      <div class="pc-row"><div class="pc-h"><span>Code work-memory</span><span class="num">2.49 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:3.3%"></div></div></div>
+      <div class="pc-row"><div class="pc-h"><span>Load memory</span><span class="num">63.2 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:5.8%"></div></div></div>
+    </div></div>
+  </div>
+
+  <div class="card pc-fo-panel" id="pc-panel-sinkcontainer" hidden>
+    <div class="pc-fo-head"><span class="pc-name">LProdReg_FoSinkContainer</span><span class="tag">FB 35756</span><span class="tag">Sinks</span></div>
+    <p class="pc-fo-models">Models the same deletion mechanism as FoSinkProduct, applied to containers.</p>
+    <div class="pc-fo-block"><h4>Principle of operation</h4><p>Operates on the same automatic-by-zone / manual-by-property principle as FoSinkProduct &mdash; the manual gives it no separate explanation. Deleting a container also deletes every product or container that was placed in its pockets.</p></div>
+    <div class="pc-fo-block"><h4>Supported functionalities</h4><ul>
+      <li>Automatic deletion by zone</li>
+      <li>Manual deletion by one or more container properties, AND- or OR-linked</li>
+    </ul></div>
+    <div class="pc-fo-block"><h4>Memory cost</h4><div class="pc-fo-mem">
+      <div class="pc-row"><div class="pc-h"><span>Code work-memory</span><span class="num">2.51 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:3.3%"></div></div></div>
+      <div class="pc-row"><div class="pc-h"><span>Load memory</span><span class="num">64.0 kB</span></div><div class="pc-track"><div class="pc-fill" style="width:5.8%"></div></div></div>
+    </div></div>
+  </div>
+
+  <p class="pc-beyond"><b>Beyond the flow objects:</b> <span class="mono">LProdReg_ProductDataBaseManager</span> is the core &mdash; not an FO &mdash; that processes every FO's requests and alone owns the register (see Architecture, above). <span class="mono">LProdReg_RegisterManager</span> wraps and calls whichever of these blocks an application configures, which is why its own footprint has no fixed size. <span class="mono">LProdReg_Hmi_Main</span> is the HMI faceplate for categorised visualisation of the register's content, with delete and filter functions.</p>
+</div></section>

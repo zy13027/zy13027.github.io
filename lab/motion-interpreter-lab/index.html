@@ -1,0 +1,668 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  
+  <script type="module">
+(function(){let e=document.createElement(`link`).relList;if(e&&e.supports&&e.supports(`modulepreload`))return;for(let e of document.querySelectorAll(`link[rel="modulepreload"]`))n(e);new MutationObserver(e=>{for(let t of e)if(t.type===`childList`)for(let e of t.addedNodes)e.tagName===`LINK`&&e.rel===`modulepreload`&&n(e)}).observe(document,{childList:!0,subtree:!0});function t(e){let t={};return e.integrity&&(t.integrity=e.integrity),e.referrerPolicy&&(t.referrerPolicy=e.referrerPolicy),t.credentials=e.crossOrigin===`use-credentials`?`include`:e.crossOrigin===`anonymous`?`omit`:`same-origin`,t}function n(e){if(e.ep)return;e.ep=!0;let n=t(e);fetch(e.href,n)}})();function e(e,t){return(t||document).querySelector(e)}function t(e,t){return Array.prototype.slice.call((t||document).querySelectorAll(e))}function n(e){try{e()}catch(e){window.console&&console.error&&console.error(e)}}var r=[],i=null;function a(e){r.push(e)}function o(e){i??(i=e);var t=Math.min(e-i,64);i=e;for(var n=0;n<r.length;n++)try{r[n](t,e)}catch{}requestAnimationFrame(o)}function s(){requestAnimationFrame(o)}function c(e){try{return window.localStorage.getItem(e)}catch{return null}}function l(e,t){try{window.localStorage.setItem(e,t)}catch{}}function u(){var t=document.documentElement,n=e(`#themeToggle`),r=c(`mil-theme`);(r===`light`||r===`dark`)&&t.setAttribute(`data-theme`,r);function i(){var e=t.getAttribute(`data-theme`);if(e)return e;var n=!1;try{n=window.matchMedia(`(prefers-color-scheme: dark)`).matches}catch{}return n?`dark`:`light`}n&&n.addEventListener(`click`,function(){var e=i()===`dark`?`light`:`dark`;t.setAttribute(`data-theme`,e),l(`mil-theme`,e)})}function d(e,t,n){return Math.max(t,Math.min(n,e))}function f(e,t,n){return e+(t-e)*n}function p(e){return Math.round(e/5)*5}var m=!1;try{m=window.matchMedia&&window.matchMedia(`(prefers-reduced-motion: reduce)`).matches}catch{}function h(e){return e=e.replace(`#`,``),[parseInt(e.substr(0,2),16),parseInt(e.substr(2,2),16),parseInt(e.substr(4,2),16)]}var g=[h(`006e93`),h(`00a4b8`),h(`00eaff`)];function _(e){e=d(e,0,1);var t=e<.5?0:1,n=e<.5?e/.5:(e-.5)/.5,r=g[t],i=g[t+1],a=Math.round(f(r[0],i[0],n)),o=Math.round(f(r[1],i[1],n)),s=Math.round(f(r[2],i[2],n));return`rgb(`+a+`,`+o+`,`+s+`)`}var v={};function y(e,t){if(v[t]=!0,`IntersectionObserver`in window)try{new IntersectionObserver(function(e){e.forEach(function(e){v[t]=e.isIntersecting})},{rootMargin:`80px`}).observe(e)}catch{}}function b(e,t){function n(){var n=e.getBoundingClientRect(),r=window.devicePixelRatio||1,i=Math.max(1,Math.round(n.width*r)),a=Math.max(1,Math.round(n.height*r));(e.width!==i||e.height!==a)&&(e.width=i,e.height=a),e.getContext(`2d`).setTransform(r,0,0,r,0,0),t&&t(n.width,n.height)}if(n(),`ResizeObserver`in window)try{new ResizeObserver(function(){n()}).observe(e)}catch{window.addEventListener(`resize`,n)}else window.addEventListener(`resize`,n);return n}function x(e,t){e.textContent=``,t.forEach(function(t,n){var r=document.createElement(`div`);r.className=`line`,r.dataset.line=String(n+1);var i=document.createElement(`span`);i.className=`ln`,i.textContent=String(n+1);var a=document.createElement(`span`),o=t.indexOf(`//`);if(o>=0){a.appendChild(document.createTextNode(t.slice(0,o)));var s=document.createElement(`span`);s.className=`cm`,s.textContent=t.slice(o),a.appendChild(s)}else a.textContent=t;r.appendChild(i),r.appendChild(a),e.appendChild(r)})}function S(){var e=[`PROGRAM main`,`  VAR_IPR CONSTANT`,`    PickPosition   : TO_Struct_Ipr_Position := (x:=0, y:=0, z:=0);`,`    PlacePosOrigin : TO_Struct_Ipr_Position := (x:=20.0, y:=20.0);`,`    ProductGapX    : LREAL := 20.0;`,`    ProductGapY    : LREAL := 25.0;`,`    MASK           : DWORD := 32; // Mask for bit 5`,`  END_VAR`,``,`  VAR`,`    iterateX : DINT;`,`    iterateY : DINT;`,`  END_VAR`,``,`  powerOn( );`,``,`  IF (($A1.StatusWord AND MASK)) <> 32 THEN // home if axes are not homed yet`,`    home( $A1 );`,`    home( $A2 );`,`    home( $A3 );`,`  END_IF;`,``,`  setTrans( 2 );`,`  setBlend( 2 );`,`  setBlendDist( 4.0 );`,``,`  FOR iterateX := 0 TO 2 DO`,`    FOR iterateY := 0 TO 2 DO`,`      linAbs( PickPosition );`,`      Grip();`,`      linRel( (z := 50.0) );`,`      linAbs( (x := PlacePosOrigin.x + ProductGapX * iterateX,`,`               y := PlacePosOrigin.y + ProductGapY * iterateY) );`,`      linRel( (z := -50.0) );`,`      Release();`,`      linRel( (z := 35.0) );`,`      linAbs( (x := PickPosition.x, y := PickPosition.y) );`,`    END_FOR;`,`  END_FOR;`,``,`  linAbs( PickPosition );`,``,`END_PROGRAM`,``,`FUNCTION Grip : VOID`,`  writeVar( OpenGripper, FALSE );`,`  writeVar( CloseGripper, TRUE );`,`  waitEvent( GripperClosed );`,`END_FUNCTION`,``,`FUNCTION Release : VOID`,`  writeVar( CloseGripper, FALSE );`,`  writeVar( OpenGripper, TRUE );`,`  waitEvent( GripperOpened );`,`END_FUNCTION`],t=[],n={x:0,y:0,z:0};function r(e,r){t.push({line:e,type:`flow`,x:n.x,y:n.y,z:n.z,ms:r||120})}function i(e,r,i,a){r!==void 0&&(n.x=r),i!==void 0&&(n.y=i),a!==void 0&&(n.z=a),t.push({line:e,type:`move`,x:n.x,y:n.y,z:n.z})}function a(e,r,i){t.push({line:e,type:`pause`,x:n.x,y:n.y,z:n.z,pauseLabel:r,pauseMs:i})}r(15,160),r(18,90),r(19,90),r(20,90),r(23,90),r(24,90),r(25,90);for(var o=20,s=20,c=20,l=25,u=0;u<3;u++)for(var d=0;d<3;d++)i(29,0,0,0),a(30,`Grip(): waiting GripperClosed`,400),i(31,void 0,void 0,n.z+50),i(32,o+c*u,s+l*d,void 0),i(34,void 0,void 0,n.z-50),a(35,`Release(): waiting GripperOpened`,200),i(36,void 0,void 0,n.z+35),i(37,0,0,void 0);return i(41,0,0,0),r(43,90),{src:e,jobs:t,is3d:!0,nominalV:80}}function C(){var e=[`PROGRAM main`,`  VAR CONSTANT`,`    p1 : TO_Struct_Ipr_Position := (x:=0,   y:=0);`,`    p2 : TO_Struct_Ipr_Position := (x:=120, y:=0);`,`    p3 : TO_Struct_Ipr_Position := (x:=120, y:=80);`,`    p4 : TO_Struct_Ipr_Position := (x:=0,   y:=80);`,`  END_VAR`,`  setDynMax( v := 100.0, a := 10000.0, d := 10000.0, j := 10000.0 );`,`  setDyn( v := 60.0, a := 2000.0, d := 3000.0, j := 10000.0 );`,`  linAbs( p1 );`,`  linAbs( p2, trans := 2, blend := 2, blendDist := 15.0 );`,`  linAbs( p3, trans := 2 );`,`  linAbs( p4, trans := 0 );`,`  linAbs( p1 );`,`END_PROGRAM`],t=[];return t.push({line:8,type:`flow`,x:0,y:0,z:0,ms:90}),t.push({line:9,type:`flow`,x:0,y:0,z:0,ms:90}),t.push({line:10,type:`move`,x:0,y:0,z:0}),t.push({line:11,type:`move`,x:120,y:0,z:0}),t.push({line:12,type:`move`,x:120,y:80,z:0}),t.push({line:13,type:`move`,x:0,y:80,z:0}),t.push({line:14,type:`move`,x:0,y:0,z:0}),{src:e,jobs:t,is3d:!1,nominalV:60}}function w(){var e=[`PROGRAM main`,`  VAR`,`    Pos1 : TO_Struct_Ipr_Position;`,`  END_VAR`,`  // set max. values for dynamic`,`  setDynMax( v := 100.0, a := 10000.0, d := 10000.0, j := 10000.0 );`,`  // set dynamic parameters modally`,`  setDyn( a := 2000.0, d := 3000.0, j := 10000.0 );`,`  // linear movement of Kinematics to Pos1 with modal parameters (a, d, j),`,`  // specified with "setDyn()" and velocity specified in "linAbs()"`,`  linAbs( Pos1, v := 50.0 );`,`END_PROGRAM`],t=[];return t.push({line:6,type:`flow`,x:10,y:10,z:0,ms:110}),t.push({line:8,type:`flow`,x:10,y:10,z:0,ms:110}),t.push({line:11,type:`move`,x:70,y:45,z:0,v:50}),{src:e,jobs:t,is3d:!1,nominalV:50,illustrative:!0}}function T(){var t=e(`#heroCanvas`);if(!t)return;var n=t.parentElement,r=t.getContext(`2d`),i=S().jobs.filter(function(e){return e.type===`move`}).map(function(e){return{x:e.x,y:e.y,z:e.z}});function o(e,t,n){var r=Math.PI/6;return{sx:(e-t)*Math.cos(r),sy:(e+t)*Math.sin(r)-n}}var s=i.map(function(e){return o(e.x,e.y,e.z)}),c=1/0,l=-1/0,u=1/0,p=-1/0;s.forEach(function(e){e.sx<c&&(c=e.sx),e.sx>l&&(l=e.sx),e.sy<u&&(u=e.sy),e.sy>p&&(p=e.sy)});for(var h=Math.max(1,l-c),g=Math.max(1,p-u),x=[0],C=1;C<s.length;C++){var w=s[C].sx-s[C-1].sx,T=s[C].sy-s[C-1].sy;x.push(x[C-1]+Math.sqrt(w*w+T*T))}var E=x[x.length-1]||1;function D(e,t,n,r){var i=.14;return{x:i*n+(e-c)/h*(1-2*i)*n,y:i*r+(t-u)/g*(1-2*i)*r}}function O(e,t,n){e=(e%E+E)%E;for(var r=1;r<x.length;r++)if(e<=x[r]){var i=x[r]-x[r-1],a=i>0?(e-x[r-1])/i:0,o=s[r-1],c=s[r];return D(f(o.sx,c.sx,a),f(o.sy,c.sy,a),t,n)}return D(s[s.length-1].sx,s[s.length-1].sy,t,n)}var k=0,A=0;b(t,function(e,t){k=e,A=t,j()});function j(){if(k&&A){r.clearRect(0,0,k,A),r.lineWidth=2;for(var e=1;e<s.length;e++){var t=D(s[e-1].sx,s[e-1].sy,k,A),n=D(s[e].sx,s[e].sy,k,A),i=x[e]/E;r.strokeStyle=_((Math.sin(i*Math.PI*6)+1)/2),r.beginPath(),r.moveTo(t.x,t.y),r.lineTo(n.x,n.y),r.stroke()}}}var M=[],N=0,P=130;function F(e){if(k&&A&&v.hero){N+=e/1e3*P;var t=O(N,k,A);M.push({x:t.x,y:t.y,t:0,frac:N%E/E}),M.length>70&&M.shift(),M.forEach(function(t){t.t+=e}),r.clearRect(0,0,k,A);for(var n=1;n<M.length;n++){var i=M[n-1],a=M[n],o=d(1-a.t/1400,0,1);o<=0||(r.globalAlpha=o,r.strokeStyle=_((Math.sin(a.frac*Math.PI*6)+1)/2),r.lineWidth=3,r.beginPath(),r.moveTo(i.x,i.y),r.lineTo(a.x,a.y),r.stroke())}r.globalAlpha=1;var s=M[M.length-1];s&&(r.fillStyle=`#00eaff`,r.beginPath(),r.arc(s.x,s.y,3.4,0,Math.PI*2),r.fill())}}y(n,`hero`),m?j():a(F)}var E={"box-interpreter":`<h3>TO_Interpreter</h3><ul><li>Loading/unloading of an interpreter program</li><li>Loading/unloading of an interpreter mapping</li><li>Preparation of the interpreter program</li><li>Technology and time-optimised processing of the interpreter program</li><li>Execution of motion jobs</li></ul><p>Connects to exactly ONE kinematics TO; can additionally control mapped Speed Axis, Positioning Axis and Synchronous Axis TOs.</p><p class="note">Configured under Basic parameters &gt; Connected kinematics; Extended parameters carry job sequence, max wait time, program override, clipboard.</p>`,"box-program":`<h3>TO_InterpreterProgram</h3><p>Holds the motion jobs, written in MCL. Loaded into the Interpreter at runtime and interpreted &mdash; it is NOT compiled in TIA Portal. One Interpreter can have exactly one program loaded at a time; one program can be loaded into multiple Interpreters. Swapping programs = swapping the product the machine handles.</p>`,"box-mapping":`<h3>TO_InterpreterMapping</h3><p>Declares which CPU objects the MCL program may reach, symbolically.</p><p>Mappable: Speed axis / Positioning axis / Synchronous axis TOs; variables of global data blocks. Data types for tags: BOOL, DINT, UDINT, DWORD, LREAL; complex position types (TO_Struct_Ipr_Frame, TO_Struct_Ipr_Position, TO_Struct_Ipr_AxPosition, TO_Struct_Ipr_JtPosition); and ARRAYs of those. Max 100 table entries (an entry may be a single tag or a whole array). Read-only per entry is available &mdash; and is MANDATORY if the DB variable itself is read-only. One mapping loaded at a time; one mapping usable by several Interpreters.</p><p class="note">NOTE for V10.0: mapping complex position data types and mapping arrays are NEW in V10.0.</p>`,"box-user":`<h3>User program</h3><p>Three PLCopen-style Motion Control instructions, called from the cyclic OB.</p><p>Data also crosses via the clipboard and via mapped DB tags.</p>`,"box-kinematics":`<h3>TO_Kinematics</h3><p>Interpreter executes the transferred jobs; axes execute cyclically in MC_Interpolator.</p>`,"box-axes":`<h3>Mapped axes</h3><p>Interpreter executes the transferred jobs; axes execute cyclically in MC_Interpolator.</p>`};function D(){var n=e(`#diagramDetail`);if(!n)return;var r=t(`.to-box`);function i(e){r.forEach(function(t){var n=t.id===e;t.classList.toggle(`is-selected`,n),t.setAttribute(`aria-pressed`,n?`true`:`false`)}),n.innerHTML=E[e]||``}r.forEach(function(e){e.addEventListener(`click`,function(){i(e.id)}),e.addEventListener(`keydown`,function(t){(t.key===`Enter`||t.key===` `)&&(t.preventDefault(),i(e.id))})}),i(`box-interpreter`)}function O(){if(!e(`#s3`))return;for(var t=70,n=[],r=0;r<t;r++){var i=r%9;n.push(i===4||i===5?`other`:`kin`)}var o=7,s={play:e(`#s3Play`),playLabel:e(`#s3PlayLabel`),playIcon:e(`#s3PlayIcon`),step:e(`#s3Step`),reset:e(`#s3Reset`),cap:e(`#s3Cap`),capVal:e(`#s3CapVal`),timeout:e(`#s3Timeout`),timeoutVal:e(`#s3TimeoutVal`),preHalt:e(`#s3PreHalt`),waitEvent:e(`#s3WaitEvent`),prepFill:e(`#s3PrepFill`),prepTiles:e(`#s3PrepTiles`),execFill:e(`#s3ExecFill`),execTiles:e(`#s3ExecTiles`),badges:e(`#s3Badges`),level:e(`#s3Level`),counts:e(`#s3Counts`),kinCount:e(`#s3KinCount`),elapsed:e(`#s3Elapsed`),timeoutComputed:e(`#s3TimeoutComputed`)},c=[],l=[];function u(e,r){e.textContent=``;for(var i=0;i<t;i++){var a=document.createElement(`div`);a.className=`job-tile `+n[i],e.appendChild(a),r.push(a)}}u(s.prepTiles,c),u(s.execTiles,l);var f={prepIdx:0,execIdx:0,elapsedMs:0,playing:!1,preHaltOn:!1,waitEventOn:!1,preHalted:!1,waitBlocked:!1,waitEventFiredAt:null,prepAcc:0,execAcc:0},m=110,h=260,g=1500;function _(){return parseInt(s.cap.value,10)}function v(){return parseFloat(s.timeout.value)}function y(){var e=v();return e<=0?g:Math.min(e*1e3,g)}function b(){for(var e=0,t=f.execIdx;t<f.prepIdx;t++)n[t]===`kin`&&e++;return e}function x(){return!(f.prepIdx>=t||f.preHalted||f.prepIdx-f.execIdx>=_()||b()>=30)}function S(){return!(f.execIdx>=t||f.execIdx>=f.prepIdx||f.execIdx===o&&f.waitBlocked||f.execIdx===0&&f.elapsedMs<y())}function C(){return x()?(f.prepIdx++,f.prepIdx===o+1&&f.preHaltOn&&(f.preHalted=!0),!0):!1}function w(){return S()?f.execIdx===o&&f.waitEventOn&&!f.waitEventFiredAt?(f.waitBlocked=!0,!1):(f.execIdx++,!0):!1}function T(){f.waitBlocked=!1,f.waitEventFiredAt=f.elapsedMs}function E(){f.prepIdx=0,f.execIdx=0,f.elapsedMs=0,f.preHalted=!1,f.waitBlocked=!1,f.waitEventFiredAt=null,f.prepAcc=0,f.execAcc=0,D(!1),A()}function D(e){f.playing=e,s.play.setAttribute(`aria-pressed`,e?`true`:`false`),s.playLabel.textContent=e?`Pause`:`Play`,s.playIcon.setAttribute(`d`,e?`M6 5h4v14H6zM14 5h4v14h-4z`:`M8 5v14l11-7z`)}function O(e,t){var n=document.createElement(`span`);return n.className=`badge`+(t?` `+t:``),n.textContent=e,n}function k(){var e=document.createElement(`button`);return e.type=`button`,e.className=`badge stall`,e.style.cursor=`pointer`,e.textContent=`Fire waitEvent() now`,e.addEventListener(`click`,T),e}function A(){for(var e=0;e<t;e++)c[e].dataset.prepped=e<f.prepIdx?`1`:`0`,c[e].removeAttribute(`data-head`),l[e].dataset.executed=e<f.execIdx?`1`:`0`,l[e].removeAttribute(`data-head`);f.prepIdx<t&&c[f.prepIdx].setAttribute(`data-head`,`prep`),f.execIdx<t&&l[f.execIdx].setAttribute(`data-head`,`exec`),s.prepFill.style.width=100*f.prepIdx/t+`%`,s.execFill.style.width=100*f.execIdx/t+`%`;var n=p(d(100*(f.prepIdx-f.execIdx)/_(),0,100));s.level.textContent=n+`%`,s.counts.textContent=f.prepIdx+` / `+f.execIdx,s.kinCount.textContent=b()+` / 30`,s.elapsed.textContent=(f.elapsedMs/1e3).toFixed(1)+` s`,s.timeoutComputed.textContent=(y()/1e3).toFixed(1),s.badges.textContent=``;var r=f.prepIdx-f.execIdx>=_()&&f.prepIdx<t,i=b()>=30&&f.prepIdx<t;r?s.badges.appendChild(O(`Preparation interrupted — job sequence full`,`stall`)):i?s.badges.appendChild(O(`Preparation interrupted — 30 kinematics jobs already prepared`,`stall`)):f.preHalted?s.badges.appendChild(O(`Preparation halted — preHalt() at job 8`,`stall`)):f.prepIdx>=t&&s.badges.appendChild(O(`Preparation complete`,`ok`)),f.waitBlocked?(s.badges.appendChild(O(`Execution blocked — waiting for waitEvent() at job 8`,`stall`)),s.badges.appendChild(k())):f.execIdx===0&&f.elapsedMs<y()?s.badges.appendChild(O(`Execution has not started — StartTimeout not yet reached`,``)):f.execIdx>=t&&s.badges.appendChild(O(`Execution complete`,`ok`))}function j(e){if(f.playing){for(f.elapsedMs+=e,f.prepAcc+=e,f.execAcc+=e;f.prepAcc>=m;)f.prepAcc-=m,C();for(;f.execAcc>=h;)f.execAcc-=h,w();f.prepIdx>=t&&f.execIdx>=t&&D(!1),A()}}a(j),s.play.addEventListener(`click`,function(){D(!f.playing),A()}),s.step.addEventListener(`click`,function(){C()||w(),A()}),s.reset.addEventListener(`click`,E),s.cap.addEventListener(`input`,function(){s.capVal.textContent=s.cap.value,A()}),s.timeout.addEventListener(`input`,function(){s.timeoutVal.textContent=parseFloat(s.timeout.value).toFixed(1),A()});function M(e,t){e.addEventListener(`click`,function(){var n=e.getAttribute(`aria-checked`)!==`true`;e.setAttribute(`aria-checked`,n?`true`:`false`),f[t]=n,A()})}M(s.preHalt,`preHaltOn`),M(s.waitEvent,`waitEventOn`),A()}function k(){var n=e(`#s4`);if(!n)return;var r=[S(),C(),w()],i=[{a:2e3,d:2e3,vc:80},{a:2e3,d:3e3,vc:60},{a:2e3,d:3e3,vc:50}],o=[`<p>The gripper model from the Getting Started manual: the gripper reports &ldquo;closed&rdquo; 400&nbsp;ms after CloseGripper is written, and &ldquo;opened&rdquo; 200&nbsp;ms after OpenGripper is written. The lamp beside the canvas goes amber while <code>waitEvent()</code> is pending and green once the event arrives.</p>`,`<p>A short 4-corner path, chosen so the setTrans / setBlend / setBlendDist controls above are easy to read against a simple shape. Try trans&nbsp;=&nbsp;0 at every corner, then trans&nbsp;=&nbsp;2 with a growing blendDist.</p>`,`<p>Modal parameters are initialised from the TO&rsquo;s DynamicDefaults when the MCL program is loaded and keep their value until changed. A value given directly in a motion instruction applies to THAT instruction only and does not overwrite the modal value. Values are limited to the lowest of the TO DynamicLimits, the modal max set by setDynMax/setAxisDynMax/setOriDynMax, and the value in the job.</p><p style="font-size:0.85rem;">(Start point and Pos1&rsquo;s target are illustrative for this simulator &mdash; the manual&rsquo;s listing gives values only for the dynamic parameters, not for Pos1 itself.)</p><pre class="code-block syntax-card">linAbs( &lt;pos&gt; [,v := &lt;value&gt;] [,a := &lt;value&gt;] [,d := &lt;value&gt;] [,j := &lt;value&gt;]
+        [,trans := &lt;value&gt;] [,blend := &lt;value&gt;] [,blendDist := &lt;value&gt;]
+        [,cs := &lt;value&gt;] [,oDirA := &lt;value&gt;] );</pre><p style="font-size:0.85rem;">cs: 0 WCS &middot; 1 OCS1 &middot; 2 OCS2 &middot; 3 OCS3. oDirA: 1 positive &middot; 2 negative &middot; 3 shortest path (default 3; only relevant for up to 4 interpolating kinematics axes; B and C coordinates only relevant with more than 4 interpolating axes).</p>`],s={tabs:[e(`#presetTab0`),e(`#presetTab1`),e(`#presetTab2`)],source:e(`#mclSource`),canvas:e(`#mclCanvas`),zFill:e(`#zGaugeFill`),zVal:e(`#zGaugeVal`),zGauge:e(`#zGauge`),lamp:e(`#gripperLamp`),lampLabel:e(`#gripperLampLabel`),reset:e(`#mclReset`),play:e(`#mclPlay`),playIcon:e(`#mclPlayIcon`),step:e(`#mclStep`),scrub:e(`#mclScrub`),timeVal:e(`#mclTimeVal`),ovr:e(`#mclOvr`),ovrVal:e(`#mclOvrVal`),trans:[e(`#mclTrans0`),e(`#mclTrans1`),e(`#mclTrans2`)],blend:[e(`#mclBlend0`),e(`#mclBlend1`),e(`#mclBlend2`)],blendDist:e(`#mclBlendDist`),blendDistVal:e(`#mclBlendDistVal`),formula:e(`#mclFormula`),note:e(`#presetNote`)},c={presetIdx:0,trans:0,blend:2,blendDist:-1,ovr:100,playing:!1,currentMs:0,totalMs:1,PP:[],pauseWindows:[],vmaxRamp:100,zMax:1,is3d:!1};function l(e,t){var n=t.x-e.x,r=t.y-e.y,i=(t.z||0)-(e.z||0);return Math.sqrt(n*n+r*r+i*i)}function u(e,t,n,r,i,a){t=Math.max(0,t),n=Math.max(0,n),a=Math.max(a,t,n,.001),e=Math.max(0,e);var o=(a*a-t*t)/(2*r),s=(a*a-n*n)/(2*i),c,l,u,d;if(o>=0&&s>=0&&o+s<=e)c=a,l=o,u=s,d=e-o-s;else{var f=e+t*t/(2*r)+n*n/(2*i),p=1/(2*r)+1/(2*i);c=Math.sqrt(Math.max(0,f/p)),c=Math.max(c,t,n),l=(c*c-t*t)/(2*r),(!isFinite(l)||l<0)&&(l=0),u=(c*c-n*n)/(2*i),(!isFinite(u)||u<0)&&(u=0);var m=l+u;m>e&&m>0&&(l=l/m*e,u=u/m*e),d=Math.max(0,e-l-u)}var h=r>0?(c-t)/r:0;h<0&&(h=0);var g=i>0?(c-n)/i:0;g<0&&(g=0);var _=c>0?d/c:0;return{v0:t,v1:n,vp:c,x1:l,x2:u,cruiseLen:d,t1:h,t2:_,t3:g,totalT:h+_+g,totalX:l+d+u,a:r,d:i}}function p(e,t){var n=[],r=0;e.t1;var i=e.t1;e.t1+e.t2;var a=e.t1+e.t2;if(e.t1+e.t2+e.t3,e.t1>0)for(var o=0;o<=t;o++){var s=r+e.t1*(o/t),c=s-r;n.push({t:s,x:e.v0*c+.5*e.a*c*c,v:e.v0+e.a*c})}else n.push({t:0,x:0,v:e.v0});if(e.t2>0)for(var l=1;l<=t;l++){var u=i+e.t2*(l/t);n.push({t:u,x:e.x1+e.vp*(u-i),v:e.vp})}if(e.t3>0)for(var d=1;d<=t;d++){var f=a+e.t3*(d/t),p=f-a;n.push({t:f,x:e.x1+e.cruiseLen+(e.vp*p-.5*e.d*p*p),v:Math.max(0,e.vp-e.d*p)})}else n.push({t:e.totalT,x:e.totalX,v:e.v1});return n}function m(e){for(var t=[],n=0;n<e.length;n++){var r=e[n];if(r.type===`move`){var i={x:r.x,y:r.y,z:r.z||0,line:r.line,pausedAfter:!1},a=e[n+1];a&&a.type===`pause`&&(i.pausedAfter=!0,i.pauseLabel=a.pauseLabel,i.pauseMs=a.pauseMs),t.push(i)}}return t}function h(){for(var e=r[c.presetIdx],t=i[c.presetIdx],n=e.jobs,a=m(n),o=a.length,s=c.ovr/100*.5,d=t.a*s,h=t.d*s,g=t.vc*s,_=[],v=0;v<o-1;v++)_.push(l(a[v],a[v+1]));var y=_.map(function(e){return u(e,0,0,d,h,g).vp}),b=_.map(function(e){return u(e,0,0,t.a*.5,t.d*.5,t.vc*.5).vp});c.vmaxRamp=Math.max.apply(null,b.concat([.001]));for(var x=c.trans!==0&&c.blend!==1,S=Array(o),C=Array(o),w=Array(o),T=1;T<o-1;T++){var E=x&&!a[T].pausedAfter;if(S[T]=E,E){var D=y[T-1],O=y[T];C[T]=c.trans===1?Math.min(D,O):Math.max(D,O);var k=.5*Math.min(_[T-1],_[T]);w[T]=c.blendDist<0?k:Math.min(c.blendDist,k)}}var A=[],j=0,N=[];function P(){return A.length?A[A.length-1]:{x:a[0].x,y:a[0].y,z:a[0].z}}for(var F=0;F<n.length&&n[F].type!==`move`;F++){var I=n[F];I.type===`flow`&&(A.push({t:j,x:I.x,y:I.y,z:I.z||0,speed:0,line:I.line}),j+=I.ms)}A.push({t:j,x:a[0].x,y:a[0].y,z:a[0].z,speed:0,line:a[0].line});for(var L=0;L<o-1;L++){var R=a[L],z=a[L+1],B=_[L],V=B>0?{x:(z.x-R.x)/B,y:(z.y-R.y)/B,z:(z.z-R.z)/B}:{x:0,y:0,z:0},H=L>0&&S[L]?w[L]:0,U=L+1<o-1&&S[L+1]?w[L+1]:0,ee=Math.max(0,B-H-U),te=L>0&&S[L]?C[L]:0,ne=L+1<o-1&&S[L+1]?C[L+1]:0;L>0&&a[L].pausedAfter&&(N.push({t0:j,t1:j+a[L].pauseMs,label:a[L].pauseLabel}),A.push({t:j,x:R.x,y:R.y,z:R.z,speed:0,line:a[L].line,pauseLabel:a[L].pauseLabel}),j+=a[L].pauseMs,A.push({t:j,x:R.x,y:R.y,z:R.z,speed:0,line:a[L].line}));for(var re={x:R.x+V.x*H,y:R.y+V.y*H,z:R.z+V.z*H},W={x:z.x-V.x*U,y:z.y-V.y*U,z:z.z-V.z*U},G=u(ee,te,ne,d,h,g),K=p(G,9),q=0;q<K.length;q++){var ie=G.totalX>0?K[q].x/G.totalX:0;A.push({t:j+K[q].t*1e3,x:f(re.x,W.x,ie),y:f(re.y,W.y,ie),z:f(re.z,W.z,ie),speed:K[q].v,line:a[L].line})}if(j+=G.totalT*1e3,L+1<o-1&&S[L+1]){for(var J=a[L+1],Y=_[L+1],ae=Y>0?{x:(a[L+2].x-J.x)/Y,y:(a[L+2].y-J.y)/Y,z:(a[L+2].z-J.z)/Y}:{x:0,y:0,z:0},X={x:J.x+ae.x*w[L+1],y:J.y+ae.y*w[L+1],z:J.z+ae.z*w[L+1]},oe=10,se=Math.max(1,C[L+1]),ce=l(W,X)/se*1e3,le=1;le<=oe;le++){var Z=le/oe,Q=1-Z,ue,de,fe;if(c.blend===0)ue=Q*Q*W.x+2*Q*Z*J.x+Z*Z*X.x,de=Q*Q*W.y+2*Q*Z*J.y+Z*Z*X.y,fe=f(W.z,X.z,Z);else{var pe=Z*Z*(3-2*Z),me=Q*Q*W.x+2*Q*Z*J.x+Z*Z*X.x,he=Q*Q*W.y+2*Q*Z*J.y+Z*Z*X.y;ue=f(f(W.x,X.x,Z),me,.6),de=f(f(W.y,X.y,Z),he,.6),fe=f(W.z,X.z,pe)}A.push({t:j+ce*Z,x:ue,y:de,z:fe,speed:se,line:a[L].line,isCorner:!0})}j+=ce}}for(var ge=n.length-1;ge>=0&&n[ge].type!==`move`;ge--);for(var _e=-1,$=0;$<n.length;$++)n[$].type===`move`&&(_e=$);for(var ve=_e+1;ve<n.length;ve++){var ye=n[ve];if(ye.type===`flow`){var be=P();A.push({t:j,x:be.x,y:be.y,z:be.z,speed:0,line:ye.line}),j+=ye.ms}}var xe=P();A.push({t:j,x:xe.x,y:xe.y,z:xe.z,speed:0,line:A[A.length-1].line}),c.PP=A,c.totalMs=Math.max(1,j),c.pauseWindows=N,c.is3d=!!e.is3d;var Se=a.map(function(e){return e.z||0});c.zMax=Math.max.apply(null,Se.concat([1])),M()}s.canvas.getContext(`2d`);var g=0,T=0,E={minX:0,maxX:1,minY:0,maxY:1};b(s.canvas,function(e,t){g=e,T=t,M()});function D(){var e=1/0,t=-1/0,n=1/0,r=-1/0;c.PP.forEach(function(i){i.x<e&&(e=i.x),i.x>t&&(t=i.x),i.y<n&&(n=i.y),i.y>r&&(r=i.y)}),isFinite(e)||(e=0,t=1,n=0,r=1);var i=Math.max(1,t-e),a=Math.max(1,r-n);E={minX:e,maxX:t,minY:n,maxY:r,spanX:i,spanY:a}}function O(e,t){var n=.12,r=Math.min((1-2*n)*g/E.spanX,(1-2*n)*T/E.spanY),i=(g-E.spanX*r)/2,a=(T-E.spanY*r)/2;return{x:i+(e-E.minX)*r,y:T-(a+(t-E.minY)*r)}}function k(e){var t=e/5,n=10**Math.floor(Math.log(t)/Math.LN10),r=t/n;return(r<1.5?1:r<3.5?2:r<7.5?5:10)*n}function A(e){var t=getComputedStyle(document.documentElement),n=t.getPropertyValue(`--ix-bdr`).trim()||`rgba(35,48,60,0.15)`,r=t.getPropertyValue(`--ix-weak`).trim()||`rgba(0,10,20,0.4)`,i=k(Math.max(E.spanX,E.spanY));e.save(),e.lineWidth=1,e.strokeStyle=n,e.font=`10px "JetBrains Mono", ui-monospace, monospace`,e.fillStyle=r;for(var a=Math.ceil(E.minX/i)*i,o=Math.ceil(E.minY/i)*i,s=a,l,u;s<=E.maxX+.001;s+=i)u=O(s,E.minY),e.beginPath(),e.moveTo(u.x,0),e.lineTo(u.x,T),e.stroke(),e.textAlign=`center`,e.textBaseline=`bottom`,e.fillText(String(Math.round(s)),u.x,T-4);for(l=o;l<=E.maxY+.001;l+=i)u=O(E.minX,l),e.beginPath(),e.moveTo(0,u.y),e.lineTo(g,u.y),e.stroke(),e.textAlign=`left`,e.textBaseline=`middle`,e.fillText(String(Math.round(l)),4,u.y);e.textAlign=`right`,e.textBaseline=`top`,e.fillText(`x / y in mm`,g-6,6),e.fillStyle=n;for(var d={},f=0;f<c.PP.length;f++){var p=c.PP[f];if(!(p.speed>.001)){var m=Math.round(p.x*10)+`|`+Math.round(p.y*10);if(!d[m]){d[m]=1;var h=O(p.x,p.y);e.beginPath(),e.arc(h.x,h.y,3,0,Math.PI*2),e.fill()}}}e.restore()}var j=document.createElement(`canvas`);function M(){if(g&&T&&c.PP.length){D(),j.width=s.canvas.width,j.height=s.canvas.height;var e=j.getContext(`2d`),t=window.devicePixelRatio||1;e.setTransform(t,0,0,t,0,0),e.clearRect(0,0,g,T),A(e),e.lineCap=`round`,e.lineJoin=`round`,e.lineWidth=2.4;for(var n=1;n<c.PP.length;n++){var r=c.PP[n-1],i=c.PP[n],a=O(r.x,r.y),o=O(i.x,i.y);e.strokeStyle=_((r.speed+i.speed)/2/c.vmaxRamp),e.beginPath(),e.moveTo(a.x,a.y),e.lineTo(o.x,o.y),e.stroke()}L()}}function N(e){var t=c.PP;if(!t.length)return null;if(e<=t[0].t)return t[0];for(var n=1;n<t.length;n++)if(t[n].t>=e){var r=t[n-1],i=t[n],a=i.t-r.t,o=a>0?(e-r.t)/a:0;return{x:f(r.x,i.x,o),y:f(r.y,i.y,o),z:f(r.z,i.z,o),speed:f(r.speed,i.speed,o),line:o<.5?r.line:i.line}}return t[t.length-1]}var P=null;function F(e){if(e!==P){P=e;var n=t(`.line`,s.source);n.forEach(function(t){t.classList.toggle(`active`,parseInt(t.dataset.line,10)===e)});var r=n[e-1];if(r){var i=s.source;r.offsetTop<i.scrollTop?i.scrollTop=r.offsetTop:r.offsetTop+r.offsetHeight>i.scrollTop+i.clientHeight&&(i.scrollTop=r.offsetTop+r.offsetHeight-i.clientHeight)}}}function I(e){if(!c.is3d){s.lamp.hidden=!0;return}s.lamp.hidden=!1;for(var t=null,n=0;n<c.pauseWindows.length;n++){var r=c.pauseWindows[n];if(e>=r.t0&&e<r.t1){t=r;break}e>=r.t1&&e<r.t1+300&&(t={done:!0,label:r.label})}t&&!t.done?(s.lamp.dataset.state=`wait`,s.lampLabel.textContent=t.label):t&&t.done?(s.lamp.dataset.state=`ok`,s.lampLabel.textContent=t.label.indexOf(`Closed`)>=0?`GripperClosed`:`GripperOpened`):(s.lamp.dataset.state=`idle`,s.lampLabel.textContent=`gripper idle`)}function L(){var e=N(c.currentMs);if(e){var t=s.canvas.getContext(`2d`),n=window.devicePixelRatio||1;t.setTransform(n,0,0,n,0,0),t.clearRect(0,0,g,T),t.drawImage(j,0,0,s.canvas.width/n,s.canvas.height/n);var r=O(e.x,e.y);t.fillStyle=`#00eaff`,t.strokeStyle=`rgba(0,0,0,0.35)`,t.lineWidth=1,t.beginPath(),t.arc(r.x,r.y,5,0,Math.PI*2),t.fill(),t.stroke(),F(e.line),I(c.currentMs),c.is3d?(s.zGauge.style.opacity=`1`,s.zFill.style.height=d(100*e.z/c.zMax,0,100)+`%`,s.zVal.textContent=Math.round(e.z)):(s.zGauge.style.opacity=`0.35`,s.zFill.style.height=`0%`,s.zVal.textContent=`n/a`),s.scrub.value=String(Math.round(1e3*c.currentMs/c.totalMs)),s.timeVal.textContent=(c.currentMs/1e3).toFixed(1)+` / `+(c.totalMs/1e3).toFixed(1)+`s`}}function R(e){c.playing=e,s.play.setAttribute(`aria-pressed`,e?`true`:`false`),s.playIcon.setAttribute(`d`,e?`M6 5h4v14H6zM14 5h4v14h-4z`:`M8 5v14l11-7z`)}a(function(e){c.playing&&v.mcl&&(c.currentMs+=e,c.currentMs>=c.totalMs&&(c.currentMs=c.totalMs,R(!1)),L())}),y(n,`mcl`);function z(){var e=c.ovr,t=Math.round(e*.5);s.formula.textContent=`program `+e+`% × TO 50% = `+t+`% velocity · 50% accel`}function B(e){c.presetIdx=e,c.currentMs=0,R(!1),s.tabs.forEach(function(t,n){t.classList.toggle(`is-active`,n===e),t.setAttribute(`aria-selected`,n===e?`true`:`false`)}),x(s.source,r[e].src),s.note.innerHTML=o[e],P=null,h()}s.tabs.forEach(function(e,t){e.addEventListener(`click`,function(){B(t)})}),s.reset.addEventListener(`click`,function(){c.currentMs=0,R(!1),L()}),s.play.addEventListener(`click`,function(){R(!c.playing),c.currentMs>=c.totalMs&&(c.currentMs=0),L()}),s.step.addEventListener(`click`,function(){for(var e=P,t=0;t<c.PP.length;t++)if(c.PP[t].t>c.currentMs+1&&c.PP[t].line!==e){c.currentMs=c.PP[t].t;break}R(!1),L()}),s.scrub.addEventListener(`input`,function(){R(!1),c.currentMs=parseInt(s.scrub.value,10)/1e3*c.totalMs,L()}),s.ovr.addEventListener(`input`,function(){s.ovrVal.textContent=s.ovr.value+`%`,c.ovr=parseInt(s.ovr.value,10),z();var e=c.currentMs/c.totalMs;h(),c.currentMs=e*c.totalMs,L()});function V(e,t,n){e.forEach(function(r,i){r.addEventListener(`click`,function(){e.forEach(function(e){e.classList.remove(`is-active`)}),r.classList.add(`is-active`),c[t]=n?n(r):i,h(),L()})})}V(s.trans,`trans`),V(s.blend,`blend`),s.blendDist.addEventListener(`input`,function(){var e=parseInt(s.blendDist.value,10);c.blendDist=e,s.blendDistVal.textContent=e<0?`max`:String(e),h(),L()}),z(),B(0)}var A=[`ALL`,`KINEMATICS MOTIONS`,`COORDINATE SYSTEMS`,`ZONES`,`TOOLS`,`AXIS FUNCTIONS`,`OTHER`,`CONTROL INSTRUCTIONS`],j=[[`linAbs()`,`KINEMATICS MOTIONS`,`Position kinematics absolutely with linear path motion`,`exec`],[`linRel()`,`KINEMATICS MOTIONS`,`Relative positioning of kinematics with linear path motion`,`exec`],[`circAbs()`,`KINEMATICS MOTIONS`,`Position kinematics absolutely with circular path motion`,`exec`],[`circRel()`,`KINEMATICS MOTIONS`,`Relative positioning of kinematics with circular path motion`,`exec`],[`ptpAbs()`,`KINEMATICS MOTIONS`,`Move kinematics to absolute Cartesian target coordinates with sPTP motion`,`exec`],[`ptpRel()`,`KINEMATICS MOTIONS`,`Move kinematics to relative Cartesian target coordinates with sPTP motion`,`exec`],[`ptpAxAbs()`,`KINEMATICS MOTIONS`,`Move kinematics to absolute axis positions with sPTP motion`,`exec`],[`ptpAxRel()`,`KINEMATICS MOTIONS`,`Move kinematics to relative axis positions with sPTP motion`,`exec`],[`ptpJtAbs()`,`KINEMATICS MOTIONS`,`Move kinematics to absolute joint positions with sPTP motion`,`exec`],[`ptpJtRel()`,`KINEMATICS MOTIONS`,`Move kinematics to relative joint positions with sPTP motion`,`exec`],[`setDyn()`,`KINEMATICS MOTIONS`,`Set dynamic defaults for path motions modally`,`prep`],[`setOriDyn()`,`KINEMATICS MOTIONS`,`Set dynamic defaults for orientation motions modally`,`prep`],[`setPtpDyn()`,`KINEMATICS MOTIONS`,`Set dynamic defaults for sPTP motions modally`,`prep`],[`setDynMax()`,`KINEMATICS MOTIONS`,`Set dynamic limits for path motions modally`,`prep`],[`setOriDynMax()`,`KINEMATICS MOTIONS`,`Set dynamic limits for orientation motions modally`,`prep`],[`setTrans()`,`KINEMATICS MOTIONS`,`Set motion transition for linear, circular path and sPTP motions modally`,`prep`],[`setBlend()`,`KINEMATICS MOTIONS`,`Set blending mode for linear and circular path motions modally`,`prep`],[`setBlendDist()`,`KINEMATICS MOTIONS`,`Set blending distance for linear, circular path and sPTP motions modally`,`prep`],[`setBlendFactor()`,`KINEMATICS MOTIONS`,`Set max. blending distance for linear, circular path and sPTP motions modally`,`prep`],[`setPlane()`,`KINEMATICS MOTIONS`,`Set main plane of circle path for circular path motions modally`,`prep`],[`setOriDirA()`,`KINEMATICS MOTIONS`,`Set direction of motion of Cartesian orientation A manually (relevant for linAbs(), circAbs() and ptpAbs())`,`prep`],[`setTurnJoint()`,`KINEMATICS MOTIONS`,`Set target joint position ranges for sPTP motions modally`,`prep`],[`setCircDir()`,`KINEMATICS MOTIONS`,`Set orientation of circle path for circular path motions modally`,`prep`],[`setLc()`,`KINEMATICS MOTIONS`,`Set target joint position space for sPTP motions modally`,`prep`],[`setDynAdapt()`,`KINEMATICS MOTIONS`,`Set dynamic adaptation for path motions modally`,`prep`],[`defOcs()`,`COORDINATE SYSTEMS`,`Redefine object coordinate systems`,`exec`],[`defTool()`,`COORDINATE SYSTEMS`,`Redefine tool`,`exec`],[`trackIn()`,`COORDINATE SYSTEMS`,`Start conveyor tracking`,`exec`],[`setCs()`,`COORDINATE SYSTEMS`,`Set reference coordinate system for linear, circular path and sPTP motions modally`,`prep`],[`defWsZone()`,`ZONES`,`Define workspace zone`,`exec`],[`defKinZone()`,`ZONES`,`Define kinematics zone`,`exec`],[`setWsZoneActive()`,`ZONES`,`Activate workspace zone`,`exec`],[`setWsZoneInactive()`,`ZONES`,`Deactivate workspace zone`,`exec`],[`setKinZoneActive()`,`ZONES`,`Activate kinematics zone`,`exec`],[`setKinZoneInactive()`,`ZONES`,`Deactivate kinematics zone`,`exec`],[`setTool()`,`TOOLS`,`Change active tool`,`exec`],[`move()`,`AXIS FUNCTIONS`,`Move axis with velocity/speed setpoint`,`exec`],[`posAbs()`,`AXIS FUNCTIONS`,`Position axis absolutely`,`exec`],[`posRel()`,`AXIS FUNCTIONS`,`Position axis relatively`,`exec`],[`setAxisDyn()`,`AXIS FUNCTIONS`,`Set dynamic defaults for single-axis motions modally`,`prep`],[`setAxisDynMax()`,`AXIS FUNCTIONS`,`Set dynamic limits for single-axis motions modally`,`prep`],[`powerOn()`,`AXIS FUNCTIONS`,`Enable axis`,`exec`],[`powerOff()`,`AXIS FUNCTIONS`,`Disable axis`,`exec`],[`home()`,`AXIS FUNCTIONS`,`Home axis, set reference point`,`exec`],[`torqueLimitOn()`,`AXIS FUNCTIONS`,`Activate force/torque limit/fixed stop detection`,`exec`],[`torqueLimitOff()`,`AXIS FUNCTIONS`,`Deactivate force/torque limit/fixed stop detection`,`exec`],[`writeVar()`,`OTHER`,`Write mapped PLC tag or technology object data block tag`,`exec`],[`waitTime()`,`OTHER`,`Interrupt program execution for a defined period`,`exec`],[`waitEvent()`,`OTHER`,`Interrupt program execution until a specific event`,`exec`],[`setControlledByInterpreter()`,`OTHER`,`Set “ControlledByInterpreter” bit for a technology object`,`exec`],[`setOvr()`,`OTHER`,`Set program override`,`prep`],[`preHalt()`,`OTHER`,`Halt program preparation`,`prep`],[`IF/ELSE`,`CONTROL INSTRUCTIONS`,`Either-or instruction`,null],[`CASE`,`CONTROL INSTRUCTIONS`,`Conditional instruction`,null],[`FOR`,`CONTROL INSTRUCTIONS`,`FOR loop`,null],[`WHILE`,`CONTROL INSTRUCTIONS`,`WHILE loop`,null],[`REPEAT`,`CONTROL INSTRUCTIONS`,`REPEAT-UNTIL loop`,null],[`EXIT`,`CONTROL INSTRUCTIONS`,`Cancel loop unconditionally`,null],[`CONTINUE`,`CONTROL INSTRUCTIONS`,`Cancel loop conditionally`,null],[`GOTO`,`CONTROL INSTRUCTIONS`,`Jump to defined jump label`,null],[`RETURN`,`CONTROL INSTRUCTIONS`,`Exit function/main program`,null],[`SYNC ON_START`,`CONTROL INSTRUCTIONS`,`Start-triggered synchronous action`,null],[`SYNC ON_POS`,`CONTROL INSTRUCTIONS`,`Position-triggered synchronous action`,null]];function M(){var n=e(`#instrGrid`);if(!n)return;var r=e(`#familyChips`),i=e(`#instrSearch`),a=e(`#instrCount`),o=e(`#instrDetail`),s=e(`#instrDetailName`),c=e(`#instrDetailBadge`),l=e(`#instrDetailDesc`),u=`ALL`,d=[];j.forEach(function(e,t){var r=document.createElement(`button`);r.type=`button`,r.className=`instr-cell`,r.dataset.idx=String(t);var i=document.createElement(`span`);i.className=`nm`,i.textContent=e[0];var a=document.createElement(`span`);a.className=`fam`,a.textContent=e[1],r.appendChild(i),r.appendChild(a),r.addEventListener(`click`,function(){p(t)}),n.appendChild(r),d.push(r)}),A.forEach(function(e){var n=document.createElement(`button`);n.type=`button`,n.className=`chip`,n.textContent=e,n.setAttribute(`aria-pressed`,e===`ALL`?`true`:`false`),n.addEventListener(`click`,function(){u=e,t(`.chip`,r).forEach(function(e){e.setAttribute(`aria-pressed`,e===n?`true`:`false`)}),f()}),r.appendChild(n)});function f(){var e=(i.value||``).toLowerCase().trim(),t=0;d.forEach(function(n,r){var i=j[r],a=u===`ALL`||i[1]===u,o=!e||i[0].toLowerCase().indexOf(e)>=0||i[2].toLowerCase().indexOf(e)>=0,s=a&&o;n.hidden=!s,s&&t++}),a.textContent=t+` of `+j.length+` instructions`}i.addEventListener(`input`,f);function p(e){var t=j[e];d.forEach(function(t){t.classList.toggle(`is-active`,t.dataset.idx===String(e))}),o.hidden=!1,s.textContent=t[0],l.textContent=t[2],t[3]===`prep`?(c.hidden=!1,c.className=`run-badge prep`,c.textContent=`Runs at: PREPARATION`):t[3]===`exec`?(c.hidden=!1,c.className=`run-badge exec`,c.textContent=`Runs at: EXECUTION`):(c.hidden=!0,c.textContent=``)}f()}function N(){var n=t(`#stepper .step`);n.length&&n.forEach(function(t){var n=e(`.step-head`,t);n.addEventListener(`click`,function(){var e=t.getAttribute(`data-open`)===`true`;t.setAttribute(`data-open`,e?`false`:`true`),n.setAttribute(`aria-expanded`,e?`false`:`true`)})})}var P=[[`X0`,`Control`,`technology object is in operation / a job is active`],[`X1`,`Error`,`the technology object reports an error`],[`X2`,`RestartActive`,`the technology object is being reinitialised`],[`X3`,`OnlineStartValuesChanged`,`restart required; changes apply after a TO restart`],[`X4`,`MasterControlActive`,`the programming editor toolbar has master control`],[`X5`,`InRun`,`the TO is executing an Interpreter program`],[`X6`,`Done`,`execution of the Interpreter program is complete`],[`X7`,`Stopping`,`execution will be or has been stopped`],[`X8`,`Interrupted`,`execution was interrupted and can be continued`],[`X9`,`Loading`,`loading the Interpreter program; preparation running`],[`X10`,`Loaded`,`the Interpreter program is loaded and prepared`]],F=[[`X0`,`SystemFault`,``],[`X1`,`ConfigFault`,``],[`X2`,`UserFault`,``],[`X3`,`CommandNotAccepted`,``],[`X4`,`UserProgramFault`,`error in the current Interpreter program`],[`X5`,`UserMappingFault`,`error in the current Interpreter mapping`]],I=[[`X0`,`SystemWarning`,``],[`X1`,`ConfigWarning`,``],[`X2`,`UserWarning`,``],[`X3`,`CommandNotAccepted`,``],[`X4`,`UserProgrammWarning`,``],[`X5`,`UserMappingWarning`,``]],L=[{label:`idle`,bits:[]},{label:`MC_LoadProgram (Mode 1)`,bits:[]},{label:`X9 Loading`,bits:[`X9`]},{label:`X10 Loaded`,bits:[`X10`],clears:[`X9`]},{label:`MC_RunProgram`,bits:[`X10`]},{label:`X5 InRun`,bits:[`X5`,`X10`]},{label:`X6 Done`,bits:[`X6`],clears:[`X5`]},{label:`prepared again — may re-run`,bits:[`X10`],clears:[`X6`]}];function R(){var t=e(`#statusBits`);if(!t)return;function n(e,t,n){var r={};return t.forEach(function(t){var i=document.createElement(`button`);i.type=`button`,i.className=`bit-cell`,i.setAttribute(`aria-pressed`,`false`);var a=document.createElement(`span`);a.className=`x`,a.textContent=t[0];var o=document.createElement(`span`);o.className=`nm`,o.textContent=t[1],i.appendChild(a),i.appendChild(o),i.addEventListener(`click`,function(){var e=i.getAttribute(`aria-pressed`)!==`true`;i.setAttribute(`aria-pressed`,e?`true`:`false`),n&&(n.innerHTML=e?`<b>`+t[0]+` `+t[1]+`</b> — `+(t[2]||`see the Function Manual for this bit.`):`Select a bit to see its meaning.`)}),e.appendChild(i),r[t[0]]=i}),r}var r=n(t,P,e(`#statusMeaning`));n(e(`#errorBits`),F,null),n(e(`#warningBits`),I,null);var i=e(`#ribbon`),a=[],o=[];L.forEach(function(e,t){if(t>0){var n=document.createElement(`div`);n.className=`ribbon-connector`,i.appendChild(n),o.push(n)}var r=document.createElement(`div`);r.className=`ribbon-step`;var s=document.createElement(`span`);s.className=`node`;var c=document.createElement(`span`);c.className=`lbl`,c.textContent=e.label,r.appendChild(s),r.appendChild(c),i.appendChild(r),a.push(r)});var s=null;function c(e,t){var n=r[e];n&&n.setAttribute(`aria-pressed`,t?`true`:`false`)}function l(){s&&clearInterval(s),Object.keys(r).forEach(function(e){c(e,!1)}),a.forEach(function(e){e.classList.remove(`is-active`)}),o.forEach(function(e){e.classList.remove(`is-done`)});var e=0;function t(e){var t=L[e];a[e].classList.add(`is-active`),e>0&&o[e-1].classList.add(`is-done`),(t.clears||[]).forEach(function(e){c(e,!1)}),(t.bits||[]).forEach(function(e){c(e,!0)})}t(0),s=setInterval(function(){if(e++,e>=L.length){clearInterval(s),s=null;return}t(e)},m?1:900)}e(`#ribbonPlay`).addEventListener(`click`,l);var u=!1;y(e(`#s7`),`s7`);var d=setInterval(function(){!u&&v.s7&&(u=!0,l(),clearInterval(d))},300)}s(),n(u),n(T),n(D),n(O),n(k),n(M),n(N),n(R);
+</script>
+  <style>
+:root{--lightningcss-light:initial;--lightningcss-dark: ;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{color:#141413;background:#faf9f5;margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}:root{--ix-1:#fff;--ix-2:#eff0f1;--ix-3:#e2e4e6;--ix-4:#d8dadd;--ix-8:#92979b;--ix-text:#000a14e6;--ix-soft:#000a1499;--ix-weak:#000a1466;--ix-bdr:#23303c26;--ix-bdr-strong:#0014284d;--ix-primary:#006e93;--ix-dynamic:#005e66;--ix-dynamic-alt:#00eaff;--ix-success:#2c8500;--ix-warning:#fb0;--ix-alarm:#d72332;--ix-critical:#bc5b01;--ix-neutral:#66727e;--r-sm:2px;--r-md:4px;--r-pill:999px;--sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:24px;--sp-6:32px;--sp-7:40px;--sp-8:48px;--sp-9:64px;--sp-10:80px;--sp-11:96px;--sp-12:128px;--font-display:"Barlow Condensed",Oswald,"Arial Narrow",sans-serif;--font-body:"IBM Plex Sans",-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;--font-mono:"JetBrains Mono","SFMono-Regular",Consolas,"Liberation Mono",monospace;--grad-flow:linear-gradient(90deg, var(--ix-primary), var(--ix-dynamic-alt));--grad-prep:linear-gradient(90deg, #006e93 0%, #00a4b8 100%);--grad-exec:linear-gradient(90deg, #005e66 0%, #00eaff 100%);--v-slow:#006e93;--v-mid:#00a4b8;--v-fast:#00eaff;--max-w:1140px;--header-h:56px;--ease:cubic-bezier(.2,.7,.2,1)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--ix-1:#0d1417;--ix-2:#162025;--ix-3:#1d2b31;--ix-4:#27383f;--ix-8:#6d7f86;--ix-text:#e9f2f5eb;--ix-soft:#e9f2f59e;--ix-weak:#e9f2f56b;--ix-bdr:#a0bec82e;--ix-bdr-strong:#a0bec857;--ix-primary:#2ba3c7;--ix-dynamic:#0a8d96;--ix-dynamic-alt:#00eaff;--ix-success:#4aac1e;--ix-warning:#ffc633;--ix-alarm:#ff5b68;--ix-critical:#e0791f;--ix-neutral:#8d9aa5}}:root[data-theme=dark]{--ix-1:#0d1417;--ix-2:#162025;--ix-3:#1d2b31;--ix-4:#27383f;--ix-8:#6d7f86;--ix-text:#e9f2f5eb;--ix-soft:#e9f2f59e;--ix-weak:#e9f2f56b;--ix-bdr:#a0bec82e;--ix-bdr-strong:#a0bec857;--ix-primary:#2ba3c7;--ix-dynamic:#0a8d96;--ix-dynamic-alt:#00eaff;--ix-success:#4aac1e;--ix-warning:#ffc633;--ix-alarm:#ff5b68;--ix-critical:#e0791f;--ix-neutral:#8d9aa5}*{box-sizing:border-box}::selection{background:var(--ix-primary);color:#fff}html{--lightningcss-light:initial;--lightningcss-dark: ;color-scheme:light dark}@media (prefers-color-scheme:dark){html{--lightningcss-light: ;--lightningcss-dark:initial}}body{background:var(--ix-1);color:var(--ix-text);font-family:var(--font-body);-webkit-font-smoothing:antialiased;text-rendering:optimizelegibility;margin:0;font-size:16px;line-height:1.55}.page{padding-inline-start:16px;padding-inline-end:16px;padding-block:0 var(--sp-9);overflow-x:hidden}.wrap{max-width:var(--max-w);margin-inline-start:auto;margin-inline-end:auto}h1,h2,h3,h4{font-family:var(--font-display);letter-spacing:-.01em;margin:0;font-weight:700;line-height:1.05}p{max-width:68ch;margin:0}p+p{margin-top:var(--sp-3)}a{color:var(--ix-primary)}button{color:inherit;font-family:inherit}.mono,code,pre,.tabular{font-family:var(--font-mono)}.tabular,[data-live]{font-variant-numeric:tabular-nums}.sr-only{clip:rect(0 0 0 0);white-space:nowrap;width:1px;height:1px;position:absolute;overflow:hidden}:focus-visible{outline:2px solid var(--ix-primary);outline-offset:2px;border-radius:var(--r-sm)}hr.hair{border:none;border-top:1px solid var(--ix-bdr);margin:0}@media (prefers-reduced-motion:reduce){*,:before,:after{scroll-behavior:auto!important;transition-duration:.001ms!important;animation-duration:.001ms!important;animation-iteration-count:1!important}}.site-header{top:env(safe-area-inset-top,0px);z-index:50;background:var(--ix-1);border-bottom:1px solid var(--ix-bdr);position:sticky}.site-header .wrap{height:var(--header-h);justify-content:space-between;align-items:center;gap:var(--sp-4);display:flex}.brand{font-family:var(--font-display);letter-spacing:.01em;white-space:nowrap;align-items:center;gap:var(--sp-2);font-size:1.05rem;font-weight:700;display:flex}.brand .dot{border-radius:var(--r-pill);background:var(--grad-flow);flex:none;width:8px;height:8px}.head-nav{align-items:center;gap:var(--sp-5);scrollbar-width:none;display:flex;overflow-x:auto}.head-nav::-webkit-scrollbar{display:none}.head-nav a{font-family:var(--font-display);letter-spacing:.03em;text-transform:uppercase;color:var(--ix-soft);white-space:nowrap;padding-block:var(--sp-1);font-size:.82rem;font-weight:600;text-decoration:none}.head-nav a:hover{color:var(--ix-primary)}@media (max-width:720px){.head-nav a{display:none}}.theme-toggle{border:1px solid var(--ix-bdr);border-radius:var(--r-md);background:var(--ix-2);cursor:pointer;flex:none;justify-content:center;align-items:center;width:32px;height:32px;display:flex}.theme-toggle svg{width:16px;height:16px;display:block}.theme-toggle .i-sun{display:none}.theme-toggle .i-moon,:root[data-theme=dark] .theme-toggle .i-sun{display:block}:root[data-theme=dark] .theme-toggle .i-moon{display:none}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .theme-toggle .i-sun{display:block}:root:not([data-theme=light]) .theme-toggle .i-moon{display:none}}.eyebrow{align-items:center;gap:var(--sp-3);font-family:var(--font-display);letter-spacing:.02em;text-transform:uppercase;color:var(--ix-primary);margin-bottom:var(--sp-3);font-size:.78rem;font-weight:600;display:flex}.eyebrow:before{content:"";background:var(--grad-flow);border-radius:var(--r-pill);flex:none;width:28px;height:3px;display:block}.section{padding-block:var(--sp-9);border-top:1px solid var(--ix-bdr)}.section:first-of-type{border-top:none}.section>.wrap>h2{margin-bottom:var(--sp-4);font-size:clamp(1.7rem,4.4vw,2.3rem)}.section-intro{color:var(--ix-soft);margin-bottom:var(--sp-6)}.section-num{font-family:var(--font-mono);color:var(--ix-weak);letter-spacing:.04em;font-size:.72rem}.btn{font-family:var(--font-display);letter-spacing:.02em;text-transform:uppercase;padding:var(--sp-2) var(--sp-4);border:1px solid var(--ix-bdr-strong);background:var(--ix-2);color:var(--ix-text);border-radius:var(--r-md);cursor:pointer;align-items:center;gap:var(--sp-2);font-size:.85rem;font-weight:600;line-height:1.2;display:inline-flex}.btn:hover{border-color:var(--ix-primary);color:var(--ix-primary)}.btn:active{transform:translateY(1px)}.btn[aria-pressed=true],.btn.is-active,.btn.primary{background:var(--ix-primary);border-color:var(--ix-primary);color:#fff}.btn.icon-only{padding:var(--sp-2);justify-content:center;width:36px}.btn:disabled{opacity:.4;cursor:not-allowed}.btn svg{flex:none;width:14px;height:14px}.control-row{align-items:center;gap:var(--sp-3);flex-wrap:wrap;display:flex}.control-group{gap:var(--sp-1);flex-direction:column;min-width:0;display:flex}.control-group label{font-family:var(--font-display);letter-spacing:.03em;text-transform:uppercase;color:var(--ix-soft);justify-content:space-between;gap:var(--sp-2);font-size:.72rem;display:flex}.control-group label .val{color:var(--ix-primary);font-family:var(--font-mono)}input[type=range]{-webkit-appearance:none;appearance:none;cursor:pointer;background:0 0;width:100%;height:20px}input[type=range]::-webkit-slider-runnable-track{background:var(--ix-4);border-radius:var(--r-pill);height:4px}input[type=range]::-moz-range-track{background:var(--ix-4);border-radius:var(--r-pill);height:4px}input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;border-radius:var(--r-pill);background:var(--ix-primary);border:2px solid var(--ix-1);width:16px;height:16px;box-shadow:0 0 0 1px var(--ix-bdr-strong);margin-top:-6px}input[type=range]::-moz-range-thumb{border-radius:var(--r-pill);background:var(--ix-primary);border:2px solid var(--ix-1);width:16px;height:16px}.toggle-row{align-items:center;gap:var(--sp-2);font-size:.85rem;display:flex}.switch{border-radius:var(--r-pill);background:var(--ix-4);border:1px solid var(--ix-bdr-strong);cursor:pointer;flex:none;width:36px;height:20px;position:relative}.switch:after{content:"";border-radius:var(--r-pill);background:var(--ix-1);width:16px;height:16px;transition:transform .15s var(--ease);position:absolute;top:1px;left:1px}.switch[aria-checked=true]{background:var(--ix-primary);border-color:var(--ix-primary)}.switch[aria-checked=true]:after{transform:translate(16px)}.chip{font-family:var(--font-display);letter-spacing:.02em;text-transform:uppercase;padding:var(--sp-1) var(--sp-3);border:1px solid var(--ix-bdr);border-radius:var(--r-pill);color:var(--ix-soft);background:var(--ix-2);cursor:pointer;white-space:nowrap;font-size:.74rem;font-weight:600}.chip[aria-pressed=true]{background:var(--ix-primary);border-color:var(--ix-primary);color:#fff}.chip.sev-warning{color:var(--ix-critical);background:0 0;border-color:currentColor}.chip.sev-alarm{color:var(--ix-alarm);background:0 0;border-color:currentColor}.badge{align-items:center;gap:var(--sp-2);font-family:var(--font-mono);padding:var(--sp-1) var(--sp-3);border-radius:var(--r-sm);background:var(--ix-3);color:var(--ix-soft);border:1px solid var(--ix-bdr);font-size:.78rem;display:inline-flex}.badge.stall{color:var(--ix-critical);border-color:var(--ix-critical)}.badge.ok{color:var(--ix-success);border-color:var(--ix-success)}.instrument{background:var(--ix-3);border:1px solid var(--ix-bdr);border-radius:var(--r-md);padding:var(--sp-5)}:root[data-theme=dark] .instrument{background:var(--ix-2)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .instrument{background:var(--ix-2)}}.instrument+.instrument{margin-top:var(--sp-4)}.readout-row{gap:var(--sp-5);margin-top:var(--sp-4);padding-top:var(--sp-4);border-top:1px solid var(--ix-bdr);flex-wrap:wrap;display:flex}.readout{flex-direction:column;gap:2px;display:flex}.readout .k{font-family:var(--font-display);letter-spacing:.03em;text-transform:uppercase;color:var(--ix-weak);font-size:.7rem}.readout .v{font-family:var(--font-mono);color:var(--ix-text);font-size:1.05rem}.readout .v.accent{color:var(--ix-primary)}.hero{padding-block:var(--sp-8) var(--sp-9)}.hero-grid{gap:var(--sp-8);grid-template-columns:1.1fr 1fr;align-items:start;display:grid}@media (max-width:860px){.hero-grid{grid-template-columns:1fr}}.hero h1{margin-bottom:var(--sp-4);font-size:clamp(2.1rem,6vw,3.2rem)}.standfirst{color:var(--ix-text);font-size:1.05rem}.standfirst+p{color:var(--ix-soft);font-size:.96rem}.hero-canvas-wrap{background:var(--ix-3);border:1px solid var(--ix-bdr);border-radius:var(--r-md);aspect-ratio:16/9;position:relative;overflow:hidden}:root[data-theme=dark] .hero-canvas-wrap{background:var(--ix-2)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .hero-canvas-wrap{background:var(--ix-2)}}.hero-canvas-wrap canvas{width:100%;height:100%;display:block}.hero-canvas-cap{padding:var(--sp-2) var(--sp-3);font-family:var(--font-mono);color:var(--ix-weak);background:linear-gradient(#0000,#0000001f);font-size:.7rem;position:absolute;bottom:0;left:0;right:0}.spec-chips{margin-top:var(--sp-8);flex-wrap:wrap;display:flex}.spec-chip{padding:var(--sp-4) var(--sp-4) var(--sp-4) 0;border-left:1px solid var(--ix-bdr);padding-left:var(--sp-4);flex:150px}.spec-chip:first-child{border-left:none;padding-left:0}.spec-chip .fig{font-family:var(--font-mono);color:var(--ix-primary);font-size:1.5rem;font-weight:600;display:block}.spec-chip .lbl{color:var(--ix-soft);margin-top:var(--sp-1);font-size:.78rem;display:block}.diagram-panel{background:var(--ix-3);border:1px solid var(--ix-bdr);border-radius:var(--r-md);padding:var(--sp-4)}:root[data-theme=dark] .diagram-panel{background:var(--ix-2)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .diagram-panel{background:var(--ix-2)}}.to-diagram{width:100%;height:auto;display:block}.to-box{cursor:pointer}.to-box rect{fill:var(--ix-1);stroke:var(--ix-bdr-strong);stroke-width:1px;transition:stroke .15s,fill .15s}:root[data-theme=dark] .to-box rect{fill:var(--ix-3)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .to-box rect{fill:var(--ix-3)}}.to-box.is-selected rect{stroke:var(--ix-primary);stroke-width:2px}.to-box:hover rect{stroke:var(--ix-primary)}.to-box text{fill:var(--ix-text);font-family:var(--font-body);pointer-events:none;font-size:12.5px}.to-box .box-title{font-family:var(--font-display);font-size:13.5px;font-weight:600}.to-box .box-sub{fill:var(--ix-soft);font-size:10.5px}.to-box .call-block{fill:var(--ix-2);stroke:var(--ix-bdr)}:root[data-theme=dark] .to-box .call-block{fill:var(--ix-1)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .to-box .call-block{fill:var(--ix-1)}}.to-box .call-block-text{font-family:var(--font-mono);font-size:10.5px}.flow-line{fill:none;stroke-width:2px;stroke-dasharray:6 5;animation:1.1s linear infinite dashflow}.flow-line.control{stroke:var(--ix-primary)}.flow-line.motion{stroke:var(--ix-dynamic-alt)}.flow-line.status{stroke:var(--ix-neutral);animation-direction:reverse}@keyframes dashflow{to{stroke-dashoffset:-44px}}@media (prefers-reduced-motion:reduce){.flow-line{animation:none}}.feed-line{fill:none;stroke:var(--ix-bdr-strong);stroke-width:1.5px;stroke-dasharray:3 3}.mk-fill-control{fill:var(--ix-primary)}.mk-fill-motion{fill:var(--ix-dynamic-alt)}.mk-fill-status{fill:var(--ix-neutral)}.mk-fill-feed{fill:var(--ix-bdr-strong)}.diagram-detail{margin-top:var(--sp-5);padding-top:var(--sp-5);border-top:1px solid var(--ix-bdr)}.diagram-detail h3{margin-bottom:var(--sp-2);font-size:1.15rem;font-family:var(--font-display)}.diagram-detail ul{margin:var(--sp-2) 0 0;color:var(--ix-text);padding-left:1.1em}.diagram-detail li{margin-bottom:var(--sp-1)}.diagram-detail p{color:var(--ix-soft)}.diagram-detail .note{margin-top:var(--sp-3);color:var(--ix-soft);border-left:2px solid var(--ix-primary);padding-left:var(--sp-3);font-size:.88rem}.tracks{margin-top:var(--sp-5);gap:var(--sp-3);flex-direction:column;display:flex}.track{align-items:center;gap:var(--sp-3);grid-template-columns:88px 1fr;display:grid}.track-label{font-family:var(--font-display);letter-spacing:.02em;text-transform:uppercase;font-size:.78rem;font-weight:600}.track-label.prep{color:var(--ix-primary)}.track-label.exec{color:var(--ix-dynamic-alt)}.track-lane{background:var(--ix-1);border:1px solid var(--ix-bdr);border-radius:var(--r-sm);height:34px;position:relative;overflow:hidden}:root[data-theme=dark] .track-lane{background:var(--ix-3)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .track-lane{background:var(--ix-3)}}.track-lane canvas{width:100%;height:100%;position:absolute;top:0;bottom:0;left:0;right:0}.track-fill{opacity:.16;width:0%;position:absolute;top:0;bottom:0;left:0}.track-fill.prep{background:var(--grad-prep)}.track-fill.exec{background:var(--grad-exec)}.job-tiles{margin-top:var(--sp-1);padding-bottom:var(--sp-2);scrollbar-width:thin;gap:2px;display:flex;overflow-x:auto}.job-tile{border:1.5px solid var(--ix-8);border-radius:var(--r-sm);flex:none;width:20px;height:20px;position:relative}.job-tile.kin{border-style:solid}.job-tile.other{border-style:dashed}.job-tile[data-prepped="1"]{background:var(--grad-prep);border-color:#0000}.job-tile[data-executed="1"]{background:var(--grad-exec);border-color:#0000}.job-tile[data-head=prep]{box-shadow:0 0 0 2px var(--ix-primary)}.job-tile[data-head=exec]{box-shadow:0 0 0 2px var(--ix-dynamic-alt)}.sim-badges{gap:var(--sp-2);margin-top:var(--sp-3);flex-wrap:wrap;min-height:26px;display:flex}.timeout-caption{margin-top:var(--sp-3);color:var(--ix-soft);font-size:.85rem}.timeout-caption b{color:var(--ix-text)}.timeout-caption .hl{color:var(--ix-primary);font-family:var(--font-mono)}.line-legend{align-items:center;gap:var(--sp-4);color:var(--ix-soft);margin-top:var(--sp-2);flex-wrap:wrap;font-size:.78rem;display:flex}.line-legend .sw{align-items:center;gap:6px;display:inline-flex}.line-legend .sw i{border:1.5px solid var(--ix-8);border-radius:var(--r-sm);width:14px;height:14px;display:inline-block}.line-legend .sw i.other{border-style:dashed}.run-table{margin-top:var(--sp-5);border:1px solid var(--ix-bdr);border-radius:var(--r-md);grid-template-columns:1fr 1fr;gap:0;display:grid;overflow:hidden}.run-col{padding:var(--sp-4)}.run-col:first-child{border-right:1px solid var(--ix-bdr);background:var(--ix-2)}:root[data-theme=dark] .run-col:first-child{background:var(--ix-3)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .run-col:first-child{background:var(--ix-3)}}.run-col h4{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;margin-bottom:var(--sp-3);font-size:.85rem}.run-col:first-child h4{color:var(--ix-primary)}.run-col:last-child h4{color:var(--ix-dynamic-alt)}.run-col .instr-list{gap:var(--sp-2);font-family:var(--font-mono);flex-wrap:wrap;font-size:.8rem;display:flex}.run-col .instr-list span{padding:2px var(--sp-2);background:var(--ix-1);border:1px solid var(--ix-bdr);border-radius:var(--r-sm)}:root[data-theme=dark] .run-col .instr-list span{background:var(--ix-2)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .run-col .instr-list span{background:var(--ix-2)}}@media (max-width:640px){.run-table{grid-template-columns:1fr}.run-col:first-child{border-right:none;border-bottom:1px solid var(--ix-bdr)}}.rule-line{margin-top:var(--sp-4);font-family:var(--font-mono);padding:var(--sp-3);background:var(--ix-1);border:1px solid var(--ix-bdr);border-radius:var(--r-sm);font-size:.88rem}:root[data-theme=dark] .rule-line{background:var(--ix-2)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .rule-line{background:var(--ix-2)}}pre.code-block{margin:var(--sp-4) 0 0;padding:var(--sp-4);background:var(--ix-1);border:1px solid var(--ix-bdr);border-radius:var(--r-md);font-family:var(--font-mono);white-space:pre;font-size:.82rem;line-height:1.65;overflow-x:auto}:root[data-theme=dark] pre.code-block{background:var(--ix-2)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) pre.code-block{background:var(--ix-2)}}pre.code-block .cm{color:var(--ix-weak)}pre.code-block .kw{color:var(--ix-primary)}.mcl-panel{gap:var(--sp-4);grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);display:grid}@media (max-width:860px){.mcl-panel{grid-template-columns:1fr}}.mcl-source{background:var(--ix-1);border:1px solid var(--ix-bdr);border-radius:var(--r-md);max-height:460px;font-family:var(--font-mono);font-size:.78rem;line-height:1.6;overflow:auto}:root[data-theme=dark] .mcl-source{background:var(--ix-2)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .mcl-source{background:var(--ix-2)}}.mcl-source .line{padding-inline:var(--sp-2);white-space:pre;grid-template-columns:2.4em 1fr;display:grid}.mcl-source .line .ln{color:var(--ix-weak);text-align:right;padding-right:var(--sp-2);-webkit-user-select:none;user-select:none}.mcl-source .line.active{box-shadow:inset 3px 0 0 var(--ix-warning);background:#ffbb0029}.mcl-source .line.active .ln{color:var(--ix-critical);font-weight:600}.mcl-source .cm{color:var(--ix-weak)}.mcl-canvas-side{gap:var(--sp-3);flex-direction:column;display:flex}.mcl-canvas-wrap{background:var(--ix-3);border:1px solid var(--ix-bdr);border-radius:var(--r-md);aspect-ratio:4/3;display:flex;position:relative;overflow:hidden}:root[data-theme=dark] .mcl-canvas-wrap{background:var(--ix-2)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .mcl-canvas-wrap{background:var(--ix-2)}}.mcl-canvas-wrap canvas{width:100%;height:100%;display:block}.z-gauge{border-left:1px solid var(--ix-bdr);width:34px;padding:var(--sp-2) 0;align-items:center;gap:var(--sp-1);flex-direction:column;flex:none;display:flex}.z-gauge .track{background:var(--ix-1);border:1px solid var(--ix-bdr);border-radius:var(--r-pill);flex:1;width:8px;position:relative;overflow:hidden}:root[data-theme=dark] .z-gauge .track{background:var(--ix-3)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .z-gauge .track{background:var(--ix-3)}}.z-gauge .fill{background:var(--grad-flow);height:0%;position:absolute;bottom:0;left:0;right:0}.z-gauge .lbl{font-family:var(--font-mono);color:var(--ix-weak);writing-mode:vertical-rl;font-size:.62rem}.z-gauge .val{font-family:var(--font-mono);color:var(--ix-soft);font-size:.62rem}.gripper-lamp{align-items:center;gap:var(--sp-2);color:var(--ix-soft);font-size:.8rem;display:flex}.gripper-lamp .dot{border-radius:var(--r-pill);background:var(--ix-8);flex:none;width:10px;height:10px}.gripper-lamp[data-state=wait] .dot{background:var(--ix-warning)}.gripper-lamp[data-state=ok] .dot{background:var(--ix-success)}.gripper-lamp[hidden]{display:none}.scrub-row{align-items:center;gap:var(--sp-3);display:flex}.scrub-row input[type=range]{flex:1}.mcl-controls{margin-top:var(--sp-4);gap:var(--sp-4);grid-template-columns:repeat(auto-fit,minmax(150px,1fr));display:grid}.formula-strip{margin-top:var(--sp-3);font-family:var(--font-mono);padding:var(--sp-3);background:var(--ix-1);border:1px solid var(--ix-bdr);border-radius:var(--r-sm);color:var(--ix-text);font-size:.85rem}:root[data-theme=dark] .formula-strip{background:var(--ix-2)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .formula-strip{background:var(--ix-2)}}.formula-strip .accent{color:var(--ix-primary);font-weight:600}.canvas-caption{color:var(--ix-soft);font-size:.82rem}.preset-tabs{gap:var(--sp-2);margin-bottom:var(--sp-4);flex-wrap:wrap;display:flex}.mcl-side-note{margin-top:var(--sp-5);color:var(--ix-soft);font-size:.92rem}.mcl-side-note p+p{margin-top:var(--sp-2)}.syntax-card{margin-top:var(--sp-4)}.explorer-controls{gap:var(--sp-3);margin-bottom:var(--sp-5);flex-direction:column;display:flex}.search-box{width:100%;max-width:360px;padding:var(--sp-2) var(--sp-3);border:1px solid var(--ix-bdr-strong);border-radius:var(--r-md);background:var(--ix-2);color:var(--ix-text);font-family:var(--font-body);font-size:.9rem}.family-chips{gap:var(--sp-2);flex-wrap:wrap;display:flex}.instr-grid{background:var(--ix-bdr);border:1px solid var(--ix-bdr);border-radius:var(--r-md);grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1px;display:grid;overflow:hidden}.instr-cell{background:var(--ix-1);padding:var(--sp-3);text-align:left;cursor:pointer;border:none;flex-direction:column;gap:2px;display:flex}:root[data-theme=dark] .instr-cell{background:var(--ix-3)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .instr-cell{background:var(--ix-3)}}.instr-cell:hover{background:var(--ix-2)}.instr-cell.is-active{box-shadow:inset 0 0 0 2px var(--ix-primary)}.instr-cell .nm{font-family:var(--font-mono);font-size:.88rem;font-weight:600}.instr-cell .fam{color:var(--ix-weak);text-transform:uppercase;letter-spacing:.03em;font-size:.68rem}.instr-cell[hidden]{display:none}.instr-detail{margin-top:var(--sp-5);padding:var(--sp-5);background:var(--ix-3);border:1px solid var(--ix-bdr);border-radius:var(--r-md)}:root[data-theme=dark] .instr-detail{background:var(--ix-2)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .instr-detail{background:var(--ix-2)}}.instr-detail .nm{font-family:var(--font-mono);color:var(--ix-primary);font-size:1.1rem;font-weight:600}.instr-detail .desc{margin-top:var(--sp-2)}.run-badge{font-family:var(--font-display);letter-spacing:.03em;text-transform:uppercase;padding:2px var(--sp-2);border-radius:var(--r-pill);margin-top:var(--sp-3);align-items:center;gap:6px;font-size:.7rem;display:inline-flex}.run-badge.prep{color:var(--ix-primary);background:#006e9329}.run-badge.exec{color:var(--ix-dynamic);background:#00eaff29}:root[data-theme=dark] .run-badge.exec{color:var(--ix-dynamic-alt)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .run-badge.exec{color:var(--ix-dynamic-alt)}}.instr-note{margin-top:var(--sp-5);color:var(--ix-soft);font-size:.88rem}.result-count{color:var(--ix-weak);font-size:.8rem}.stepper{flex-direction:column;display:flex}.step{border-top:1px solid var(--ix-bdr);position:relative}.step:first-child{border-top:none}.step-head{align-items:center;gap:var(--sp-3);width:100%;padding-block:var(--sp-4);text-align:left;cursor:pointer;background:0 0;border:none;grid-template-columns:2.4em 1fr auto;display:grid;position:relative}.step-head:before{content:"";background:0 0;width:3px;position:absolute;top:0;bottom:0;left:0}.step[data-open=true] .step-head:before{background:var(--grad-flow)}.step-num{font-family:var(--font-mono);color:var(--ix-weak);font-size:1.15rem;font-weight:600}.step[data-open=true] .step-num{color:var(--ix-primary)}.step-title{font-family:var(--font-display);font-size:1.05rem;font-weight:600}.step-chevron{width:18px;height:18px;transition:transform .15s var(--ease);color:var(--ix-weak)}.step[data-open=true] .step-chevron{color:var(--ix-primary);transform:rotate(90deg)}.step-body{max-height:0;transition:max-height .25s var(--ease);overflow:hidden}.step[data-open=true] .step-body{max-height:600px}.step-body-inner{padding:0 0 var(--sp-5) 2.4em;color:var(--ix-soft);font-size:.95rem}.step-body-inner p+p{margin-top:var(--sp-2)}.step-body-inner .tip{margin-top:var(--sp-3);padding-left:var(--sp-3);border-left:2px solid var(--ix-warning);color:var(--ix-text);font-size:.9rem}@media (prefers-reduced-motion:reduce){.step-body{transition:none}}.call-ref{margin-top:var(--sp-6);border:1px solid var(--ix-bdr);border-radius:var(--r-md);grid-template-columns:repeat(3,1fr);gap:0;display:grid;overflow:hidden}@media (max-width:760px){.call-ref{grid-template-columns:1fr}}.call-ref-col{padding:var(--sp-4);border-left:1px solid var(--ix-bdr)}.call-ref-col:first-child{border-left:none}@media (max-width:760px){.call-ref-col{border-left:none;border-top:1px solid var(--ix-bdr)}.call-ref-col:first-child{border-top:none}}.call-ref-col h4{font-family:var(--font-mono);color:var(--ix-primary);margin-bottom:var(--sp-3);font-size:.92rem}.call-ref-col .row{font-family:var(--font-mono);color:var(--ix-soft);margin-bottom:var(--sp-2);font-size:.76rem;line-height:1.5}.call-ref-col .row b{color:var(--ix-text)}.bit-board{gap:var(--sp-2);margin-top:var(--sp-4);flex-wrap:wrap;display:flex}.bit-cell{width:64px;padding:var(--sp-2);border:1px solid var(--ix-bdr-strong);border-radius:var(--r-sm);background:var(--ix-1);cursor:pointer;text-align:center;flex:none}:root[data-theme=dark] .bit-cell{background:var(--ix-3)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .bit-cell{background:var(--ix-3)}}.bit-cell .x{font-family:var(--font-mono);color:var(--ix-weak);font-size:.68rem;display:block}.bit-cell .nm{font-family:var(--font-display);margin-top:2px;font-size:.72rem;font-weight:600;display:block}.bit-cell[aria-pressed=true]{background:var(--ix-primary);border-color:var(--ix-primary)}.bit-cell[aria-pressed=true] .x,.bit-cell[aria-pressed=true] .nm{color:#fff}.bit-meaning{margin-top:var(--sp-3);min-height:44px;padding:var(--sp-3);background:var(--ix-3);border:1px solid var(--ix-bdr);border-radius:var(--r-sm);font-size:.9rem}:root[data-theme=dark] .bit-meaning{background:var(--ix-2)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .bit-meaning{background:var(--ix-2)}}.bit-meaning b{font-family:var(--font-mono);color:var(--ix-primary)}.word-group{margin-top:var(--sp-6)}.word-group h4{font-family:var(--font-display);text-transform:uppercase;letter-spacing:.02em;color:var(--ix-soft);margin-bottom:var(--sp-2);font-size:.9rem}.tag-list{margin-top:var(--sp-6);gap:var(--sp-2);font-family:var(--font-mono);flex-direction:column;font-size:.82rem;display:flex}.tag-list .row b{color:var(--ix-primary)}.ribbon{margin-top:var(--sp-6);padding-bottom:var(--sp-3);align-items:center;gap:0;display:flex;overflow-x:auto}.ribbon-step{align-items:center;gap:var(--sp-2);flex-direction:column;flex:none;min-width:110px;display:flex;position:relative}.ribbon-step .node{border-radius:var(--r-pill);background:var(--ix-4);border:2px solid var(--ix-8);z-index:1;width:14px;height:14px}.ribbon-step.is-active .node{background:var(--ix-primary);border-color:var(--ix-primary);box-shadow:0 0 0 4px #006e932e}.ribbon-step .lbl{font-family:var(--font-mono);text-align:center;color:var(--ix-soft);max-width:120px;font-size:.7rem}.ribbon-step.is-active .lbl{color:var(--ix-text);font-weight:600}.ribbon-connector{background:var(--ix-4);flex:40px;min-width:24px;height:2px;margin-bottom:22px}.ribbon-connector.is-done{background:var(--grad-flow)}.ribbon-branch{color:var(--ix-weak);margin-top:var(--sp-3);font-size:.72rem}.notes-list{flex-direction:column;display:flex}.note-item{padding-block:var(--sp-4);border-top:1px solid var(--ix-bdr);gap:var(--sp-1);flex-direction:column;display:flex}.note-item:first-child{border-top:none}.note-item .lead{align-items:center;gap:var(--sp-2);flex-wrap:wrap;font-weight:600;display:flex}.note-item p{color:var(--ix-soft);font-size:.94rem}.site-footer{padding-block:var(--sp-8);border-top:1px solid var(--ix-bdr);color:var(--ix-soft);font-size:.85rem}.site-footer h4{font-family:var(--font-display);color:var(--ix-text);margin-bottom:var(--sp-2);font-size:.95rem}.site-footer ul{margin:0 0 var(--sp-5);padding-left:1.1em}.site-footer li{margin-bottom:var(--sp-1)}.sources{font-size:.8rem;font-family:var(--font-mono);gap:var(--sp-1);flex-direction:column;display:flex}.footnote{margin-top:var(--sp-5);padding-top:var(--sp-4);border-top:1px solid var(--ix-bdr);color:var(--ix-weak);font-size:.78rem}@media (max-width:400px){.spec-chip{flex-basis:120px}.bit-cell{width:56px}}
+
+</style>
+<title>Motion Interpreter Lab · Zinan Yang</title>
+</head>
+<body>
+<div class="zylab-bar"><a href="/lab/">&larr; Zinan Yang &middot; lab</a></div>
+<style>
+.zylab-bar{position:relative;z-index:1000;padding:7px 16px;border-bottom:1px solid rgba(128,128,128,.28);
+  font:500 12px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+  letter-spacing:.02em}
+.zylab-bar a{color:inherit;opacity:.78;text-decoration:none}
+.zylab-bar a:hover,.zylab-bar a:focus-visible{opacity:1;text-decoration:underline}
+</style>
+<div class="page">
+
+<header class="site-header">
+  <div class="wrap">
+    <span class="brand"><span class="dot" aria-hidden="true"></span>Motion Interpreter Lab</span>
+    <nav class="head-nav" aria-label="Section navigation">
+      <a href="#s2">Objects</a>
+      <a href="#s3">Two clocks</a>
+      <a href="#s4">Path sim</a>
+      <a href="#s5">Instructions</a>
+      <a href="#s6">Workflow</a>
+      <a href="#s7">StatusWord</a>
+      <a href="#s8">Notes</a>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle colour theme">
+      <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+      <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.4 6.4 0 0 0 10.5 10.5z"/></svg>
+    </button>
+  </div>
+</header>
+
+
+<main>
+
+<!-- ============================================================
+     S1 — HERO
+     ============================================================ -->
+<section class="section hero" id="s1">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">Unofficial notes &middot; SIMATIC S7-1500T &middot; Technology version V10.0 &middot; STEP 7 V21</p>
+        <h1>The Motion Interpreter</h1>
+        <p class="standfirst">With the SIMATIC Motion Interpreter of the S7-1500T CPU you create motion jobs for individual axes and kinematics with up to 6 interpolating axes. The Interpreter executes a series of serial instructions &mdash; that sequence is called an Interpreter program.</p>
+        <p>In contrast to cyclic programming in STEP&nbsp;7, you do not program step-enabling conditions or &lsquo;job done&rsquo; queries &mdash; the Interpreter sequences the work itself.</p>
+        <p style="color:var(--ix-weak);font-size:0.85rem">Personal study notes &mdash; not a Siemens publication. The manuals on Siemens Industry Online Support are authoritative.</p>
+      </div>
+      <div>
+        <div class="hero-canvas-wrap">
+          <canvas id="heroCanvas" role="img" aria-label="Animated pick-and-place cycle of a Cartesian-portal kinematics TCP, tracing a gradient path"></canvas>
+          <div class="hero-canvas-cap" id="heroCap">pick &amp; place cycle &middot; TCP trail</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec-chips" role="list" aria-label="Interpreter configuration limits">
+      <div class="spec-chip" role="listitem"><span class="fig tabular">6</span><span class="lbl">interpolating kinematics axes</span></div>
+      <div class="spec-chip" role="listitem"><span class="fig tabular">30</span><span class="lbl">kinematics jobs in the job sequence (fixed)</span></div>
+      <div class="spec-chip" role="listitem"><span class="fig tabular">10&ndash;100</span><span class="lbl">jobs prepared (MaxNumberOfCommands, configurable, default cap 100)</span></div>
+      <div class="spec-chip" role="listitem"><span class="fig tabular">20</span><span class="lbl">mapped technology objects</span></div>
+      <div class="spec-chip" role="listitem"><span class="fig tabular">100</span><span class="lbl">entries in the Interpreter mapping table</span></div>
+      <div class="spec-chip" role="listitem"><span class="fig tabular">300 / 100 / 100</span><span class="lbl">clipboard BOOL / DINT / LREAL tags</span></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     S2 — THREE TECHNOLOGY OBJECTS
+     ============================================================ -->
+<section class="section" id="s2">
+  <div class="wrap">
+    <p class="eyebrow">Architecture</p>
+    <h2>Three technology objects</h2>
+    <p class="section-intro">The Interpreter is implemented as a technology object and is controlled from the user program. Click any block below to read what it does.</p>
+
+    <div class="diagram-panel">
+      <svg class="to-diagram" viewBox="0 0 960 460" role="group" aria-label="Interpreter architecture diagram" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <marker id="mk-control" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 Z" class="mk-fill-control"></path>
+          </marker>
+          <marker id="mk-motion" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 Z" class="mk-fill-motion"></path>
+          </marker>
+          <marker id="mk-status" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 Z" class="mk-fill-status"></path>
+          </marker>
+          <marker id="mk-feed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 Z" class="mk-fill-feed"></path>
+          </marker>
+        </defs>
+
+        <!-- static feed lines (program/mapping into interpreter) -->
+        <path class="feed-line" d="M375,80 L375,120" marker-end="url(#mk-feed)"></path>
+        <path class="feed-line" d="M545,80 L470,120" marker-end="url(#mk-feed)"></path>
+
+        <!-- animated flow connectors -->
+        <path class="flow-line control" d="M212,200 C255,200 262,258 300,258" marker-end="url(#mk-control)"></path>
+        <path class="flow-line motion" d="M620,215 C642,215 646,182 660,182" marker-end="url(#mk-motion)"></path>
+        <path class="flow-line motion" d="M620,330 C642,330 646,340 660,340" marker-end="url(#mk-motion)"></path>
+        <path class="flow-line status" d="M340,398 C300,440 250,440 214,384" marker-end="url(#mk-status)"></path>
+
+        <!-- TO_InterpreterProgram -->
+        <g class="to-box" id="box-program" tabindex="0" role="button" aria-pressed="false" aria-label="TO_InterpreterProgram">
+          <rect x="300" y="16" width="150" height="64" rx="4"></rect>
+          <text x="375" y="40" text-anchor="middle" class="box-title">TO_InterpreterProgram</text>
+          <text x="375" y="58" text-anchor="middle" class="box-sub">holds the MCL program</text>
+        </g>
+
+        <!-- TO_InterpreterMapping -->
+        <g class="to-box" id="box-mapping" tabindex="0" role="button" aria-pressed="false" aria-label="TO_InterpreterMapping">
+          <rect x="470" y="16" width="150" height="64" rx="4"></rect>
+          <text x="545" y="40" text-anchor="middle" class="box-title">TO_InterpreterMapping</text>
+          <text x="545" y="58" text-anchor="middle" class="box-sub">declares what MCL may reach</text>
+        </g>
+
+        <!-- User program -->
+        <g class="to-box" id="box-user" tabindex="0" role="button" aria-pressed="false" aria-label="User program, cyclic OB">
+          <rect x="16" y="120" width="196" height="300" rx="4"></rect>
+          <text x="114" y="144" text-anchor="middle" class="box-title">User program</text>
+          <text x="114" y="160" text-anchor="middle" class="box-sub">cyclic OB</text>
+          <rect class="call-block" x="30" y="176" width="168" height="46" rx="2"></rect>
+          <text x="114" y="203" text-anchor="middle" class="call-block-text">MC_LoadProgram</text>
+          <rect class="call-block" x="30" y="230" width="168" height="46" rx="2"></rect>
+          <text x="114" y="257" text-anchor="middle" class="call-block-text">MC_RunProgram</text>
+          <rect class="call-block" x="30" y="284" width="168" height="46" rx="2"></rect>
+          <text x="114" y="311" text-anchor="middle" class="call-block-text">MC_StopProgram</text>
+          <rect class="call-block" x="30" y="338" width="168" height="46" rx="2"></rect>
+          <text x="114" y="365" text-anchor="middle" class="call-block-text">Status evaluation</text>
+        </g>
+
+        <!-- TO_Interpreter (centre) -->
+        <g class="to-box is-selected" id="box-interpreter" tabindex="0" role="button" aria-pressed="true" aria-label="TO_Interpreter">
+          <rect x="300" y="120" width="320" height="300" rx="4"></rect>
+          <text x="460" y="144" text-anchor="middle" class="box-title">TO_Interpreter</text>
+          <rect class="call-block" x="316" y="170" width="288" height="108" rx="2"></rect>
+          <text x="460" y="200" text-anchor="middle" class="call-block-text">Program preparation</text>
+          <text x="460" y="220" text-anchor="middle" class="box-sub">MC_LookAhead OB</text>
+          <rect class="call-block" x="316" y="288" width="288" height="108" rx="2"></rect>
+          <text x="460" y="318" text-anchor="middle" class="call-block-text">Sequential program execution</text>
+          <text x="460" y="338" text-anchor="middle" class="box-sub">MC_Interpolator OB</text>
+        </g>
+
+        <!-- TO_Kinematics -->
+        <g class="to-box" id="box-kinematics" tabindex="0" role="button" aria-pressed="false" aria-label="TO_Kinematics">
+          <rect x="660" y="120" width="284" height="140" rx="4"></rect>
+          <text x="802" y="150" text-anchor="middle" class="box-title">TO_Kinematics</text>
+          <text x="802" y="170" text-anchor="middle" class="box-sub">up to 6 interpolating axes</text>
+          <rect class="call-block" x="676" y="186" width="252" height="58" rx="2"></rect>
+          <text x="802" y="220" text-anchor="middle" class="call-block-text">motion jobs executed</text>
+        </g>
+
+        <!-- Mapped axes -->
+        <g class="to-box" id="box-axes" tabindex="0" role="button" aria-pressed="false" aria-label="Mapped axes: Speed, Positioning, Synchronous">
+          <rect x="660" y="280" width="284" height="140" rx="4"></rect>
+          <text x="802" y="310" text-anchor="middle" class="box-title">Mapped axes</text>
+          <text x="802" y="330" text-anchor="middle" class="box-sub">Speed &middot; Positioning &middot; Synchronous</text>
+          <rect class="call-block" x="676" y="346" width="252" height="58" rx="2"></rect>
+          <text x="802" y="380" text-anchor="middle" class="call-block-text">MC_Interpolator (cyclic)</text>
+        </g>
+      </svg>
+
+      <div class="line-legend" aria-hidden="true">
+        <span class="sw"><i style="background:var(--ix-primary);border:none;width:14px;height:3px;border-radius:2px;"></i>control &mdash; user program &rarr; interpreter</span>
+        <span class="sw"><i style="background:var(--ix-dynamic-alt);border:none;width:14px;height:3px;border-radius:2px;"></i>motion &mdash; interpreter &rarr; kinematics / axes</span>
+        <span class="sw"><i style="background:var(--ix-neutral);border:none;width:14px;height:3px;border-radius:2px;"></i>status &mdash; interpreter &rarr; user program</span>
+      </div>
+
+      <div class="diagram-detail" id="diagramDetail">
+        <!-- filled by JS from a data table; default = TO_Interpreter -->
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     S3 — TWO CLOCKS: PREPARATION AND EXECUTION
+     ============================================================ -->
+<section class="section" id="s3">
+  <div class="wrap">
+    <p class="eyebrow">The key concept</p>
+    <h2>Two clocks: preparation and execution</h2>
+    <p class="section-intro">The single thing that separates MCL from cyclic SCL. The Interpreter runs a look-ahead: jobs are prepared in the MC_LookAhead OB, acyclically and in advance, and then processed in the MC_Interpolator OB. A job executes with the parameters it had AT PREPARATION TIME, not at execution time.</p>
+
+    <div class="instrument">
+      <div class="control-row">
+        <button class="btn primary" id="s3Play" type="button" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path id="s3PlayIcon" d="M8 5v14l11-7z"></path></svg>
+          <span id="s3PlayLabel">Play</span>
+        </button>
+        <button class="btn" id="s3Step" type="button">Step</button>
+        <button class="btn" id="s3Reset" type="button">Reset</button>
+      </div>
+
+      <div class="mcl-controls" style="margin-top:var(--sp-4);">
+        <div class="control-group">
+          <label for="s3Cap">MaxNumberOfCommands <span class="val tabular" id="s3CapVal">30</span></label>
+          <input type="range" id="s3Cap" min="10" max="100" step="1" value="30">
+        </div>
+        <div class="control-group">
+          <label for="s3Timeout">StartTimeout (s) <span class="val tabular" id="s3TimeoutVal">0.0</span></label>
+          <input type="range" id="s3Timeout" min="0" max="2" step="0.1" value="0">
+        </div>
+        <div class="control-group">
+          <span class="toggle-row"><button class="switch" id="s3PreHalt" type="button" role="switch" aria-checked="false" aria-label="Insert preHalt at job 8"></button> insert preHalt() at job 8</span>
+        </div>
+        <div class="control-group">
+          <span class="toggle-row"><button class="switch" id="s3WaitEvent" type="button" role="switch" aria-checked="false" aria-label="Insert waitEvent at job 8"></button> insert waitEvent() at job 8</span>
+        </div>
+      </div>
+
+      <div class="tracks">
+        <div class="track">
+          <span class="track-label prep">Preparation</span>
+          <div class="track-lane"><div class="track-fill prep" id="s3PrepFill"></div></div>
+        </div>
+        <div class="job-tiles" id="s3PrepTiles" aria-hidden="true"></div>
+        <div class="track">
+          <span class="track-label exec">Execution</span>
+          <div class="track-lane"><div class="track-fill exec" id="s3ExecFill"></div></div>
+        </div>
+        <div class="job-tiles" id="s3ExecTiles" aria-hidden="true"></div>
+      </div>
+
+      <div class="line-legend">
+        <span class="sw"><i class="kin"></i>kinematics job</span>
+        <span class="sw"><i class="other"></i>non-kinematics job (writeVar / waitEvent, etc.)</span>
+      </div>
+
+      <div class="sim-badges" id="s3Badges" aria-live="polite"></div>
+
+      <div class="readout-row">
+        <div class="readout"><span class="k">LevelOfPreparedCommands</span><span class="v accent tabular" id="s3Level" data-live>0%</span></div>
+        <div class="readout"><span class="k">Prepared / executed</span><span class="v tabular" id="s3Counts" data-live>0 / 0</span></div>
+        <div class="readout"><span class="k">Kinematics prepared (of 30)</span><span class="v tabular" id="s3KinCount" data-live>0 / 30</span></div>
+        <div class="readout"><span class="k">Elapsed</span><span class="v tabular" id="s3Elapsed" data-live>0.0 s</span></div>
+      </div>
+
+      <p class="timeout-caption">Worked example from the manual: preparation of a motion sequence takes <b>1.5 s</b>. Wait time <span class="hl">0.0</span> starts after <span class="hl">1.5 s</span>; wait time <span class="hl">1.0</span> starts after <span class="hl">1.0 s</span>; wait time <span class="hl">2.0</span> starts after <span class="hl">1.5 s</span>. Current setting starts after <b><span id="s3TimeoutComputed" data-live>1.5</span> s</b>.</p>
+    </div>
+
+    <h3 style="font-family:var(--font-display);font-size:1.2rem;margin-top:var(--sp-8);margin-bottom:var(--sp-2);">When does my line actually run?</h3>
+    <p class="rule-line"><span class="kw">x := 5;</span> assigns during PREPARATION &middot; <span class="kw">writeVar(x, 5);</span> writes during EXECUTION. Reading a tag returns its value at preparation time.</p>
+
+    <div class="run-table">
+      <div class="run-col">
+        <h4>Executed WITH preparation</h4>
+        <div class="instr-list">
+          <span>setAxisDyn</span><span>setAxisDynMax</span><span>setDyn</span><span>setDynMax</span><span>setPlane</span><span>setCircDirs</span><span>setDynAdapt</span><span>setOriDyn</span><span>setOriDynMax</span><span>setPtpDyn</span><span>setCs</span><span>setBlendDist</span><span>setBlendFactor</span><span>setBlend</span><span>setTrans</span><span>setLc</span><span>setTurnJoint</span><span>setOvr</span><span>preHalt</span>
+        </div>
+      </div>
+      <div class="run-col">
+        <h4>Executed AT execution</h4>
+        <div class="instr-list">
+          <span>writeVar</span><span>waitEvent</span><span>waitTime</span><span>setControlledByInterpreter</span><span>powerOn</span><span>powerOff</span><span>home</span><span>move</span><span>posRel</span><span>posAbs</span><span>torqueLimitOn</span><span>torqueLimitOff</span><span>linAbs</span><span>linRel</span><span>circAbs</span><span>circRel</span><span>ptpAbs</span><span>ptpRel</span><span>ptpAxAbs</span><span>ptpAxRel</span><span>ptpJtAbs</span><span>ptpJtRel</span><span>defOcs</span><span>defTool</span><span>setTool</span><span>trackIn</span><span>defWsZone</span><span>defKinZone</span><span>setWsZoneActive</span><span>setWsZoneInactive</span><span>setKinZoneActive</span><span>setKinZoneInactive</span>
+        </div>
+      </div>
+    </div>
+
+    <pre class="code-block">$IPR.Clipboard.CbDint[1] := 5;              <span class="cm">// set to 5 during preparation</span>
+$IPR.Clipboard.CbDint[2] := 5;              <span class="cm">// set to 5 during preparation</span>
+$IPR.Clipboard.CbDint[100] := 3;            <span class="cm">// set to 3 during preparation</span>
+writeVar( $IPR.Clipboard.CbDint[100], 10 ); <span class="cm">// set from 3 to 10 during execution</span>
+$IPR.Clipboard.CbDint[1] := $IPR.Clipboard.CbDint[100];  <span class="cm">// set to 3 during preparation</span>
+writeVar( $IPR.Clipboard.CbDint[1], $IPR.Clipboard.CbDint[100] ); <span class="cm">// writes 3 — the</span>
+                                            <span class="cm">// preparation-time value</span>
+preHalt( );                                 <span class="cm">// interrupt preparation here</span>
+writeVar( $IPR.Clipboard.CbDint[2], $IPR.Clipboard.CbDint[100] ); <span class="cm">// now writes 10</span></pre>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     S4 — MCL PATH SIMULATOR
+     ============================================================ -->
+<section class="section" id="s4">
+  <div class="wrap">
+    <p class="eyebrow">Centrepiece</p>
+    <h2>MCL path simulator</h2>
+    <p class="section-intro">Step or scrub through three real MCL programs and watch the TCP path build up, coloured by velocity. The source line executing right now is highlighted, TIA-monitoring style.</p>
+
+    <div class="preset-tabs" role="tablist" aria-label="MCL program preset">
+      <button class="btn is-active" id="presetTab0" type="button" role="tab" aria-selected="true">1 &middot; Getting Started: pick &amp; place</button>
+      <button class="btn" id="presetTab1" type="button" role="tab" aria-selected="false">2 &middot; Blending</button>
+      <button class="btn" id="presetTab2" type="button" role="tab" aria-selected="false">3 &middot; Modal parameters</button>
+    </div>
+
+    <div class="mcl-panel">
+      <div class="mcl-source" id="mclSource" tabindex="0" aria-label="MCL source listing"></div>
+
+      <div class="mcl-canvas-side">
+        <div class="mcl-canvas-wrap">
+          <canvas id="mclCanvas" role="img" aria-label="TCP path in the XY plane, stroked with the velocity colour ramp"></canvas>
+          <div class="z-gauge" id="zGauge">
+            <span class="lbl">Z</span>
+            <div class="track"><div class="fill" id="zGaugeFill"></div></div>
+            <span class="val tabular" id="zGaugeVal">0</span>
+          </div>
+        </div>
+        <div class="gripper-lamp" id="gripperLamp" data-state="idle">
+          <span class="dot"></span><span id="gripperLampLabel">gripper idle</span>
+        </div>
+        <div class="scrub-row">
+          <button class="btn icon-only" id="mclReset" type="button" aria-label="Reset">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4v6h6M20 20v-6h-6"/><path d="M5.5 15a8 8 0 1 0 1-9.5L4 8M18.5 9a8 8 0 0 1-1 9.5L20 16"/></svg>
+          </button>
+          <button class="btn icon-only" id="mclPlay" type="button" aria-pressed="false" aria-label="Play">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path id="mclPlayIcon" d="M8 5v14l11-7z"></path></svg>
+          </button>
+          <button class="btn icon-only" id="mclStep" type="button" aria-label="Step">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4l10 8-10 8V4zM19 5v14"/></svg>
+          </button>
+          <input type="range" id="mclScrub" min="0" max="1000" step="1" value="0" aria-label="Scrub through cycle">
+          <span class="tabular" id="mclTimeVal" style="font-family:var(--font-mono);font-size:0.78rem;color:var(--ix-soft);min-width:5.5em;text-align:right;">0.0 / 0.0s</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mcl-controls">
+      <div class="control-group">
+        <label for="mclOvr">setOvr &mdash; program override <span class="val tabular" id="mclOvrVal">100%</span></label>
+        <input type="range" id="mclOvr" min="1" max="100" step="1" value="100">
+      </div>
+      <div class="control-group">
+        <label>setTrans &mdash; motion transition</label>
+        <div class="control-row" role="group" aria-label="setTrans">
+          <button class="btn is-active" id="mclTrans0" type="button" data-trans="0">0 &middot; append</button>
+          <button class="btn" id="mclTrans1" type="button" data-trans="1">1 &middot; lower v</button>
+          <button class="btn" id="mclTrans2" type="button" data-trans="2">2 &middot; higher v</button>
+        </div>
+      </div>
+      <div class="control-group">
+        <label>setBlend &mdash; blending mode</label>
+        <div class="control-row" role="group" aria-label="setBlend">
+          <button class="btn" id="mclBlend0" type="button" data-blend="0">0 &middot; direct</button>
+          <button class="btn" id="mclBlend1" type="button" data-blend="1">1 &middot; reserved</button>
+          <button class="btn is-active" id="mclBlend2" type="button" data-blend="2">2 &middot; geometric</button>
+        </div>
+      </div>
+      <div class="control-group">
+        <label for="mclBlendDist">setBlendDist <span class="val tabular" id="mclBlendDistVal">max</span></label>
+        <input type="range" id="mclBlendDist" min="-1" max="60" step="1" value="-1">
+      </div>
+    </div>
+
+    <p class="formula-strip" id="mclFormula" data-live>program 100% &times; TO 50% = 50% velocity &middot; 50% accel</p>
+    <p class="canvas-caption">In MCL, blending is defined in the PRECEDING job &mdash; the opposite of the Motion Control instructions.</p>
+
+    <div class="mcl-side-note" id="presetNote"></div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     S5 — INSTRUCTION EXPLORER
+     ============================================================ -->
+<section class="section" id="s5">
+  <div class="wrap">
+    <p class="eyebrow">Reference</p>
+    <h2>Instruction explorer</h2>
+    <p class="section-intro">Every MCL instruction, grouped by family. Search, filter, or click a tile for its description and when it runs.</p>
+
+    <div class="explorer-controls">
+      <input type="search" class="search-box" id="instrSearch" placeholder="Search instructions&hellip;" aria-label="Search MCL instructions">
+      <div class="family-chips" id="familyChips" role="group" aria-label="Filter by family"></div>
+      <span class="result-count" id="instrCount" aria-live="polite"></span>
+    </div>
+
+    <div class="instr-grid" id="instrGrid"></div>
+
+    <div class="instr-detail" id="instrDetail" hidden>
+      <span class="nm" id="instrDetailName"></span>
+      <span class="run-badge" id="instrDetailBadge"></span>
+      <p class="desc" id="instrDetailDesc"></p>
+    </div>
+
+    <p class="instr-note">Bit-string instructions, mathematical functions and conversions are also supported. Max 10 programmable synchronous actions.</p>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     S6 — HOW TO USE IT
+     ============================================================ -->
+<section class="section" id="s6">
+  <div class="wrap">
+    <p class="eyebrow">Workflow</p>
+    <h2>How to use it</h2>
+    <p class="section-intro">A real, ordered procedure &mdash; from mechanics to the first monitored run.</p>
+
+    <div class="stepper" id="stepper">
+
+      <div class="step" data-open="true">
+        <button class="step-head" aria-expanded="true">
+          <span class="step-num">1</span>
+          <span class="step-title">Configure the mechanics &mdash; axes and kinematics</span>
+          <svg class="step-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Add the positioning-axis TOs, activate simulation on each if you are running without hardware, assign the drive interface, then add the TO_Kinematics and set its type (the Getting Started basic example uses &ldquo;Cartesian portal 3D&rdquo; with three positioning axes) and its interconnections and geometry.</p>
+            <p class="tip">Tip from the manual: adding a PROFIdrive device such as a SINAMICS S210 and configuring IRT improves behaviour under PLCSIM Advanced.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-open="false">
+        <button class="step-head" aria-expanded="false">
+          <span class="step-num">2</span>
+          <span class="step-title">Add the TO_Interpreter and connect the kinematics</span>
+          <svg class="step-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Basic parameters &gt; Connected kinematics &mdash; or pick the kinematics in the &ldquo;Add technology object&rdquo; dialog, or drag the Interpreter onto the kinematics in the project tree. One Interpreter binds to exactly one kinematics TO.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-open="false">
+        <button class="step-head" aria-expanded="false">
+          <span class="step-num">3</span>
+          <span class="step-title">Set the Extended parameters</span>
+          <svg class="step-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Interpreter job sequence &mdash; max jobs prepared, <code>&lt;TO&gt;.Parameter.MaxNumberOfCommands</code>, 10&ndash;100.</p>
+            <p>Program preparation &gt; Maximum wait time &mdash; <code>&lt;TO&gt;.Parameter.StartTimeout</code>, 0.0&ndash;2.0 s.</p>
+            <p>Program preparation &gt; Start value program override &mdash; <code>&lt;TO&gt;.Parameter.ProgramOverride</code>, 1&ndash;100 %.</p>
+            <p>Clipboard &mdash; start values for CbBool[1..300], CbDint[1..100], CbLreal[1..100].</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-open="false">
+        <button class="step-head" aria-expanded="false">
+          <span class="step-num">4</span>
+          <span class="step-title">Add the TO_InterpreterMapping and declare what MCL may touch</span>
+          <svg class="step-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Mapping &gt; Mapping of technology objects: name in interpreter program + the TO. Mapping &gt; Mapping of variables: name + data block variable (+ Read only where required).</p>
+            <p>In the Getting Started project this is where the gripper signals live &mdash; a &ldquo;BasicMappingDB&rdquo; DB whose BOOLs are mapped one-for-one.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-open="false">
+        <button class="step-head" aria-expanded="false">
+          <span class="step-num">5</span>
+          <span class="step-title">Add the TO_InterpreterProgram and write the MCL</span>
+          <svg class="step-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Open its programming editor, pick the Interpreter and the Mapping in the two drop-downs at the top, and write the program. The editor has configuration dialogs for instruction parameters, bookmarks, and a 3D visualisation of the kinematics.</p>
+            <p>The program is interpreted at runtime &mdash; it is not compiled in TIA Portal.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-open="false">
+        <button class="step-head" aria-expanded="false">
+          <span class="step-num">6</span>
+          <span class="step-title">Drive it from the cyclic user program</span>
+          <svg class="step-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Add MC_LoadProgram, MC_RunProgram and MC_StopProgram to the main OB from the instruction browser and wire their instance interfaces. Rising edge on Execute starts each job.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="step" data-open="false">
+        <button class="step-head" aria-expanded="false">
+          <span class="step-num">7</span>
+          <span class="step-title">Download, run, observe</span>
+          <svg class="step-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Compile and download to the CPU or a PLCSIM Advanced instance (enable simulation support in the project settings). Drive Execute from a watch table.</p>
+            <p>Switch on &ldquo;Monitoring on/off&rdquo; and &ldquo;Monitor program execution&rdquo; in the programming editor &mdash; the active line is highlighted in orange; for a loaded but not yet started program that highlight sits on PROGRAM main. Record the TCP with the Kinematics trace under the kinematics TO.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="call-ref">
+      <div class="call-ref-col">
+        <h4>MC_LoadProgram</h4>
+        <div class="row"><b>Interpreter</b> (TO_Interpreter) &middot; <b>Execute</b> (BOOL, rising edge)</div>
+        <div class="row"><b>Mode</b> (DINT, default 1): 1 = load the Interpreter program into the Interpreter TO (the program is then disabled for changes) &middot; 0 = unload</div>
+        <div class="row"><b>Program</b> (STRING): name of the Interpreter program TO, e.g. 'InterpreterProgram_1' (Mode 1 only)</div>
+        <div class="row"><b>ProgramSource</b> (DINT, default 1): 1 = Interpreter program technology object &middot; 2 = reserved</div>
+        <div class="row"><b>Mapping</b> (STRING): name of the Interpreter mapping TO, e.g. 'InterpreterMapping_1' (optional)</div>
+        <div class="row"><b>MappingSource</b> (DINT, default 1): 1 = Interpreter mapping technology object &middot; 2,3 = reserved</div>
+        <div class="row">Out: Done &middot; Busy &middot; CommandAborted &middot; Error &middot; ErrorID (WORD)</div>
+        <div class="row">Requirement: no Motion Control job active at the Interpreter (&lt;TO&gt;.StatusWord.X0 = FALSE).</div>
+      </div>
+      <div class="call-ref-col">
+        <h4>MC_RunProgram</h4>
+        <div class="row"><b>Interpreter</b> &middot; <b>Execute</b>. Out: Done &middot; Busy &middot; Active &middot; CommandAborted &middot; Error &middot; ErrorID.</div>
+        <div class="row">You may issue Run while loading is still in progress (X9 Loading) &mdash; execution starts as soon as X10 Loaded is set.</div>
+        <div class="row">Done = TRUE means the program ran AND has been prepared for another run.</div>
+      </div>
+      <div class="call-ref-col">
+        <h4>MC_StopProgram</h4>
+        <div class="row"><b>Interpreter</b> &middot; <b>Execute</b> &middot; <b>Mode</b> (DINT, default 0):</div>
+        <div class="row">0 = stop single axis/kinematics with maximum dynamics</div>
+        <div class="row">1 = stop with the dynamics of the motion job being interrupted</div>
+        <div class="row">2 = stop after the current motion job or the current motion sequence</div>
+        <div class="row">Out: Done &middot; Busy &middot; CommandAborted &middot; Error &middot; ErrorID.</div>
+        <div class="row">MC_StopProgram aborts an active MC_LoadProgram or MC_RunProgram job.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     S7 — STATUSWORD DECODER
+     ============================================================ -->
+<section class="section" id="s7">
+  <div class="wrap">
+    <p class="eyebrow">Diagnostics</p>
+    <h2>StatusWord decoder</h2>
+    <p class="section-intro">Click a bit to see what it means, or replay the handshake below and watch the bits light as it advances.</p>
+
+    <div class="word-group">
+      <h4>StatusWord</h4>
+      <div class="bit-board" id="statusBits" role="group" aria-label="StatusWord bits"></div>
+      <div class="bit-meaning" id="statusMeaning" aria-live="polite">Select a bit to see its meaning.</div>
+    </div>
+
+    <div class="word-group">
+      <h4>ErrorWord</h4>
+      <div class="bit-board" id="errorBits" role="group" aria-label="ErrorWord bits"></div>
+    </div>
+
+    <div class="word-group">
+      <h4>WarningWord</h4>
+      <div class="bit-board" id="warningBits" role="group" aria-label="WarningWord bits"></div>
+    </div>
+
+    <div class="tag-list">
+      <div class="row"><b>&lt;TO&gt;.ErrorDetail.LineNumber</b> &mdash; line number of the error</div>
+      <div class="row"><b>&lt;TO&gt;.ErrorDetail.ErrorInfo</b> &mdash; further error information</div>
+      <div class="row"><b>&lt;TO&gt;.ProgramName</b> &mdash; name of the loaded Interpreter program</div>
+      <div class="row"><b>&lt;TO&gt;.MappingName</b> &mdash; name of the loaded Interpreter mapping</div>
+      <div class="row"><b>&lt;TO&gt;.StatusInterpreter.ProgramMode</b> &mdash; current program mode</div>
+    </div>
+
+    <h3 style="font-family:var(--font-display);font-size:1.2rem;margin-top:var(--sp-8);margin-bottom:var(--sp-3);">Handshake</h3>
+    <div class="control-row">
+      <button class="btn primary" id="ribbonPlay" type="button">Replay handshake</button>
+    </div>
+    <div class="ribbon" id="ribbon" aria-live="polite"></div>
+    <p class="ribbon-branch">Branch: MC_StopProgram can move the sequence to X7 Stopping and then X8 Interrupted at any point after loading.</p>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     S8 — ENGINEER'S NOTES
+     ============================================================ -->
+<section class="section" id="s8">
+  <div class="wrap">
+    <p class="eyebrow">Field notes</p>
+    <h2>Engineer&rsquo;s notes</h2>
+    <p class="section-intro">The things that bite.</p>
+
+    <div class="notes-list">
+      <div class="note-item">
+        <span class="lead">Assignment vs writeVar.</span>
+        <p><code>x := value</code> takes effect during PREPARATION; <code>writeVar(x, value)</code> takes effect during EXECUTION. Reading a tag in the Interpreter program returns the value valid at the time of PREPARATION.</p>
+      </div>
+      <div class="note-item">
+        <span class="lead">Blending is declared in the preceding job.</span>
+        <p>Unlike the Motion Control instructions, an MCL motion job carries the blending for the transition INTO the next job.</p>
+      </div>
+      <div class="note-item">
+        <span class="lead">Program override multiplies.</span>
+        <p>It works in addition to the technology objects&rsquo; own overrides: program override 50&nbsp;% with a kinematics velocity override of 50&nbsp;% gives 25&nbsp;% resulting velocity override, and 50&nbsp;% for acceleration and deceleration. Changes do not affect jobs already prepared. Range 1&ndash;100&nbsp;%.</p>
+      </div>
+      <div class="note-item">
+        <span class="lead">The 30-kinematics-job ceiling is fixed.</span>
+        <p>The job sequence holds at most 30 kinematics motion jobs whatever &lt;TO_Kinematics&gt;.MotionQueue.MaxNumberOfCommands says.</p>
+      </div>
+      <div class="note-item">
+        <span class="lead">Unload before you load.</span>
+        <p>To load a different or modified program, unload the current one first (MC_LoadProgram Mode 0). After CPU STOP or POWER OFF you must reload.</p>
+      </div>
+      <div class="note-item">
+        <span class="lead">move() never finishes by itself.</span>
+        <p>For motion jobs that do not end automatically, ControlledByInterpreter clears as soon as the TO reaches the specified state &mdash; so MC_StopProgram will not cancel them unless you used setControlledByInterpreter().</p>
+      </div>
+      <div class="note-item">
+        <span class="lead">Debug mode changes the rules. <span class="chip sev-warning" style="cursor:default;">warning</span></span>
+        <p>In &ldquo;Debug&rdquo; program mode, MC_StopProgram and MC_Reset with Restart = TRUE are NOT executed for the Interpreter TO, the program runs with a delay and works with preparation-time values, and the dynamics and path can differ from &ldquo;Automatic&rdquo; mode. The user program keeps running in parallel and can move other axes. Debug mode exists as of technology version V9.0; V8.0 had &ldquo;Automatic&rdquo; only.</p>
+      </div>
+      <div class="note-item">
+        <span class="lead">Read-only mappings must be declared.</span>
+        <p>If the mapped DB variable has the &ldquo;Read only&rdquo; property, the Read only check box must be set for that entry in the mapping.</p>
+      </div>
+      <div class="note-item">
+        <span class="lead">User-defined data types of identical structure are not supported.</span>
+        <p>Only the listed TO_Struct_Ipr_* / TO_Struct_Kinematics_* types map in the Interpreter mapping.</p>
+      </div>
+      <div class="note-item">
+        <span class="lead">It needs a licence.</span>
+        <p>A runtime licence is required per technology CPU: SIMATIC Motion Interpreter basic, 6ES7823-0SJ00-1AA0. You can test the functions with SIMATIC S7-PLCSIM or S7-PLCSIM Advanced.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+</main>
+
+<!-- ============================================================
+     S9 — FOOTER
+     ============================================================ -->
+<footer class="site-footer" id="s9">
+  <div class="wrap">
+    <h4>New in V10.0</h4>
+    <ul>
+      <li>Mapping of complex position data types such as TO_Struct_Ipr_Frame, and mapping of arrays.</li>
+      <li>Changing tag values at breakpoints in &ldquo;Debug&rdquo; program mode.</li>
+      <li>Defined conversion results for LREAL_TO_DINT / LREAL_TO_UDINT even for out-of-range or invalid floating-point inputs.</li>
+    </ul>
+
+    <h4>Sources</h4>
+    <div class="sources">
+      <span>S7-1500T Interpreter functions V10.0 as of STEP 7 V21, Function Manual 11/2025, A5E53131966-AC (Siemens entry 109990077)</span>
+      <span>Getting Started Manual &mdash; SIMATIC Motion Interpreter, Entry-ID 109826233, V1.0, 12/2023</span>
+    </div>
+
+    <p class="footnote">Built from the two manuals above. Dynamics in the simulators are illustrative, not the real interpolator.</p>
+  </div>
+</footer>
+
+
+</div>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!-- ============================================================
+     S3 — TWO CLOCKS: PREPARATION AND EXECUTION
+     ============================================================ -->
+<section class="section" id="s3">
+  <div class="wrap">
+    <p class="eyebrow">The key concept</p>
+    <h2>Two clocks: preparation and execution</h2>
+    <p class="section-intro">The single thing that separates MCL from cyclic SCL. The Interpreter runs a look-ahead: jobs are prepared in the MC_LookAhead OB, acyclically and in advance, and then processed in the MC_Interpolator OB. A job executes with the parameters it had AT PREPARATION TIME, not at execution time.</p>
+
+    <div class="instrument">
+      <div class="control-row">
+        <button class="btn primary" id="s3Play" type="button" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path id="s3PlayIcon" d="M8 5v14l11-7z"></path></svg>
+          <span id="s3PlayLabel">Play</span>
+        </button>
+        <button class="btn" id="s3Step" type="button">Step</button>
+        <button class="btn" id="s3Reset" type="button">Reset</button>
+      </div>
+
+      <div class="mcl-controls" style="margin-top:var(--sp-4);">
+        <div class="control-group">
+          <label for="s3Cap">MaxNumberOfCommands <span class="val tabular" id="s3CapVal">30</span></label>
+          <input type="range" id="s3Cap" min="10" max="100" step="1" value="30">
+        </div>
+        <div class="control-group">
+          <label for="s3Timeout">StartTimeout (s) <span class="val tabular" id="s3TimeoutVal">0.0</span></label>
+          <input type="range" id="s3Timeout" min="0" max="2" step="0.1" value="0">
+        </div>
+        <div class="control-group">
+          <span class="toggle-row"><button class="switch" id="s3PreHalt" type="button" role="switch" aria-checked="false" aria-label="Insert preHalt at job 8"></button> insert preHalt() at job 8</span>
+        </div>
+        <div class="control-group">
+          <span class="toggle-row"><button class="switch" id="s3WaitEvent" type="button" role="switch" aria-checked="false" aria-label="Insert waitEvent at job 8"></button> insert waitEvent() at job 8</span>
+        </div>
+      </div>
+
+      <div class="tracks">
+        <div class="track">
+          <span class="track-label prep">Preparation</span>
+          <div class="track-lane"><div class="track-fill prep" id="s3PrepFill"></div></div>
+        </div>
+        <div class="job-tiles" id="s3PrepTiles" aria-hidden="true"></div>
+        <div class="track">
+          <span class="track-label exec">Execution</span>
+          <div class="track-lane"><div class="track-fill exec" id="s3ExecFill"></div></div>
+        </div>
+        <div class="job-tiles" id="s3ExecTiles" aria-hidden="true"></div>
+      </div>
+
+      <div class="line-legend">
+        <span class="sw"><i class="kin"></i>kinematics job</span>
+        <span class="sw"><i class="other"></i>non-kinematics job (writeVar / waitEvent, etc.)</span>
+      </div>
+
+      <div class="sim-badges" id="s3Badges" aria-live="polite"></div>
+
+      <div class="readout-row">
+        <div class="readout"><span class="k">LevelOfPreparedCommands</span><span class="v accent tabular" id="s3Level" data-live>0%</span></div>
+        <div class="readout"><span class="k">Prepared / executed</span><span class="v tabular" id="s3Counts" data-live>0 / 0</span></div>
+        <div class="readout"><span class="k">Kinematics prepared (of 30)</span><span class="v tabular" id="s3KinCount" data-live>0 / 30</span></div>
+        <div class="readout"><span class="k">Elapsed</span><span class="v tabular" id="s3Elapsed" data-live>0.0 s</span></div>
+      </div>
+
+      <p class="timeout-caption">Worked example from the manual: preparation of a motion sequence takes <b>1.5 s</b>. Wait time <span class="hl">0.0</span> starts after <span class="hl">1.5 s</span>; wait time <span class="hl">1.0</span> starts after <span class="hl">1.0 s</span>; wait time <span class="hl">2.0</span> starts after <span class="hl">1.5 s</span>. Current setting starts after <b><span id="s3TimeoutComputed" data-live>1.5</span> s</b>.</p>
+    </div>
+
+    <h3 style="font-family:var(--font-display);font-size:1.2rem;margin-top:var(--sp-8);margin-bottom:var(--sp-2);">When does my line actually run?</h3>
+    <p class="rule-line"><span class="kw">x := 5;</span> assigns during PREPARATION &middot; <span class="kw">writeVar(x, 5);</span> writes during EXECUTION. Reading a tag returns its value at preparation time.</p>
+
+    <div class="run-table">
+      <div class="run-col">
+        <h4>Executed WITH preparation</h4>
+        <div class="instr-list">
+          <span>setAxisDyn</span><span>setAxisDynMax</span><span>setDyn</span><span>setDynMax</span><span>setPlane</span><span>setCircDirs</span><span>setDynAdapt</span><span>setOriDyn</span><span>setOriDynMax</span><span>setPtpDyn</span><span>setCs</span><span>setBlendDist</span><span>setBlendFactor</span><span>setBlend</span><span>setTrans</span><span>setLc</span><span>setTurnJoint</span><span>setOvr</span><span>preHalt</span>
+        </div>
+      </div>
+      <div class="run-col">
+        <h4>Executed AT execution</h4>
+        <div class="instr-list">
+          <span>writeVar</span><span>waitEvent</span><span>waitTime</span><span>setControlledByInterpreter</span><span>powerOn</span><span>powerOff</span><span>home</span><span>move</span><span>posRel</span><span>posAbs</span><span>torqueLimitOn</span><span>torqueLimitOff</span><span>linAbs</span><span>linRel</span><span>circAbs</span><span>circRel</span><span>ptpAbs</span><span>ptpRel</span><span>ptpAxAbs</span><span>ptpAxRel</span><span>ptpJtAbs</span><span>ptpJtRel</span><span>defOcs</span><span>defTool</span><span>setTool</span><span>trackIn</span><span>defWsZone</span><span>defKinZone</span><span>setWsZoneActive</span><span>setWsZoneInactive</span><span>setKinZoneActive</span><span>setKinZoneInactive</span>
+        </div>
+      </div>
+    </div>
+
+    <pre class="code-block">$IPR.Clipboard.CbDint[1] := 5;              <span class="cm">// set to 5 during preparation</span>
+$IPR.Clipboard.CbDint[2] := 5;              <span class="cm">// set to 5 during preparation</span>
+$IPR.Clipboard.CbDint[100] := 3;            <span class="cm">// set to 3 during preparation</span>
+writeVar( $IPR.Clipboard.CbDint[100], 10 ); <span class="cm">// set from 3 to 10 during execution</span>
+$IPR.Clipboard.CbDint[1] := $IPR.Clipboard.CbDint[100];  <span class="cm">// set to 3 during preparation</span>
+writeVar( $IPR.Clipboard.CbDint[1], $IPR.Clipboard.CbDint[100] ); <span class="cm">// writes 3 — the</span>
+                                            <span class="cm">// preparation-time value</span>
+preHalt( );                                 <span class="cm">// interrupt preparation here</span>
+writeVar( $IPR.Clipboard.CbDint[2], $IPR.Clipboard.CbDint[100] ); <span class="cm">// now writes 10</span></pre>
+  </div>
+</section>

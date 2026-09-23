@@ -1,0 +1,157 @@
+  /* ===== pc- : concept + MC_MovePath sections ===== */
+  #concept, #movepath { position: relative; }
+
+  #concept h3, #movepath h3 {
+    font-family: var(--f-disp);
+    font-size: 1.3rem;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+    margin: 2.6rem 0 0.9rem;
+    color: var(--text);
+  }
+  #concept h4, #movepath h4 {
+    font-family: var(--f-disp);
+    font-size: 1.02rem;
+    margin: 1.6rem 0 0.6rem;
+    color: var(--text);
+  }
+  #concept p, #movepath p { color: var(--text-2); line-height: 1.6; max-width: 68ch; }
+  #concept .mono, #movepath .mono { overflow-wrap: anywhere; }
+
+  .pc-thesis {
+    border-left: 3px solid var(--accent);
+    background: color-mix(in srgb, var(--accent) 7%, var(--surface));
+  }
+  .pc-thesis p { max-width: 72ch; color: var(--text); font-size: 1.02rem; }
+  .pc-thesis p + p { margin-top: 0.6em; }
+
+  /* diagram */
+  .pc-diagram {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+    align-items: stretch;
+  }
+  .pc-panel { min-width: 0; display: flex; flex-direction: column; gap: 0.6rem; }
+  .pc-panel-label {
+    font-family: var(--f-disp);
+    font-size: 0.92rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .pc-panel-label .pc-dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; flex: none; }
+  .pc-panel.pc-before .pc-dot { background: var(--text-dim); }
+  .pc-panel.pc-after .pc-dot { background: var(--accent); }
+  .pc-panel svg { width: 100%; height: auto; display: block; }
+  .pc-panel-note { font-size: 0.85rem; color: var(--text-dim); margin: 0; max-width: none; }
+
+  /* benefits */
+  .pc-benefits {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(230px, 100%), 1fr));
+    gap: 0.7rem;
+    margin-top: 1rem;
+  }
+  .pc-benefit {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    min-width: 0;
+  }
+  .pc-benefit svg { flex: none; margin-top: 0.15rem; }
+  .pc-benefit span { font-size: 0.9rem; color: var(--text-2); line-height: 1.45; }
+
+  /* components tables */
+  .pc-comp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .pc-comp-grid .card { min-width: 0; }
+  .pc-comp-grid table { width: 100%; }
+  .pc-comp-grid caption {
+    text-align: left;
+    font-family: var(--f-disp);
+    font-size: 0.95rem;
+    color: var(--text);
+    margin-bottom: 0.6rem;
+    caption-side: top;
+  }
+
+  /* tags for P-Type */
+  .pc-tag-in { background: color-mix(in srgb, var(--blue) 16%, transparent); color: var(--blue); border-color: color-mix(in srgb, var(--blue) 40%, transparent); }
+  .pc-tag-out { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); border-color: color-mix(in srgb, var(--ok) 40%, transparent); }
+  .pc-tag-inout { background: color-mix(in srgb, var(--pink) 16%, transparent); color: var(--pink); border-color: color-mix(in srgb, var(--pink) 40%, transparent); }
+
+  /* filter row */
+  .pc-filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    margin: 1rem 0 0.8rem;
+  }
+  .pc-filter-row .pc-filter-label { font-size: 0.82rem; color: var(--text-dim); margin-right: 0.2rem; }
+  .pc-toggle { cursor: pointer; user-select: none; }
+  .pc-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* interface table */
+  table.pc-iface { width: 100%; border-collapse: collapse; min-width: 640px; }
+  table.pc-iface th, table.pc-iface td { padding: 0.55rem 0.7rem; vertical-align: top; text-align: left; }
+  table.pc-iface td.pc-name { white-space: nowrap; font-weight: 600; }
+  table.pc-iface td.pc-type { overflow-wrap: anywhere; }
+  table.pc-iface td.pc-desc { color: var(--text-2); min-width: 22ch; }
+  table.pc-iface tr.pc-group-row td {
+    background: var(--surface-2);
+    font-family: var(--f-disp);
+    font-size: 0.82rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+  }
+  table.pc-iface tbody tr:not(.pc-group-row):hover td { background: color-mix(in srgb, var(--accent) 5%, transparent); }
+
+  /* config table */
+  table.pc-config { width: 100%; border-collapse: collapse; min-width: 560px; }
+  table.pc-config th, table.pc-config td { padding: 0.5rem 0.7rem; text-align: left; vertical-align: top; }
+  table.pc-config td.pc-desc { color: var(--text-2); }
+
+  /* general functionalities grid */
+  .pc-func-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+    gap: 0.8rem;
+    margin-top: 1rem;
+  }
+  .pc-func-grid .card { min-width: 0; }
+  .pc-func-grid h5 { margin: 0 0 0.35rem; font-family: var(--f-disp); font-size: 0.95rem; color: var(--text); }
+  .pc-func-grid p { font-size: 0.85rem; margin: 0; max-width: none; }
+
+  /* operating modes */
+  .pc-mode-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0 1rem; }
+  table.pc-modes { width: 100%; border-collapse: collapse; min-width: 520px; }
+  table.pc-modes th, table.pc-modes td { padding: 0.55rem 0.7rem; text-align: left; vertical-align: top; }
+  table.pc-modes th.pc-mcol { color: var(--accent); }
+  table.pc-modes th.pc-scol { color: var(--pink); }
+
+  .pc-mode-panel { margin-top: 1rem; display: grid; gap: 0.8rem; }
+
+  /* behaviour cards (ch. 5) */
+  .pc-behaviour-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .pc-behaviour-grid .card { min-width: 0; }
+  .pc-behaviour-grid h4 { margin-top: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pc-toggle, .pc-benefit svg circle { transition: none !important; }
+  }

@@ -1,0 +1,20 @@
+/* notes.css — S8 engineer's notes styles, extracted verbatim from the original inline <style> block */
+
+/* ============================================================
+   S8 — ENGINEER'S NOTES
+   ============================================================ */
+.notes-list{
+  display:flex; flex-direction:column;
+}
+.note-item{
+  padding-block:var(--sp-4);
+  border-top:1px solid var(--ix-bdr);
+  display:flex; flex-direction:column; gap:var(--sp-1);
+}
+.note-item:first-child{ border-top:none; }
+.note-item .lead{
+  font-weight:600;
+  display:flex; align-items:center; gap:var(--sp-2); flex-wrap:wrap;
+}
+.note-item p{ color:var(--ix-soft); font-size:0.94rem; }
+

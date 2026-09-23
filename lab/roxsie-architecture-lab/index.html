@@ -1,0 +1,1055 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  
+  <meta name="description" content="An interactive teardown of Siemens ROXSIE: the RIB shared-memory architecture, a live lifetime-buffer simulator, an interface budget calculator and an honest read on where the determinism comes from.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f3f3f0" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000028" media="(prefers-color-scheme: dark)">
+
+
+  <script type="module">
+(function(){let e=document.createElement(`link`).relList;if(e&&e.supports&&e.supports(`modulepreload`))return;for(let e of document.querySelectorAll(`link[rel="modulepreload"]`))n(e);new MutationObserver(e=>{for(let t of e)if(t.type===`childList`)for(let e of t.addedNodes)e.tagName===`LINK`&&e.rel===`modulepreload`&&n(e)}).observe(document,{childList:!0,subtree:!0});function t(e){let t={};return e.integrity&&(t.integrity=e.integrity),e.referrerPolicy&&(t.referrerPolicy=e.referrerPolicy),t.credentials=e.crossOrigin===`use-credentials`?`include`:e.crossOrigin===`anonymous`?`omit`:`same-origin`,t}function n(e){if(e.ep)return;e.ep=!0;let n=t(e);fetch(e.href,n)}})();function e(e){let t={...e},n=new Set,r=()=>n.forEach(e=>e(t));return{get state(){return t},set(e){t={...t,...e},r()},mutate(e){e(t),r()},subscribe(e){return n.add(e),()=>n.delete(e)}}}function t(){let e={segments:6,cycle:1,lifetime:3,readWindow:.1},t=0,n=0,r=[],i=0,a=0,o=[],s=0;function c(c){e={...e,...c};let{segments:l,cycle:u}=e;t=0,i=0,a=0,n=l-1,o=[],s=0,r=Array.from({length:l},(e,t)=>-(l-t)*u)}function l(c){let{segments:l,cycle:u,lifetime:d,readWindow:f}=e,p=t+c;for(;i<=p;)n=(n+1)%l,r[n]=i,o.push({kind:`write`,t:i}),i+=u;for(;a+u<=p;){a+=u;let e=f>=d;o.push({kind:`read`,t:a,duration:f,torn:e,index:n}),e&&(s+=1)}t=p;let m=Math.max(10*u,4*d+4*u);o=o.filter(e=>e.t>t-m)}return{reset:c,advance:l,get snapshot(){return{t,lastIndex:n,published:r,events:o,tornReads:s,...e}}}}var n=1e3,r=e=>Math.ceil(e/8)*8,i=e=>1e3/e,a=(e,t)=>3+Math.ceil(e/t),o=(e,t)=>16+e*t,s=(e,t)=>(e-1)*t;function c(e){return e>=1048576?`${(e/1048576).toFixed(2)} MB`:e>=1024?`${(e/1024).toFixed(1)} KB`:`${e} B`}var l=[{type:`std_msgs/msg/Bool`,bytes:1,shape:`bool`},{type:`std_msgs/msg/Float64`,bytes:8,shape:`float64`},{type:`geometry_msgs/msg/Vector3`,bytes:24,shape:`3 × float64`},{type:`geometry_msgs/msg/Twist`,bytes:48,shape:`2 × Vector3`},{type:`geometry_msgs/msg/Pose`,bytes:56,shape:`Point + Quaternion`},{type:`geometry_msgs/msg/PoseStamped`,bytes:318,shape:`Header + Pose`},{type:`sensor_msgs/msg/Imu`,bytes:558,shape:`Header + orientation, rates, accel + 3 covariances`},{type:`sensor_msgs/msg/LaserScan`,bytes:802,shape:`Header + 7 × float32 + 2 sequences (64)`},{type:`nav_msgs/msg/Odometry`,bytes:1196,shape:`Header + child_frame_id + pose & twist with covariance`},{type:`sensor_msgs/msg/BatteryState`,bytes:1314,shape:`Header + 7 × float32 + 2 sequences + 2 strings`},{type:`trajectory_msgs/msg/JointTrajectoryPoint`,bytes:2056,shape:`4 × float64 sequence (64) + Duration`},{type:`sensor_msgs/msg/JointState`,bytes:18054,shape:`Header + string[64] names + 3 × float64 sequence`}],u=new Map(l.map(e=>[e.type,e])),d=e=>u.get(e)?.bytes??8,f=e=>u.get(e)?.shape??``,p=e=>e.replace(`/msg/`,`/`),m=e=>d(e)>64,h=e=>d(e)>4e3;function g(e,t){let n=i(e.rate),c=r(d(e.type)),l=a(t,n);return{cycle:n,segment:c,segments:l,bytes:o(l,c),hold:s(l,n),margin:s(l,n)-t,wide:h(e.type),fastComplex:e.rate>100&&m(e.type)}}function _(e,t){let n=e.map(e=>g(e,t)),r=n.reduce((e,t)=>e+t.bytes,0),i=n.reduce((e,t)=>e+t.segment,0),a=e.filter(e=>e.direction===`r2p`).length,o=e.length-a,s=e.reduce((e,t)=>Math.max(e,t.rate),0),c=n.filter(e=>e.fastComplex).length,l=[];return e.length>=20?l.push(`<b>${e.length} topics needs ${e.length} cyclic interrupt OBs</b> — the Software Controller only has 20, and your own program needs some of them.`):e.length>=16&&l.push(`<b>${e.length} of 20 cyclic interrupt OBs used</b> — little room left for the rest of the program.`),(a>16||o>16)&&l.push(`More than 16 topics in one direction.`),r>8388608&&l.push(`<b>Exceeds the 8 MB VMM shared-memory cap.</b>`),c&&l.push(`${c} topic${c>1?`s run`:` runs`} complex types above 100 Hz — documented as a data-loss and cycle-time risk.`),{metrics:n,bytes:r,segmentSum:i,r2p:a,p2r:o,maxRate:s,issues:l,severity:r>8388608||e.length>=20?`bad`:l.length?`warn`:`ok`}}function v({readWindowMs:e,lifetimeMs:t,cycle:n,hold:r,margin:i}){return e>=t?{level:`bad`,html:`<b>Torn reads.</b> The reader takes ${e.toFixed(2)} ms but the lifetime is only ${t} ms, so every sample must be discarded and retried. Raise the lifetime with <code>RIB_App -l</code>, or make the read cheaper.`}:e>=n?{level:`warn`,html:`<b>Reader slower than the publish rate.</b> Each read takes ${e.toFixed(2)} ms against a ${n.toFixed(2)} ms cycle, so the consumer cannot see every update. Data is consistent but you are dropping samples.`}:e>t*.6?{level:`warn`,html:`<b>Thin margin.</b> The read uses ${Math.round(e/t*100)}% of the lifetime. The RIB manual advises against running near the limit — clock accuracy and memory management will eat what is left.`}:{level:`ok`,html:`<b>Consistent.</b> The reader finishes in ${e.toFixed(2)} ms, well inside the ${t} ms lifetime, and the writer cannot return to a segment for ${r.toFixed(2)} ms — ${i.toFixed(2)} ms of headroom.`}}var y=.002;function b(e,t){let n=i(e.rate);return e.direction===`r2p`?{total:n,boundaries:1,segments:[{label:`DDS to the node`,ms:null,colour:t.crit,note:`outside RIB`},{label:`memcpy`,ms:y,colour:t.accent,note:`order of magnitude, not a spec`},{label:`PLC samples at ${e.rate} Hz`,ms:n,colour:t.info,note:`up to one cycle of age`}],html:`<b>One sampling boundary.</b> The subscriber writes on arrival, so RIB adds at most one PLC cycle — <b>${n.toFixed(2)} ms</b> worst case. Whatever DDS costs before that is yours to measure.`}:{total:2*n,boundaries:2,segments:[{label:`PLC writes at ${e.rate} Hz`,ms:n,colour:t.accent,note:`up to one cycle of age`},{label:`memcpy`,ms:y,colour:t.info,note:`order of magnitude, not a spec`},{label:`ROS timer at ${e.rate} Hz`,ms:n,colour:t.accent,note:`independent clock`},{label:`DDS onward`,ms:null,colour:t.crit,note:`outside RIB`}],html:`<b>Two sampling boundaries on independent clocks.</b> Worst-case age before the message even reaches DDS is <b>${(2*n).toFixed(2)} ms</b> (typical about ${n.toFixed(2)} ms), and it drifts as the two clocks beat against each other. The memory copy is not the problem — the sampling is.`}}var x=document.documentElement,S=window.matchMedia(`(prefers-color-scheme: dark)`),C=e=>getComputedStyle(x).getPropertyValue(e).trim(),w=()=>window.matchMedia(`(prefers-reduced-motion: reduce)`).matches;function T(e){e&&e.addEventListener(`click`,()=>{let e=x.getAttribute(`data-theme`)||(S.matches?`dark`:`light`);x.setAttribute(`data-theme`,e===`dark`?`light`:`dark`)})}function E(e){new MutationObserver(e).observe(x,{attributes:!0,attributeFilter:[`data-theme`]}),S.addEventListener(`change`,e)}var D=[{direction:`r2p`,type:`geometry_msgs/msg/Twist`,rate:100},{direction:`p2r`,type:`nav_msgs/msg/Odometry`,rate:50},{direction:`p2r`,type:`sensor_msgs/msg/Imu`,rate:200},{direction:`p2r`,type:`sensor_msgs/msg/JointState`,rate:100},{direction:`r2p`,type:`trajectory_msgs/msg/JointTrajectoryPoint`,rate:50}],O={r2p:{short:`R→P`,yaml:`ros2_to_plc`,long:`ROS 2 → PLC`},p2r:{short:`P→R`,yaml:`plc_to_ros2`,long:`PLC → ROS 2`}},k=150,A=150,ee=62,te=110,j=300,M=(e,t,n,r)=>[e+n*Math.cos(r),t+n*Math.sin(r)];function ne(e,t,n,r,i,a){let o=M(e,t,r,i),s=M(e,t,r,a),c=M(e,t,n,a),l=M(e,t,n,i),u=+(a-i>Math.PI);return`M${o[0].toFixed(2)} ${o[1].toFixed(2)}A${r} ${r} 0 ${u} 1 ${s[0].toFixed(2)} ${s[1].toFixed(2)}L${c[0].toFixed(2)} ${c[1].toFixed(2)}A${n} ${n} 0 ${u} 0 ${l[0].toFixed(2)} ${l[1].toFixed(2)}Z`}function N(e,{snapshot:t,metrics:n,lifetime:r,readWindow:i,hasTopic:a}){let o=C(`--mono`);if(!a){e.innerHTML=`<text x="220" y="150" text-anchor="middle" fill="${C(`--ink-weak`)}" font-size="13" font-family="${o}">Add a topic in the budget panel</text>`;return}let s=Math.min(n.segments,56),{cycle:l}=n,u=C(`--accent`),d=C(`--stroke`),f=C(`--ink`),p=C(`--ink-weak`),m=C(`--ink-subtle`),h=C(`--err`),g=C(`--surface-2`),_=Math.min(.035,Math.PI*2/s*.16),v=[];for(let e=0;e<s;e+=1){let n=e/s*Math.PI*2-Math.PI/2+_/2,i=(e+1)/s*Math.PI*2-Math.PI/2-_/2,a=t.t-(t.published[e]??-9999),c=e===t.lastIndex,f=Math.max(0,1-a/(s*l)),m=g,h=1,y=.8,b=d;if(c?(m=u,y=1.6,b=u):a<r?(m=u,h=.45,b=u):(m=u,h=.06+.22*f),v.push(`<path d="${ne(k,A,ee,te,n,i)}" fill="${m}" fill-opacity="${h.toFixed(2)}" stroke="${b}" stroke-width="${y}"/>`),s<=26){let[t,r]=M(k,A,86,(n+i)/2);v.push(`<text x="${t.toFixed(1)}" y="${(r+3.5).toFixed(1)}" text-anchor="middle" font-size="9.5" font-family="${o}" fill="${c?C(`--accent-ink`):p}">${e}</text>`)}}let y=((t.lastIndex+1)%s+.5)/s*Math.PI*2-Math.PI/2,[b,x]=M(k,A,116,y),[S,w]=M(k,A,128,y),[T,E]=M(k,A,140,y);v.push(`<line x1="${S.toFixed(1)}" y1="${w.toFixed(1)}" x2="${b.toFixed(1)}" y2="${x.toFixed(1)}" stroke="${f}" stroke-width="2"/>`,`<text x="${T.toFixed(1)}" y="${(E+3).toFixed(1)}" text-anchor="middle" font-size="9" font-family="${o}" fill="${f}">W</text>`);let D=i>=r,O=(t.lastIndex+.5)/s*Math.PI*2-Math.PI/2,[N,P]=M(k,A,60,O),[F,I]=M(k,A,49,O);v.push(`<line x1="${F.toFixed(1)}" y1="${I.toFixed(1)}" x2="${N.toFixed(1)}" y2="${P.toFixed(1)}" stroke="${D?h:u}" stroke-width="2.5"/>`);let L=t.t-(t.published[t.lastIndex]||0);v.push(`<text x="${k}" y="144" text-anchor="middle" font-size="10" font-family="${o}" fill="${p}" letter-spacing="1">LASTVALID</text>`,`<text x="${k}" y="166" text-anchor="middle" font-size="24" font-weight="700" font-family="${o}" fill="${f}">${t.lastIndex}</text>`,`<text x="${k}" y="183" text-anchor="middle" font-size="10" font-family="${o}" fill="${m}">age ${L.toFixed(2)} ms</text>`),v.push(`<text x="${j}" y="46" font-size="10" font-family="${o}" fill="${p}" letter-spacing="1">RING STATE</text>`),[[`published now`,u,1],[`inside lifetime`,u,.45],[`expired, reusable`,u,.12]].forEach(([e,t,n],r)=>{let i=64+r*21;v.push(`<rect x="${j}" y="${i-9}" width="12" height="12" fill="${t}" fill-opacity="${n}" stroke="${d}"/>`,`<text x="319" y="${i+1}" font-size="11" font-family="${o}" fill="${m}">${e}</text>`)}),v.push(`<line x1="${j}" y1="129" x2="312" y2="129" stroke="${f}" stroke-width="2"/>`,`<text x="319" y="132" font-size="11" font-family="${o}" fill="${m}">W · writer, next up</text>`,`<line x1="${j}" y1="150" x2="312" y2="150" stroke="${D?h:u}" stroke-width="2.5"/>`,`<text x="319" y="153" font-size="11" font-family="${o}" fill="${m}">reader, inner tick</text>`,`<text x="${j}" y="180" font-size="10" font-family="${o}" fill="${p}" letter-spacing="1">FORMULA</text>`,`<text x="${j}" y="198" font-size="11" font-family="${o}" fill="${f}">N = 3 + L/C</text>`,`<text x="${j}" y="214" font-size="11" font-family="${o}" fill="${m}">= 3 + ${r}/${l.toFixed(2)}</text>`,`<text x="${j}" y="233" font-size="14" font-weight="700" font-family="${o}" fill="${u}">= ${n.segments}</text>`),n.segments>56&&v.push(`<text x="342" y="233" font-size="9.5" font-family="${o}" fill="${C(`--crit`)}">ring drawn as 56</text>`),v.push(`<text x="${j}" y="256" font-size="10" font-family="${o}" fill="${p}" letter-spacing="1">BUFFER</text>`,`<text x="${j}" y="274" font-size="13" font-weight="700" font-family="${o}" fill="${f}">${c(n.bytes)}</text>`,`<text x="${j}" y="290" font-size="10" font-family="${o}" fill="${m}">16 B header + ${n.segments} × ${n.segment} B</text>`),e.innerHTML=v.join(``)}var P=46,F=`11px "JetBrains Mono", ui-monospace, monospace`;function I(e){let t=e.getContext(`2d`);return function({snapshot:n,metrics:r,lifetime:i,readWindow:a,hasTopic:o}){let s=e.width,c=e.height;if(!o){t.clearRect(0,0,s,c);return}let{cycle:l}=r,u=Math.max(4*l,2.5*i),d=n.t-u,f=e=>P+(e-d)/u*(s-66),p=C(`--surface-2`),m=C(`--stroke`),h=C(`--accent`),g=C(`--ink`),_=C(`--ink-subtle`),v=C(`--ink-weak`),y=C(`--err`),b=C(`--ok`);t.clearRect(0,0,s,c),t.fillStyle=p,t.fillRect(0,0,s,c),t.font=F,t.textBaseline=`middle`,t.fillStyle=v,t.textAlign=`left`,t.letterSpacing=`1px`,t.fillText(`WRITER`,8,18),t.fillText(`READER`,8,122),t.letterSpacing=`0px`,t.strokeStyle=m,t.lineWidth=1,t.beginPath(),t.moveTo(P,62),t.lineTo(s-14,62),t.stroke(),t.beginPath(),t.moveTo(P,166),t.lineTo(s-14,166),t.stroke(),t.globalAlpha=.45,t.beginPath(),t.moveTo(8,104),t.lineTo(s-14,104),t.stroke(),t.globalAlpha=1;let x=n.events.filter(e=>e.kind===`write`);x.forEach(e=>{let n=f(e.t);n<44||n>s-12||(t.strokeStyle=h,t.lineWidth=2,t.beginPath(),t.moveTo(n,30),t.lineTo(n,62),t.stroke())});let S=x[x.length-1];if(S){let e=Math.max(P,f(S.t)),n=Math.min(s-12,f(S.t+i));t.strokeStyle=h,t.globalAlpha=.32,t.lineWidth=8,t.beginPath(),t.moveTo(e,74),t.lineTo(Math.max(e+2,n),74),t.stroke(),t.globalAlpha=1}t.fillStyle=_,t.textAlign=`left`,t.fillText(`publish ticks · lifetime of the newest element (${i} ms)`,P,90),n.events.filter(e=>e.kind===`read`).forEach(e=>{let n=f(e.t),r=f(e.t+e.duration);if(r<44||n>s-12)return;n=Math.max(n,P),r=Math.min(r,s-12);let i=Math.max(2,r-n);t.fillStyle=e.torn?y:b,t.globalAlpha=.7,t.fillRect(n,136,i,24),t.globalAlpha=1,t.strokeStyle=e.torn?y:b,t.lineWidth=1,t.strokeRect(n,136,i,24)});let w=a>=i;t.fillStyle=w?y:_,t.fillText(w?`read window ≥ lifetime — torn, discard and retry`:`read window inside lifetime — consistent`,P,188),t.strokeStyle=g,t.lineWidth=1,t.setLineDash([3,3]),t.beginPath(),t.moveTo(f(n.t),10),t.lineTo(f(n.t),c-26),t.stroke(),t.setLineDash([]),t.fillStyle=v,t.textAlign=`right`,t.fillText(`${u.toFixed(1)} ms window`,s-14,c-9),t.textAlign=`left`,t.fillText(`t = ${n.t.toFixed(1)} ms`,P,c-9)}}var L=e=>Math.min(n,Math.max(1,Math.round(10**(e/100*3)))),re=e=>Math.round(Math.log10(Math.max(1,e))/3*100),R=e=>Math.round(10**(.3+e/100*2.7)),z=e=>e/20;function B({store:e,elements:t,onChange:n}){let{rate:r,lifetime:a,readWindow:o,speed:s}=t;r.addEventListener(`input`,()=>{e.mutate(e=>{let t=e.topics[e.selected];t&&(t.rate=L(Number(r.value)))}),n()}),[[a,e=>({lifetime:Number(e)})],[o,e=>({readWindow:z(Number(e))})],[s,e=>({slowdown:R(Number(e))})]].forEach(([t,r])=>{t.addEventListener(`input`,()=>{e.set(r(t.value)),n()})});function c(){let t=e.state.topics[e.state.selected];t&&(r.value=String(re(t.rate)))}function l(){e.set({lifetime:Number(a.value),readWindow:z(Number(o.value)),slowdown:R(Number(s.value))})}function u(t){let n=e.state,r=n.topics[n.selected];t.rate.textContent=`${r?r.rate:0} Hz`,t.cycle.textContent=r?`${i(r.rate).toFixed(2)} ms`:`—`,t.lifetime.textContent=`${n.lifetime} ms`,t.readWindow.textContent=`${n.readWindow.toFixed(2)} ms`,t.speed.textContent=`1:${n.slowdown}`}return{syncFromSelection:c,readInitial:l,renderLabels:u}}function V(e,t){l.forEach(t=>{let n=document.createElement(`option`);n.value=t.type,n.textContent=p(t.type),e.appendChild(n)}),t&&(e.value=t)}function H({store:e,elements:t,onChange:r}){let{direction:i,type:a,rate:o,add:s,clear:c,preset:l}=t;s.addEventListener(`click`,()=>{let t=Math.min(n,Math.max(1,Number.parseInt(o.value,10)||50));e.mutate(e=>{e.topics.push({direction:i.value,type:a.value,rate:t}),e.selected=e.topics.length-1}),r({reselect:!0})}),c.addEventListener(`click`,()=>{e.mutate(e=>{e.topics=[],e.selected=0}),r({reselect:!0})}),l.addEventListener(`click`,()=>{e.mutate(e=>{e.topics=D.map(e=>({...e})),e.selected=0}),r({reselect:!0})})}function ie({store:e,body:t,footer:n,onChange:r}){let{topics:i,selected:a,lifetime:o}=e.state;t.innerHTML=``,i.length||(t.innerHTML=`<tr><td colspan="8" class="xs muted" style="padding:18px 12px">No topics. Add one above, or load the AMR preset.</td></tr>`),i.forEach((n,i)=>{let s=g(n,o),l=document.createElement(`tr`);i===a&&(l.className=`sel`);let u=``;s.wide&&(u+=`<span class="tag hard">wide</span> `),s.fastComplex&&(u+=`<span class="tag soft">&gt;100 Hz</span> `),u||=`<span class="tag ok">ok</span>`,l.innerHTML=`<td><span class="tag ${n.direction}">${O[n.direction].short}</span></td><td><span class="ty">${p(n.type)}</span><br><span class="xs muted">${f(n.type)}</span></td><td class="num">${n.rate} Hz</td><td class="num">${s.segment} B</td><td class="num">${s.segments}</td><td class="num">${c(s.bytes)}</td><td>${u}</td><td class="num"><button class="btn ghost" data-remove="${i}" type="button" aria-label="Remove topic">×</button></td>`,l.addEventListener(`click`,t=>{t.target.hasAttribute(`data-remove`)||(e.mutate(e=>{e.selected=i}),r({reselect:!0}))}),t.appendChild(l)}),t.querySelectorAll(`[data-remove]`).forEach(t=>{t.addEventListener(`click`,n=>{n.stopPropagation();let i=Number(t.getAttribute(`data-remove`));e.mutate(e=>{e.topics.splice(i,1),e.selected>=e.topics.length&&(e.selected=Math.max(0,e.topics.length-1))}),r({reselect:!0})})});let s=_(i,o);n.segment.textContent=i.length?`${s.segmentSum} B`:`—`,n.bytes.textContent=i.length?c(s.bytes):`—`,n.note.innerHTML=i.length?`<span class="xs muted">${i.length} topics → ${i.length} cyclic interrupt OBs</span>`:``}function ae({store:e,snapshot:t,elements:n}){let{topics:r,selected:i,lifetime:a,readWindow:o}=e.state,s=r[i];if(!s){n.segments.textContent=`—`,n.hold.textContent=`—`,n.margin.textContent=`—`;return}let c=g(s,a);n.segments.textContent=c.segments,n.hold.textContent=`${c.hold.toFixed(2)} ms`,n.margin.textContent=`${c.margin>=0?`+`:``}${c.margin.toFixed(2)} ms`,n.margin.className=`v ${c.margin>=0?`good`:`bad`}`,n.torn.textContent=t.tornReads,n.torn.className=`v ${t.tornReads>0?`bad`:`good`}`;let l=v({readWindowMs:o,lifetimeMs:a,cycle:c.cycle,hold:c.hold,margin:c.margin});n.verdict.className=`verdict ${l.level}`,n.verdictText.innerHTML=l.html}function oe({store:e,elements:t}){let{topics:n,lifetime:r}=e.state,i=_(n,r);if(t.obs.textContent=`${n.length} / 20`,t.obs.className=`v ${n.length>=20?`bad`:n.length>=16?`warn`:`good`}`,t.perDirection.textContent=`${i.r2p} / ${i.p2r}`,t.perDirection.className=`v ${i.r2p>16||i.p2r>16?`bad`:`good`}`,t.memory.textContent=`${c(i.bytes)} / 8 MB`,t.memory.className=`v ${i.bytes>8388608?`bad`:i.bytes>4194304?`warn`:`good`}`,t.rate.textContent=i.maxRate?`${i.maxRate} Hz`:`—`,t.rate.className=`v ${i.maxRate>1e3?`bad`:i.maxRate>100?`warn`:`good`}`,!n.length){t.verdict.className=`verdict`,t.verdict.style.borderLeftColor=C(`--stroke`),t.verdictText.textContent=`Add a topic to size the interface.`;return}t.verdict.style.borderLeftColor=``,i.issues.length?(t.verdict.className=`verdict ${i.severity}`,t.verdictText.innerHTML=i.issues.join(` `)):(t.verdict.className=`verdict ok`,t.verdictText.innerHTML=`<b>Inside every published limit.</b> ${n.length} topics, ${c(i.bytes)} of shared memory, highest rate ${i.maxRate} Hz.`)}var se=96;function ce({store:e,elements:t}){let{topics:n,selected:r}=e.state,i=n[r];if(!i){t.bar.innerHTML=``,t.key.innerHTML=``,t.heading.textContent=`—`,t.text.textContent=`—`;return}let a=b(i,{accent:C(`--accent`),info:C(`--info`),crit:C(`--crit`)});t.heading.textContent=`${O[i.direction].yaml} · ${p(i.type)} @ ${i.rate} Hz`,t.text.innerHTML=a.html;let o=a.segments.filter(e=>e.ms!==null).reduce((e,t)=>e+t.ms,0);t.bar.innerHTML=a.segments.map(e=>{if(e.ms===null)return`<div class="bseg" style="flex:0 0 ${se}px; background:repeating-linear-gradient(45deg,${e.colour}22 0 6px, transparent 6px 12px); color:${e.colour}; border-left:1px solid ${e.colour}">?</div>`;let t=Math.max(6,e.ms/o*100),n=e.ms>=.05?`${e.ms.toFixed(2)} ms`:`≈0`;return`<div class="bseg" style="flex:1 1 ${t}%; background:${e.colour}">${n}</div>`}).join(``),t.key.innerHTML=a.segments.map(e=>`<span><i class="swatch" style="background:${e.colour}"></i>${e.label} <span style="opacity:.65">— ${e.note}</span></span>`).join(``)}var U=e=>document.getElementById(e),W={ring:U(`ring`),trace:U(`trace`),play:U(`simPlay`),step:U(`simStep`),controls:{rate:U(`ctlRate`),lifetime:U(`ctlLife`),readWindow:U(`ctlRead`),speed:U(`ctlSpeed`)},labels:{rate:U(`vRate`),cycle:U(`vCycle`),lifetime:U(`vLife`),readWindow:U(`vRead`),speed:U(`vSpeed`)},readouts:{segments:U(`roN`),hold:U(`roHold`),margin:U(`roMargin`),torn:U(`roTorn`),verdict:U(`verdict`),verdictText:U(`verdictText`)},form:{direction:U(`addDir`),type:U(`addType`),rate:U(`addRate`),add:U(`btnAdd`),clear:U(`btnClear`),preset:U(`btnPreset`)},table:{body:U(`topicBody`),footer:{segment:U(`ftSeg`),bytes:U(`ftBytes`),note:U(`ftNote`)}},checks:{obs:U(`chkOB`),perDirection:U(`chkDir`),memory:U(`chkMem`),rate:U(`chkRate`),verdict:U(`budgetVerdict`),verdictText:U(`budgetText`)},staleness:{bar:U(`bbar`),key:U(`bkey`),heading:U(`budTopic`),text:U(`budText`)}},G=e({topics:D.map(e=>({...e})),selected:1,lifetime:10,readWindow:.4,slowdown:100,running:!0}),K=t(),le=I(W.trace);function q(){let{topics:e,selected:t,lifetime:n,readWindow:r}=G.state,i=e[t];return{hasTopic:!!i,topic:i,lifetime:n,readWindow:r,metrics:i?g(i,n):{cycle:1,segments:4,segment:8,bytes:48},snapshot:K.snapshot}}function J(){let e=q();e.hasTopic&&K.reset({segments:Math.min(e.metrics.segments,56),cycle:e.metrics.cycle,lifetime:e.lifetime,readWindow:e.readWindow})}function Y(){let e=q();N(W.ring,e),le(e),ae({store:G,snapshot:e.snapshot,elements:W.readouts})}function ue(){ie({store:G,body:W.table.body,footer:W.table.footer,onChange:Z}),oe({store:G,elements:W.checks}),ce({store:G,elements:W.staleness})}var X=B({store:G,elements:W.controls,onChange:()=>Z({reselect:!1})});function Z({reselect:e=!1}={}){e&&X.syncFromSelection(),J(),X.renderLabels(W.labels),ue(),Y()}V(W.form.type,`nav_msgs/msg/Odometry`),H({store:G,elements:W.form,onChange:Z}),T(U(`themeBtn`)),W.play.addEventListener(`click`,()=>{let e=!G.state.running;G.set({running:e}),W.play.textContent=e?`Pause`:`Play`,e&&(Q=0,requestAnimationFrame($))}),W.step.addEventListener(`click`,()=>{G.set({running:!1}),W.play.textContent=`Play`;let e=G.state.topics[G.state.selected];K.advance(i(e?e.rate:100)/4),Y()});var Q=0;function $(e){if(!G.state.running)return;Q||=e;let t=Math.min(80,e-Q);Q=e,K.advance(t/G.state.slowdown),Y(),requestAnimationFrame($)}X.syncFromSelection(),X.readInitial(),J(),K.advance(q().metrics.cycle*5),Z({reselect:!1}),E(Y),w()?(G.set({running:!1}),W.play.textContent=`Play`):requestAnimationFrame($);
+</script>
+  <style>
+:root{--bg:#f3f3f0;--surface:#fff;--surface-2:#ebebee;--surface-sunk:#e5e5e9;--stroke:#ccccd4;--stroke-strong:#9999a9;--ink:#000028;--ink-2:#333353;--ink-subtle:#66667e;--ink-weak:#7d8099;--accent:#099;--accent-2:#00646e;--accent-ink:#fff;--accent-wash:#e0f2f1;--info:#0087be;--ok:#00af8e;--warn:#f7c600;--crit:#ec6602;--err:#ef0137;--grid:#0000281a;--shadow:0 1px 2px #0000281a, 0 8px 24px #0000280f;--r-ctl:2px;--r-card:4px;--mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;--sans:"Siemens Sans","SiemensSans Pro",Arial,"Helvetica Neue",Helvetica,sans-serif}@media (prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#000028;--surface:#23233c;--surface-2:#1a1a35;--surface-sunk:#14142c;--stroke:#4c4c68;--stroke-strong:#66667e;--ink:#fff;--ink-2:#e5e5e9;--ink-subtle:#b3b3be;--ink-weak:#9999a9;--accent:#0cc;--accent-2:#00ffb9;--accent-ink:#000028;--accent-wash:#00243f;--info:#00bedc;--ok:#01d65a;--warn:#ffd732;--crit:#ff9000;--err:#ff2640;--grid:#ffffff14;--shadow:0 1px 2px #0006, 0 10px 30px #00000059}}:root[data-theme=dark]{--bg:#000028;--surface:#23233c;--surface-2:#1a1a35;--surface-sunk:#14142c;--stroke:#4c4c68;--stroke-strong:#66667e;--ink:#fff;--ink-2:#e5e5e9;--ink-subtle:#b3b3be;--ink-weak:#9999a9;--accent:#0cc;--accent-2:#00ffb9;--accent-ink:#000028;--accent-wash:#00243f;--info:#00bedc;--ok:#01d65a;--warn:#ffd732;--crit:#ff9000;--err:#ff2640;--grid:#ffffff14;--shadow:0 1px 2px #0006, 0 10px 30px #00000059}:root{--lightningcss-light:initial;--lightningcss-dark: ;color-scheme:light dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}@media (prefers-color-scheme:dark){:root{--lightningcss-light: ;--lightningcss-dark:initial}}*{box-sizing:border-box}img{max-width:100%}[hidden]{display:none!important}body{background:var(--bg);color:var(--ink-2);font-family:var(--sans);-webkit-font-smoothing:antialiased;margin:0;font-size:16px;line-height:1.55}.wrap{max-width:1080px;margin:0 auto;padding-inline:20px}h1,h2,h3,h4{color:var(--ink);text-wrap:balance;margin:0;font-weight:700;line-height:1.2}h1{letter-spacing:-.5px;font-size:clamp(32px,6vw,52px);line-height:1.05}h2{letter-spacing:-.2px;font-size:clamp(23px,3.4vw,30px)}h3{font-size:19px}h4{font-size:15px}p{margin:0}a{color:var(--accent);text-underline-offset:3px;text-decoration-thickness:1px}code,kbd,.mono{font-family:var(--mono);font-variant-ligatures:none}.tnum{font-variant-numeric:tabular-nums}.eyebrow{font-family:var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-size:11px;font-weight:500}.muted{color:var(--ink-subtle)}.small{font-size:14px;line-height:1.5}.xs{font-size:12.5px;line-height:1.45}@media (prefers-reduced-motion:reduce){*,:before,:after{transition-duration:.001ms!important;animation-duration:.001ms!important;animation-iteration-count:1!important}}.flow{animation:2.4s linear infinite flowR}.flow-b{animation:2.4s linear infinite flowL}@keyframes flowR{0%{opacity:0;transform:translate(0)}12%{opacity:1}88%{opacity:1}to{opacity:0;transform:translate(86px)}}@keyframes flowL{0%{opacity:0;transform:translate(0)}12%{opacity:1}88%{opacity:1}to{opacity:0;transform:translate(-86px)}}.pulse{animation:3.2s ease-in-out infinite pulse}@keyframes pulse{0%,to{opacity:.25}50%{opacity:.85}}.topbar{top:env(safe-area-inset-top,0px);z-index:50;background:var(--bg);background:color-mix(in srgb, var(--bg) 88%, transparent);-webkit-backdrop-filter:saturate(140%)blur(10px);backdrop-filter:saturate(140%)blur(10px);border-bottom:1px solid var(--stroke);position:sticky}.topbar .wrap{scrollbar-width:none;align-items:center;gap:18px;height:50px;display:flex;overflow-x:auto}.topbar .wrap::-webkit-scrollbar{display:none}.brandmark{flex:none;align-items:center;gap:8px;display:flex}.brandmark b{color:var(--ink);letter-spacing:.02em;font-size:14px}.dot{background:var(--accent);flex:none;width:8px;height:8px}.topnav{flex:auto;gap:16px;display:flex}.topnav a{font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-subtle);white-space:nowrap;border-bottom:2px solid #0000;padding:4px 0;font-size:11.5px;text-decoration:none}.topnav a:hover{color:var(--ink);border-bottom-color:var(--accent)}.themebtn{border:1px solid var(--stroke);color:var(--ink-subtle);font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;border-radius:var(--r-ctl);cursor:pointer;background:0 0;flex:none;padding:5px 9px;font-size:11px}.themebtn:hover{color:var(--ink);border-color:var(--stroke-strong)}header.hero{border-bottom:1px solid var(--stroke);background:linear-gradient(to bottom, color-mix(in srgb,var(--accent) 7%, transparent), transparent 60%), repeating-linear-gradient(90deg, var(--grid) 0 1px, transparent 1px 48px)}header.hero .wrap{padding-block:clamp(36px,7vw,68px) 30px}.hero-grid{grid-template-columns:minmax(0,1fr);gap:26px;display:grid}@media (min-width:860px){.hero-grid{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);align-items:end;gap:44px}}.standfirst{color:var(--ink-subtle);max-width:60ch;margin-top:16px;font-size:clamp(16px,2vw,18.5px)}.standfirst b{color:var(--ink)}.facts{background:var(--stroke);border:1px solid var(--stroke);grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;display:grid}@media (min-width:520px){.facts{grid-template-columns:repeat(4,minmax(0,1fr))}}@media (min-width:860px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}.fact{background:var(--surface);padding:12px 13px}.fact .v{font-family:var(--mono);color:var(--ink);font-size:21px;font-weight:700;line-height:1.1}.fact .k{letter-spacing:.07em;text-transform:uppercase;color:var(--ink-weak);font-size:11px;font-family:var(--mono);margin-top:5px}section{border-bottom:1px solid var(--stroke)}section>.wrap{padding-block:clamp(40px,6vw,68px)}.sechead{flex-direction:column;gap:10px;max-width:72ch;margin-bottom:26px;display:flex}.lede{color:var(--ink-subtle);max-width:68ch;font-size:16.5px}.prose{flex-direction:column;gap:14px;max-width:68ch;display:flex}.prose p{color:var(--ink-2)}.prose strong{color:var(--ink)}footer{background:var(--surface-2)}footer .wrap{padding-block:36px 44px}.srclist{grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px;margin-top:16px;font-size:13.5px;display:grid}.srclist div{border-left:2px solid var(--stroke);padding-left:14px}.srclist a{word-break:break-word}figure{flex-direction:column;gap:10px;margin:26px 0 0;display:flex}.figframe{background:var(--surface);border:1px solid var(--stroke);border-radius:var(--r-card);padding:14px;overflow-x:auto}figure svg{width:100%;min-width:620px;max-width:100%;height:auto;display:block}figcaption{color:var(--ink-subtle);max-width:70ch;font-size:13px}figcaption b{color:var(--ink)}.svg-label{font-family:var(--mono);letter-spacing:.04em;font-size:11px}.svg-title{font-family:var(--sans);font-size:13px;font-weight:700}.svg-micro{font-family:var(--mono);letter-spacing:.07em;text-transform:uppercase;font-size:9.5px}.cards{grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:14px;margin-top:24px;display:grid}.card{background:var(--surface);border:1px solid var(--stroke);border-radius:var(--r-card);flex-direction:column;gap:8px;padding:16px;display:flex}.card h4{align-items:center;gap:8px;display:flex}.rail{border-left:3px solid var(--accent);padding-left:14px}.note{background:var(--surface-2);border:1px solid var(--stroke);border-left:3px solid var(--accent);border-radius:var(--r-card);color:var(--ink-2);margin-top:22px;padding:13px 15px;font-size:14.5px}.note.warn{border-left-color:var(--crit)}.note.restricted{border-left-color:var(--err)}.note b{color:var(--ink)}.tablewrap{border:1px solid var(--stroke);border-radius:var(--r-card);background:var(--surface);margin-top:22px;overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:600px;font-size:13.5px}th,td{text-align:left;border-bottom:1px solid var(--stroke);vertical-align:top;padding:9px 12px}thead th{font-family:var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-weak);background:var(--surface-2);white-space:nowrap;font-size:10px;font-weight:500}tbody tr:last-child td{border-bottom:none}tbody tr.sel{background:var(--accent-wash)}td.num{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}td .ty{font-family:var(--mono);font-size:12.5px}tfoot td{background:var(--surface-2);font-family:var(--mono);color:var(--ink);border-top:1px solid var(--stroke-strong);font-weight:700}.tag{font-family:var(--mono);letter-spacing:.07em;text-transform:uppercase;border-radius:var(--r-ctl);border:1px solid var(--stroke);color:var(--ink-subtle);white-space:nowrap;padding:2px 6px;font-size:10px;display:inline-block}.tag.r2p{border-color:var(--info);color:var(--info)}.tag.p2r{border-color:var(--accent);color:var(--accent)}.tag.hard{border-color:var(--err);color:var(--err)}.tag.soft{border-color:var(--crit);color:var(--crit)}.tag.ok{border-color:var(--ok);color:var(--ok)}.steps{background:var(--stroke);border:1px solid var(--stroke);border-radius:var(--r-card);flex-direction:column;gap:1px;margin-top:24px;display:flex;overflow:hidden}.step{background:var(--surface);grid-template-columns:28px 1fr;align-items:start;gap:14px;padding:13px 16px;display:grid}.step .n{font-family:var(--mono);color:var(--accent);padding-top:2px;font-size:12px;font-weight:700}.step .b{flex-direction:column;gap:7px;min-width:0;display:flex}.step .h{flex-wrap:wrap;align-items:center;gap:9px;display:flex}.step .h b{color:var(--ink);font-size:14.5px}pre{background:var(--surface-sunk);border:1px solid var(--stroke);border-radius:var(--r-ctl);font-family:var(--mono);color:var(--ink-2);margin:0;padding:10px 12px;font-size:12.5px;line-height:1.6;overflow-x:auto}pre .c{color:var(--ink-weak)}pre .k{color:var(--accent)}ul.tight{flex-direction:column;gap:6px;margin:0;padding-left:19px;display:flex}ul.tight li{color:var(--ink-2)}ul.tight li b{color:var(--ink)}.panel{background:var(--surface);border:1px solid var(--stroke);border-radius:var(--r-card);box-shadow:var(--shadow);margin-top:24px;overflow:hidden}.panel-head{border-bottom:1px solid var(--stroke);background:var(--surface-2);flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;padding:11px 16px;display:flex}.panel-head .t{font-family:var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-subtle);font-size:11px}.panel-body{padding:16px}.ctl-grid{grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px 22px;display:grid}.ctl{flex-direction:column;gap:6px;display:flex}.ctl-top{justify-content:space-between;align-items:baseline;gap:10px;display:flex}.ctl label{font-family:var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-weak);font-size:10.5px}.ctl .val{font-family:var(--mono);color:var(--accent);font-size:15px;font-weight:700}input[type=range]{appearance:none;cursor:pointer;background:0 0;width:100%;height:20px;margin:0}input[type=range]::-webkit-slider-runnable-track{background:var(--stroke);border-radius:2px;height:3px}input[type=range]::-moz-range-track{background:var(--stroke);border-radius:2px;height:3px}input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;background:var(--accent);border:2px solid var(--surface);width:15px;height:15px;box-shadow:0 0 0 1px var(--accent);border-radius:50%;margin-top:-6px}input[type=range]::-moz-range-thumb{background:var(--accent);border:2px solid var(--surface);width:15px;height:15px;box-shadow:0 0 0 1px var(--accent);border-radius:50%}input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:4px}button.btn{font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase;background:var(--accent);color:var(--accent-ink);border:1px solid var(--accent);border-radius:var(--r-ctl);cursor:pointer;padding:6px 13px;font-size:11px;font-weight:700}button.btn:hover{background:var(--accent-2);border-color:var(--accent-2)}button.btn.ghost{color:var(--ink-subtle);border-color:var(--stroke);background:0 0}button.btn.ghost:hover{color:var(--ink);border-color:var(--stroke-strong);background:0 0}button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}select,input[type=number]{font-family:var(--mono);background:var(--surface);color:var(--ink);border:1px solid var(--stroke);border-radius:var(--r-ctl);width:100%;padding:5px 7px;font-size:13px}.sim-layout{grid-template-columns:minmax(0,1fr);gap:20px;display:grid}@media (min-width:800px){.sim-layout{grid-template-columns:minmax(0,300px) minmax(0,1fr);align-items:start;gap:24px}}.readouts{background:var(--stroke);border:1px solid var(--stroke);grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;margin-top:16px;display:grid}@media (min-width:620px){.readouts{grid-template-columns:repeat(4,minmax(0,1fr))}}.ro{background:var(--surface-2);padding:10px 12px}.ro .k{font-family:var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--ink-weak);font-size:9.5px}.ro .v{font-family:var(--mono);color:var(--ink);margin-top:3px;font-size:17px;font-weight:700;line-height:1.25}.ro .v.good{color:var(--ok)}.ro .v.bad{color:var(--err)}.ro .v.warn{color:var(--crit)}.verdict{border:1px solid var(--stroke);border-radius:var(--r-card);background:var(--surface-2);border-left-width:3px;align-items:center;gap:10px;margin-top:14px;padding:11px 14px;font-size:14px;display:flex}.verdict .lamp{border-radius:50%;flex:none;width:9px;height:9px}.verdict.ok{border-left-color:var(--ok)}.verdict.ok .lamp{background:var(--ok)}.verdict.bad{border-left-color:var(--err)}.verdict.bad .lamp{background:var(--err)}.verdict.warn{border-left-color:var(--crit)}.verdict.warn .lamp{background:var(--crit)}.verdict b{color:var(--ink)}canvas{border:1px solid var(--stroke);border-radius:var(--r-ctl);background:var(--surface-2);width:100%;height:auto;display:block}.budget{margin-top:20px}.bbar{border:1px solid var(--stroke);border-radius:var(--r-ctl);background:var(--surface-2);height:40px;display:flex;overflow:hidden}.bseg{font-family:var(--mono);color:var(--accent-ink);white-space:nowrap;justify-content:center;align-items:center;min-width:0;font-size:10.5px;font-weight:700;transition:flex-grow .3s;display:flex;overflow:hidden}.bkey{font-family:var(--mono);color:var(--ink-subtle);flex-wrap:wrap;gap:14px;margin-top:10px;font-size:11.5px;display:flex}.bkey span{align-items:center;gap:6px;display:flex}.swatch{flex:none;width:10px;height:10px;display:inline-block}
+/*$vite$:1*/
+</style>
+<title>ROXSIE Architecture Lab · Zinan Yang</title>
+</head>
+<body>
+<div class="zylab-bar"><a href="/lab/">&larr; Zinan Yang &middot; lab</a></div>
+<style>
+.zylab-bar{position:relative;z-index:1000;padding:7px 16px;border-bottom:1px solid rgba(128,128,128,.28);
+  font:500 12px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+  letter-spacing:.02em}
+.zylab-bar a{color:inherit;opacity:.78;text-decoration:none}
+.zylab-bar a:hover,.zylab-bar a:focus-visible{opacity:1;text-decoration:underline}
+</style>
+
+<div class="topbar">
+  <div class="wrap">
+    <span class="brandmark"><span class="dot"></span><b>ROXSIE</b></span>
+    <nav class="topnav">
+      <a href="#model">Model</a>
+      <a href="#stack">Stack</a>
+      <a href="#buffer">Buffer</a>
+      <a href="#budget">Budget</a>
+      <a href="#path">Data path</a>
+      <a href="#pipeline">Pipeline</a>
+      <a href="#limits">Limits</a>
+      <a href="#fit">Fit</a>
+      <a href="#bom">BOM</a>
+    </nav>
+    <button class="themebtn" id="themeBtn" type="button">Theme</button>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow">Unofficial notes &middot; SIMATIC Connector for ROS &middot; formerly ROSie</p>
+        <h1>ROXSIE<br>Architecture&nbsp;Lab</h1>
+        <p class="standfirst">
+          ROXSIE puts a ROS&nbsp;2 graph and an S7-1500 Software Controller <b>inside the same box</b>, talking
+          through a shared-memory window instead of a network. This page takes it apart: what generates what,
+          where the determinism actually comes from, and which ceiling you hit first.
+          <b>Everything numeric here is traceable to the Siemens docs listed at the bottom.</b>
+        </p>
+        <p class="small muted" style="margin-top:12px">Personal study notes &mdash; not a Siemens publication. The
+          manuals on Siemens Industry Online Support are authoritative.</p>
+      </div>
+      <div class="facts">
+        <div class="fact"><div class="v">1</div><div class="k">Device, two runtimes</div></div>
+        <div class="fact"><div class="v">8&nbsp;MB</div><div class="k">VMM shared memory cap</div></div>
+        <div class="fact"><div class="v">1000&nbsp;Hz</div><div class="k">Max topic rate</div></div>
+        <div class="fact"><div class="v">&lt;20</div><div class="k">Topics (OB ceiling)</div></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════ 1. MENTAL MODEL ══════════════════════════ -->
+<section id="model">
+  <div class="wrap">
+    <div class="sechead">
+      <p class="eyebrow">01 &middot; The thing people get wrong</p>
+      <h2>ROXSIE is a code generator. RIB is the runtime.</h2>
+      <p class="lede">
+        Nothing called &ldquo;ROXSIE&rdquo; runs on the machine. ROXSIE is a containerised CLI that reads a YAML
+        file and emits two artefacts; at runtime the data moves through the <b>Realtime Information Backbone
+        (RIB)</b>, a separate Siemens product with its own manual, versions and limits. Treat them as one
+        thing and every performance question becomes unanswerable.
+      </p>
+    </div>
+
+    <figure>
+      <div class="figframe">
+        <svg viewBox="0 0 920 250" role="img" aria-label="Engineering time versus runtime: ROXSIE generates an SCL file and a ROS 2 package from a YAML config; at runtime those artefacts sit on either side of the RIB shared-memory window.">
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+            </marker>
+          </defs>
+          <g fill="none" stroke="currentColor" opacity=".35" stroke-dasharray="3 4">
+            <line x1="460" y1="14" x2="460" y2="236"/>
+          </g>
+          <text x="22" y="26" class="svg-micro" fill="currentColor" opacity=".65">Engineering time &mdash; your laptop</text>
+          <text x="898" y="26" class="svg-micro" fill="currentColor" opacity=".65" text-anchor="end">Runtime &mdash; the target device</text>
+
+          <g stroke="currentColor" stroke-width="1" fill="none">
+            <rect x="22" y="44" width="150" height="58" rx="3" opacity=".45"/>
+            <rect x="212" y="44" width="150" height="58" rx="3" stroke="var(--accent)" stroke-width="1.5"/>
+            <rect x="212" y="146" width="150" height="58" rx="3" opacity=".45"/>
+          </g>
+          <text x="97" y="68" class="svg-title" fill="currentColor" text-anchor="middle">config.yaml</text>
+          <text x="97" y="86" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">topics · types · rates</text>
+          <text x="287" y="68" class="svg-title" fill="var(--accent)" text-anchor="middle">ROXSIE generator</text>
+          <text x="287" y="86" class="svg-label" fill="var(--accent)" opacity=".85" text-anchor="middle">docker · CLI · v0.3.2</text>
+          <text x="287" y="170" class="svg-title" fill="currentColor" text-anchor="middle">TIA Portal V20</text>
+          <text x="287" y="188" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">UDT layout via .psc</text>
+
+          <g stroke="currentColor" fill="none" marker-end="url(#ah)" opacity=".7">
+            <line x1="174" y1="73" x2="206" y2="73"/>
+            <line x1="287" y1="104" x2="287" y2="142"/>
+            <line x1="330" y1="146" x2="330" y2="106" />
+          </g>
+          <text x="352" y="128" class="svg-label" fill="currentColor" opacity=".55">round trip</text>
+
+          <g stroke="currentColor" stroke-width="1" fill="none">
+            <rect x="520" y="44" width="170" height="58" rx="3" opacity=".7"/>
+            <rect x="520" y="146" width="170" height="58" rx="3" opacity=".7"/>
+            <rect x="742" y="44" width="156" height="160" rx="3" stroke="var(--accent)" stroke-width="1.5"/>
+          </g>
+          <rect x="754" y="96" width="132" height="56" fill="var(--accent)" opacity=".14"/>
+          <text x="605" y="68" class="svg-title" fill="currentColor" text-anchor="middle">ROS 2 package</text>
+          <text x="605" y="86" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">node + C++17 client API</text>
+          <text x="605" y="170" class="svg-title" fill="currentColor" text-anchor="middle">SCL source</text>
+          <text x="605" y="188" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">UDTs · DBs · connect FC</text>
+          <text x="820" y="72" class="svg-title" fill="var(--accent)" text-anchor="middle">RIB</text>
+          <text x="820" y="90" class="svg-label" fill="var(--accent)" opacity=".85" text-anchor="middle">v2.1.1 / v2.2.4</text>
+          <text x="820" y="122" class="svg-label" fill="currentColor" text-anchor="middle">lifetime</text>
+          <text x="820" y="138" class="svg-label" fill="currentColor" text-anchor="middle">buffer</text>
+          <text x="820" y="178" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">shared memory</text>
+          <text x="820" y="194" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">is the data path</text>
+
+          <g stroke="var(--accent)" fill="none" marker-end="url(#ah)">
+            <line x1="692" y1="73" x2="738" y2="73"/>
+            <line x1="692" y1="175" x2="738" y2="175"/>
+          </g>
+          <g stroke="currentColor" fill="none" marker-end="url(#ah)" opacity=".5" stroke-dasharray="4 3">
+            <line x1="366" y1="60" x2="514" y2="60"/>
+            <line x1="366" y1="190" x2="514" y2="190"/>
+          </g>
+          <text x="440" y="52" class="svg-label" fill="currentColor" opacity=".5" text-anchor="middle">deploy</text>
+          <text x="440" y="182" class="svg-label" fill="currentColor" opacity=".5" text-anchor="middle">import</text>
+        </svg>
+      </div>
+      <figcaption>
+        <b>Two artefacts, one runtime.</b> The generator never appears on the target. The vertical rule is the
+        handover: everything left of it happens once, at engineering time; everything right of it is what you
+        are actually measuring when you talk about ROXSIE performance.
+      </figcaption>
+    </figure>
+
+    <div class="cards">
+      <div class="card">
+        <h4>What ROXSIE owns</h4>
+        <p class="small muted">Parsing <code>.msg</code> definitions, flattening them to fixed-size SCL structs and
+        matching C++ structs, emitting the connect state machine, wiring one cyclic interrupt OB per topic,
+        and packaging the node with a Dockerfile.</p>
+      </div>
+      <div class="card">
+        <h4>What RIB owns</h4>
+        <p class="small muted">The lifetime buffer, the VMM shared-memory driver, symbol matching, the
+        <code>ODKP_ISC</code> system function on the PLC side, the <code>RIB_App</code> broker and every
+        timing guarantee &mdash; and every disclaimer about those guarantees.</p>
+      </div>
+      <div class="card">
+        <h4>What neither owns</h4>
+        <p class="small muted">DDS or Zenoh latency to the rest of your ROS graph, your Linux scheduler
+        configuration, the OB cycle budget of your PLC program, and safety. RIB is not a safety path.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 2. STACK ══════════════════════════ -->
+<section id="stack">
+  <div class="wrap">
+    <div class="sechead">
+      <p class="eyebrow">02 &middot; Runtime architecture</p>
+      <h2>One board, two operating systems, one memory window</h2>
+      <p class="lede">
+        The Siemens Hypervisor partitions an industrial PC: SIMATIC Industrial OS on some cores, the S7-1500
+        Software Controller on a core of its own. The interesting detail is that <b>the TCP link is not the
+        data path</b> &mdash; it only negotiates which symbol lives at which offset.
+      </p>
+    </div>
+
+    <figure>
+      <div class="figframe">
+        <svg viewBox="0 0 920 470" role="img" aria-label="Stack schematic: Siemens Hypervisor at the base; Industrial OS with the ROS 2 node, generated client API and RIB Support Library on the left; the VMM shared memory lifetime buffer in the centre; the S7-1500 Software Controller with cyclic OBs, ODKP_ISC and RIB data blocks on the right; a dashed TCP 27567 control link between RIB_App and the PLC connect state machine.">
+          <defs>
+            <marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+            </marker>
+            <marker id="ah2a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+            </marker>
+          </defs>
+
+          <rect x="10" y="10" width="900" height="450" rx="4" fill="none" stroke="currentColor" opacity=".45"/>
+          <text x="26" y="32" class="svg-micro" fill="currentColor" opacity=".6">SIMATIC IPC 427E / BX-39A &middot; ET 200SP Open Controller CPU 1515SP PC2 / PC3</text>
+
+          <!-- hypervisor -->
+          <rect x="26" y="392" width="868" height="52" rx="3" fill="currentColor" opacity=".07"/>
+          <rect x="26" y="392" width="868" height="52" rx="3" fill="none" stroke="currentColor" opacity=".5"/>
+          <text x="460" y="414" class="svg-title" fill="currentColor" text-anchor="middle">Siemens Hypervisor (RT-VMM)</text>
+          <text x="460" y="431" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">owns core 0 · pre-empts Linux · never pre-empts the Software Controller</text>
+
+          <!-- linux partition -->
+          <rect x="26" y="48" width="302" height="326" rx="3" fill="none" stroke="currentColor" opacity=".5"/>
+          <text x="40" y="68" class="svg-micro" fill="currentColor" opacity=".6">SIMATIC Industrial OS · Linux RT-Preempt</text>
+          <text x="40" y="83" class="svg-micro" fill="currentColor" opacity=".38">cores 1…n · SCHED_FIFO · mlockall</text>
+
+          <rect x="40" y="96" width="274" height="48" rx="3" fill="none" stroke="currentColor"/>
+          <text x="177" y="117" class="svg-title" fill="currentColor" text-anchor="middle">ROS 2 node</text>
+          <text x="177" y="133" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">generated package · Humble / Jazzy</text>
+
+          <rect x="40" y="156" width="274" height="48" rx="3" fill="none" stroke="currentColor"/>
+          <text x="177" y="177" class="svg-title" fill="currentColor" text-anchor="middle">ROXSIE client API</text>
+          <text x="177" y="193" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">C++17 · not thread safe</text>
+
+          <rect x="40" y="216" width="274" height="48" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+          <text x="177" y="237" class="svg-title" fill="var(--accent)" text-anchor="middle">RIB Support Library</text>
+          <text x="177" y="253" class="svg-label" fill="var(--accent)" opacity=".85" text-anchor="middle">librib_support.so</text>
+
+          <rect x="40" y="300" width="274" height="48" rx="3" fill="none" stroke="currentColor" stroke-dasharray="4 3" opacity=".8"/>
+          <text x="177" y="321" class="svg-title" fill="currentColor" opacity=".85" text-anchor="middle">RIB_App</text>
+          <text x="177" y="337" class="svg-label" fill="currentColor" opacity=".55" text-anchor="middle">broker · taskset -c 0 · not realtime</text>
+
+          <!-- shared memory -->
+          <rect x="400" y="96" width="120" height="168" rx="3" fill="var(--accent)" opacity=".12"/>
+          <rect x="400" y="96" width="120" height="168" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+          <text x="460" y="126" class="svg-title" fill="var(--accent)" text-anchor="middle">VMM</text>
+          <text x="460" y="144" class="svg-title" fill="var(--accent)" text-anchor="middle">shared</text>
+          <text x="460" y="162" class="svg-title" fill="var(--accent)" text-anchor="middle">memory</text>
+          <g stroke="var(--accent)" opacity=".55">
+            <line x1="416" y1="182" x2="504" y2="182"/>
+            <line x1="416" y1="196" x2="504" y2="196"/>
+            <line x1="416" y1="210" x2="504" y2="210"/>
+          </g>
+          <text x="460" y="234" class="svg-label" fill="currentColor" text-anchor="middle">lifetime buffer</text>
+          <text x="460" y="252" class="svg-label" fill="currentColor" opacity=".65" text-anchor="middle">max 8 MB</text>
+
+          <!-- data arrows + flow dots -->
+          <g stroke="var(--accent)" fill="none" marker-end="url(#ah2a)">
+            <line x1="316" y1="150" x2="396" y2="150"/>
+            <line x1="524" y1="150" x2="604" y2="150"/>
+            <line x1="604" y1="212" x2="524" y2="212"/>
+            <line x1="396" y1="212" x2="316" y2="212"/>
+          </g>
+          <g fill="var(--accent)">
+            <circle cx="320" cy="150" r="3" class="flow" style="animation-delay:0s"/>
+            <circle cx="320" cy="150" r="3" class="flow" style="animation-delay:.8s"/>
+            <circle cx="320" cy="150" r="3" class="flow" style="animation-delay:1.6s"/>
+            <circle cx="528" cy="150" r="3" class="flow" style="animation-delay:.4s"/>
+            <circle cx="528" cy="150" r="3" class="flow" style="animation-delay:1.2s"/>
+            <circle cx="600" cy="212" r="3" class="flow-b" style="animation-delay:0s"/>
+            <circle cx="600" cy="212" r="3" class="flow-b" style="animation-delay:1.2s"/>
+            <circle cx="392" cy="212" r="3" class="flow-b" style="animation-delay:.6s"/>
+            <circle cx="392" cy="212" r="3" class="flow-b" style="animation-delay:1.8s"/>
+          </g>
+          <text x="460" y="84" class="svg-micro" fill="var(--accent)" text-anchor="middle">data plane · memcpy</text>
+          <text x="356" y="142" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">write</text>
+          <text x="564" y="142" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">read</text>
+          <text x="564" y="232" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">write</text>
+          <text x="356" y="232" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">read</text>
+
+          <!-- plc partition -->
+          <rect x="592" y="48" width="302" height="326" rx="3" fill="none" stroke="currentColor" opacity=".5"/>
+          <text x="606" y="68" class="svg-micro" fill="currentColor" opacity=".6">S7-1500 Software Controller</text>
+          <text x="606" y="83" class="svg-micro" fill="currentColor" opacity=".38">own core · CPU 1505SP / 1507S / 1508S</text>
+
+          <rect x="606" y="96" width="274" height="48" rx="3" fill="none" stroke="currentColor"/>
+          <text x="743" y="117" class="svg-title" fill="currentColor" text-anchor="middle">User program</text>
+          <text x="743" y="133" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">one cyclic interrupt OB per topic</text>
+
+          <rect x="606" y="156" width="274" height="48" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+          <text x="743" y="177" class="svg-title" fill="var(--accent)" text-anchor="middle">ODKP_ISC (SFC65490)</text>
+          <text x="743" y="193" class="svg-label" fill="var(--accent)" opacity=".85" text-anchor="middle">INIT · CONNECT · READ · WRITE · DISCONNECT</text>
+
+          <rect x="606" y="216" width="274" height="48" rx="3" fill="none" stroke="currentColor"/>
+          <text x="743" y="237" class="svg-title" fill="currentColor" text-anchor="middle">RIB data blocks</text>
+          <text x="743" y="253" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">generated UDTs, one DB per topic</text>
+
+          <rect x="606" y="300" width="274" height="48" rx="3" fill="none" stroke="currentColor" stroke-dasharray="4 3" opacity=".8"/>
+          <text x="743" y="321" class="svg-title" fill="currentColor" opacity=".85" text-anchor="middle">RIB_CONNECT_STATE_MACHINE_FC</text>
+          <text x="743" y="337" class="svg-label" fill="currentColor" opacity=".55" text-anchor="middle">generated · drives the handshake</text>
+
+          <!-- control plane -->
+          <g stroke="currentColor" stroke-dasharray="5 4" opacity=".55" fill="none">
+            <line x1="316" y1="324" x2="602" y2="324" marker-end="url(#ah2)" marker-start="url(#ah2)"/>
+          </g>
+          <rect x="384" y="276" width="152" height="34" rx="2" fill="var(--bg)" opacity=".92"/>
+          <text x="460" y="290" class="svg-micro" fill="currentColor" opacity=".75" text-anchor="middle">control plane</text>
+          <text x="460" y="304" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">TCP 27567 · vNIC</text>
+          <text x="460" y="346" class="svg-label" fill="currentColor" opacity=".5" text-anchor="middle">connect · symbol matching · disconnect — no payload crosses here</text>
+        </svg>
+      </div>
+      <figcaption>
+        <b>The socket is a registry, not a pipe.</b> Client applications send <code>RIB_App</code> a JSON
+        description of the symbols they provide and request; it matches them by <em>case-sensitive name</em>
+        and hands back offsets. After that the payload never touches TCP &mdash; both sides read and write the
+        same physical pages. That is also why killing <code>RIB_App</code> does not stop data flowing:
+        the buffers keep working, the client logs the loss and <em>never reconnects</em>.
+      </figcaption>
+    </figure>
+
+    <div class="cards">
+      <div class="card rail">
+        <h4>Core pinning is not optional</h4>
+        <p class="small muted">Linux shares core 0 with the hypervisor and the hypervisor wins. Pin
+        <code>RIB_App</code> there (<code>taskset -c 0</code>) because it has no realtime requirement, and pin
+        your realtime application to a core the hypervisor never touches.</p>
+      </div>
+      <div class="card rail">
+        <h4>Priority and memory locking</h4>
+        <p class="small muted">Non-root users cannot take RT priorities until <code>rtprio</code> is granted in
+        <code>limits.conf</code>; then <code>SCHED_FIFO</code> at the priority you set and
+        <code>mlockall(MCL_CURRENT|MCL_FUTURE)</code> to keep pages out of swap. Lock less than you use and the
+        app crashes.</p>
+      </div>
+      <div class="card rail">
+        <h4>The MFP exception</h4>
+        <p class="small muted">On a CPU 1518(F)-4 PN/DP MFP only one core is available to Linux, so core pinning
+        is pointless there &mdash; and <code>RIB_App</code> needs root, unlike on the Software Controller.</p>
+      </div>
+    </div>
+
+    <div class="note warn">
+      <b>Shared memory is not private.</b> The RIB manual states plainly that the shared memories used for data
+      exchange are not exclusive to the applications that opened them, so malicious software could alter a
+      lifetime buffer unnoticed. The <code>RIB_App</code> port is also fixed at 27567 and exposed on every
+      interface RIB can reach; if the port is taken, <code>RIB_App</code> aborts. Plan the firewall rule
+      (<code>ufw allow from &lt;SWCPU_VNIC&gt; to &lt;LINUX_VNIC&gt; port 27567 proto tcp</code>) as part of
+      commissioning, not afterwards.
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 3. LIFETIME BUFFER SIM ══════════════════════════ -->
+<section id="buffer">
+  <div class="wrap">
+    <div class="sechead">
+      <p class="eyebrow">03 &middot; The mechanism &middot; interactive</p>
+      <h2>The lifetime buffer, running</h2>
+      <p class="lede">
+        There is no lock. Consistency comes from a ring of segments sized so that a writer cannot come back
+        round to a segment before the reader has had time to finish with it. Drive the three knobs below and
+        watch where it breaks.
+      </p>
+    </div>
+
+    <div class="prose">
+      <p><b>Writer:</b> take the next segment, confirm its lifetime has expired, write the payload, then
+      publish by updating <code>LastValidBufferElementIndex</code> in the 16-byte header.</p>
+      <p><b>Reader:</b> note the time, read the index, read that segment, note the time again. If less than one
+      <em>lifetime</em> elapsed, the data is consistent. If not, throw it away and repeat.</p>
+      <p>The segment count follows directly:
+      <code>N = 3 + Lifetime / Cycle&#8209;time</code>. The <code>+3</code> is the margin &mdash; it buys the
+      reader two extra writer cycles beyond the lifetime it was promised.</p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <span class="t">Lifetime buffer simulator</span>
+        <span style="display:flex; gap:8px">
+          <button class="btn ghost" id="simStep" type="button">Step</button>
+          <button class="btn" id="simPlay" type="button">Pause</button>
+        </span>
+      </div>
+      <div class="panel-body">
+        <div class="sim-layout">
+          <div>
+            <div class="ctl-grid" style="grid-template-columns:minmax(0,1fr)">
+              <div class="ctl">
+                <div class="ctl-top"><label for="ctlRate">Topic rate</label><span class="val" id="vRate">100 Hz</span></div>
+                <input type="range" id="ctlRate" min="0" max="100" value="50" step="1">
+                <p class="xs muted">Sets the writer cycle <span class="mono" id="vCycle">10.00 ms</span>. YAML <code>rate</code>, capped at 1000 Hz.</p>
+              </div>
+              <div class="ctl">
+                <div class="ctl-top"><label for="ctlLife">Lifetime</label><span class="val" id="vLife">10 ms</span></div>
+                <input type="range" id="ctlLife" min="1" max="50" value="10" step="1">
+                <p class="xs muted"><code>RIB_App -l</code>. Default 10 ms, minimum 1 ms, no upper bound.</p>
+              </div>
+              <div class="ctl">
+                <div class="ctl-top"><label for="ctlRead">Reader window</label><span class="val" id="vRead">0.40 ms</span></div>
+                <input type="range" id="ctlRead" min="1" max="400" value="8" step="1">
+                <p class="xs muted">Time from reading the index to finishing the payload. Grows with symbol count and system load.</p>
+              </div>
+              <div class="ctl">
+                <div class="ctl-top"><label for="ctlSpeed">Time scale</label><span class="val" id="vSpeed">1:100</span></div>
+                <input type="range" id="ctlSpeed" min="0" max="100" value="55" step="1">
+                <p class="xs muted">Slow-motion factor. Real hardware runs this far too fast to see.</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <svg id="ring" viewBox="0 0 440 300" role="img" aria-label="Animated ring of buffer segments with a writer head advancing and a reader sampling the last published segment." style="width:100%; height:auto; display:block; min-width:0"></svg>
+            <canvas id="trace" width="880" height="224" aria-label="Rolling timeline of writer publishes and reader sampling windows against the lifetime envelope"></canvas>
+          </div>
+        </div>
+
+        <div class="readouts">
+          <div class="ro"><div class="k">Segments N</div><div class="v" id="roN">13</div></div>
+          <div class="ro"><div class="k">Untouched for</div><div class="v" id="roHold">12.00 ms</div></div>
+          <div class="ro"><div class="k">Margin over lifetime</div><div class="v" id="roMargin">2.00 ms</div></div>
+          <div class="ro"><div class="k">Torn reads</div><div class="v" id="roTorn">0</div></div>
+        </div>
+
+        <div class="verdict ok" id="verdict">
+          <span class="lamp"></span>
+          <span id="verdictText">Reader window is shorter than the lifetime &mdash; every sample is consistent.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <b>Why the writer never blocks.</b> Nothing in this scheme makes the writer wait for a reader. If the
+      reader is too slow it simply gets torn data and retries &mdash; it degrades into a retry loop, not a
+      stall. That is the right trade for a control system, but it means a struggling consumer shows up as
+      <em>missed deadlines on the consumer</em>, never as back-pressure you can see from the PLC. The RIB
+      manual also warns against running the lifetime near its limit, because clock accuracy and memory
+      management eat the margin.
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 4. BUDGET ══════════════════════════ -->
+<section id="budget">
+  <div class="wrap">
+    <div class="sechead">
+      <p class="eyebrow">04 &middot; Sizing &middot; interactive</p>
+      <h2>Which ceiling do you actually hit?</h2>
+      <p class="lede">
+        Build an interface below. The table sizes each topic's buffer from the documented formula and checks
+        it against every published limit at once. Select a row to drive the simulator above.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <span class="t">Interface budget</span>
+        <span style="display:flex; gap:8px; flex-wrap:wrap">
+          <button class="btn ghost" id="btnPreset" type="button">AMR preset</button>
+          <button class="btn ghost" id="btnClear" type="button">Clear</button>
+        </span>
+      </div>
+      <div class="panel-body">
+        <div class="ctl-grid" style="align-items:end">
+          <div class="ctl">
+            <label for="addDir">Direction</label>
+            <select id="addDir">
+              <option value="r2p">ROS 2 &rarr; PLC</option>
+              <option value="p2r" selected>PLC &rarr; ROS 2</option>
+            </select>
+          </div>
+          <div class="ctl">
+            <label for="addType">Message type</label>
+            <select id="addType"></select>
+          </div>
+          <div class="ctl">
+            <label for="addRate">Rate (Hz)</label>
+            <input type="number" id="addRate" value="50" min="1" max="1000" step="1">
+          </div>
+          <div class="ctl">
+            <label for="btnAdd" class="xs">&nbsp;</label>
+            <button class="btn" id="btnAdd" type="button">Add topic</button>
+          </div>
+        </div>
+
+        <div class="tablewrap">
+          <table id="topicTable">
+            <thead>
+              <tr>
+                <th>Dir</th><th>Message type</th>
+                <th style="text-align:right">Rate</th>
+                <th style="text-align:right">Segment</th>
+                <th style="text-align:right">N</th>
+                <th style="text-align:right">Buffer</th>
+                <th>Flag</th><th></th>
+              </tr>
+            </thead>
+            <tbody id="topicBody"></tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3">Totals</td>
+                <td class="num" id="ftSeg">&mdash;</td>
+                <td class="num">&nbsp;</td>
+                <td class="num" id="ftBytes">&mdash;</td>
+                <td colspan="2" id="ftNote"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div class="readouts">
+          <div class="ro"><div class="k">Cyclic interrupt OBs</div><div class="v" id="chkOB">0 / 20</div></div>
+          <div class="ro"><div class="k">Per direction</div><div class="v" id="chkDir">0 / 0</div></div>
+          <div class="ro"><div class="k">Shared memory</div><div class="v" id="chkMem">0 KB / 8 MB</div></div>
+          <div class="ro"><div class="k">Highest rate</div><div class="v" id="chkRate">&mdash;</div></div>
+        </div>
+
+        <div class="verdict ok" id="budgetVerdict">
+          <span class="lamp"></span><span id="budgetText">Add a topic to size the interface.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <b>How the segment size is worked out.</b> ROXSIE flattens every ROS&nbsp;2 message to a fixed-size
+      struct: a <code>string</code> becomes a 254-byte array, a variable-length sequence becomes exactly 64
+      elements, and the RIB formula then rounds the sum up to the next multiple of 8. The byte figures in this
+      table are <em>computed from those documented rules</em>, field by field &mdash; they are a close estimate,
+      not a number Siemens publishes, and they ignore any per-field padding the generator may insert. Check
+      against the generated SCL before you design a machine around them.
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <h4><span class="tag hard">binding</span> The OB ceiling</h4>
+        <p class="small muted">Every topic gets its own cyclic interrupt OB and a Software Controller supports
+        20 of them in total &mdash; for <em>everything</em>, not just ROXSIE. Fewer than 20 topics, and up to 16
+        per direction. This is almost always what stops you first.</p>
+      </div>
+      <div class="card">
+        <h4><span class="tag soft">watch</span> Complex types above 100 Hz</h4>
+        <p class="small muted">The documented cap is 1000 Hz, but strings, sequences and nested structures
+        &ldquo;should be avoided at higher frequencies (&gt;100 Hz)&rdquo; because of data loss and PLC cycle
+        time violations. Treat 1000 Hz as reachable only for flat scalar messages.</p>
+      </div>
+      <div class="card">
+        <h4><span class="tag ok">rarely binding</span> The 8 MB window</h4>
+        <p class="small muted">The 64-element sequence cap is what keeps you under 8 MB &mdash; you structurally
+        cannot put a point cloud through here. The one way to blow it is arrays of strings: 64 &times; 254 bytes
+        is 16 KB per field, and <code>JointState</code> alone is about 18 KB per segment.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 5. DATA PATH ══════════════════════════ -->
+<section id="path">
+  <div class="wrap">
+    <div class="sechead">
+      <p class="eyebrow">05 &middot; Performance</p>
+      <h2>The transport is free. The sampling is not.</h2>
+      <p class="lede">
+        The shared-memory hop is a memcpy of a few hundred bytes. What dominates end-to-end age is that both
+        sides sample on independent clocks &mdash; and the two directions are not symmetric about it.
+      </p>
+    </div>
+
+    <figure>
+      <div class="figframe">
+        <svg viewBox="0 0 920 330" role="img" aria-label="Two lanes comparing the ROS 2 to PLC direction, where only the PLC samples at the configured rate, against the PLC to ROS 2 direction, where both the PLC interrupt and the ROS 2 timer sample at that rate on independent clocks.">
+          <defs>
+            <marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+            </marker>
+          </defs>
+
+          <text x="14" y="22" class="svg-micro" fill="var(--info)">ros2_to_plc &mdash; one sampling boundary</text>
+          <g stroke="currentColor" fill="none" opacity=".85">
+            <rect x="14" y="36" width="150" height="46" rx="3"/>
+            <rect x="204" y="36" width="160" height="46" rx="3" stroke="var(--info)" stroke-width="1.5"/>
+            <rect x="404" y="36" width="112" height="46" rx="3" stroke="var(--accent)" stroke-width="1.5"/>
+            <rect x="556" y="36" width="170" height="46" rx="3" stroke="var(--info)" stroke-width="1.5"/>
+            <rect x="766" y="36" width="140" height="46" rx="3"/>
+          </g>
+          <text x="89" y="56" class="svg-label" fill="currentColor" text-anchor="middle">your publisher</text>
+          <text x="89" y="72" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">anywhere in the graph</text>
+          <text x="284" y="56" class="svg-label" fill="var(--info)" text-anchor="middle">ROXSIE subscriber</text>
+          <text x="284" y="72" class="svg-label" fill="var(--info)" opacity=".8" text-anchor="middle">event-driven</text>
+          <text x="460" y="56" class="svg-label" fill="var(--accent)" text-anchor="middle">lifetime</text>
+          <text x="460" y="72" class="svg-label" fill="var(--accent)" text-anchor="middle">buffer</text>
+          <text x="641" y="56" class="svg-label" fill="var(--info)" text-anchor="middle">PLC cyclic interrupt OB</text>
+          <text x="641" y="72" class="svg-label" fill="var(--info)" opacity=".8" text-anchor="middle">samples at rate</text>
+          <text x="836" y="56" class="svg-label" fill="currentColor" text-anchor="middle">user program</text>
+          <g stroke="currentColor" fill="none" marker-end="url(#ah3)" opacity=".65">
+            <line x1="166" y1="59" x2="200" y2="59"/><line x1="366" y1="59" x2="400" y2="59"/>
+            <line x1="518" y1="59" x2="552" y2="59"/><line x1="728" y1="59" x2="762" y2="59"/>
+          </g>
+          <text x="183" y="102" class="svg-label" fill="currentColor" opacity=".5" text-anchor="middle">DDS</text>
+          <text x="284" y="102" class="svg-label" fill="var(--info)" opacity=".8" text-anchor="middle">writes on arrival</text>
+          <text x="641" y="102" class="svg-label" fill="var(--info)" opacity=".8" text-anchor="middle">+ up to 1 cycle of age</text>
+
+          <line x1="14" y1="134" x2="906" y2="134" stroke="currentColor" opacity=".25"/>
+
+          <text x="14" y="168" class="svg-micro" fill="var(--accent)">plc_to_ros2 &mdash; two independent sampling boundaries</text>
+          <g stroke="currentColor" fill="none" opacity=".85">
+            <rect x="14" y="182" width="140" height="46" rx="3"/>
+            <rect x="194" y="182" width="170" height="46" rx="3" stroke="var(--accent)" stroke-width="1.5"/>
+            <rect x="404" y="182" width="112" height="46" rx="3" stroke="var(--accent)" stroke-width="1.5"/>
+            <rect x="556" y="182" width="170" height="46" rx="3" stroke="var(--accent)" stroke-width="1.5"/>
+            <rect x="766" y="182" width="140" height="46" rx="3"/>
+          </g>
+          <text x="84" y="202" class="svg-label" fill="currentColor" text-anchor="middle">user program</text>
+          <text x="279" y="202" class="svg-label" fill="var(--accent)" text-anchor="middle">PLC cyclic interrupt OB</text>
+          <text x="279" y="218" class="svg-label" fill="var(--accent)" opacity=".85" text-anchor="middle">writes at rate</text>
+          <text x="460" y="202" class="svg-label" fill="var(--accent)" text-anchor="middle">lifetime</text>
+          <text x="460" y="218" class="svg-label" fill="var(--accent)" text-anchor="middle">buffer</text>
+          <text x="641" y="202" class="svg-label" fill="var(--accent)" text-anchor="middle">ROS 2 timer callback</text>
+          <text x="641" y="218" class="svg-label" fill="var(--accent)" opacity=".85" text-anchor="middle">reads at the same rate</text>
+          <text x="836" y="202" class="svg-label" fill="currentColor" text-anchor="middle">publisher &rarr; DDS</text>
+          <g stroke="currentColor" fill="none" marker-end="url(#ah3)" opacity=".65">
+            <line x1="156" y1="205" x2="190" y2="205"/><line x1="366" y1="205" x2="400" y2="205"/>
+            <line x1="518" y1="205" x2="552" y2="205"/><line x1="728" y1="205" x2="762" y2="205"/>
+          </g>
+          <g stroke="var(--accent)" stroke-dasharray="4 3" fill="none" opacity=".8">
+            <path d="M279 248 L279 268 L641 268 L641 248"/>
+          </g>
+          <text x="460" y="286" class="svg-label" fill="var(--accent)" text-anchor="middle">two clocks, never phase-locked</text>
+          <text x="460" y="304" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">worst-case added age ≈ 2 × cycle time, and it beats</text>
+          <text x="460" y="318" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">slowly through the data as the phases drift</text>
+        </svg>
+      </div>
+      <figcaption>
+        <b>The asymmetry is documented, not incidental.</b> In the YAML reference, <code>rate</code> under
+        <code>ros2_to_plc</code> &ldquo;configures PLC interrupt cycle&rdquo;; under <code>plc_to_ros2</code> it
+        &ldquo;configures both PLC interrupt and ROS 2 timer callback&rdquo;. So PLC&nbsp;&rarr;&nbsp;ROS&nbsp;2
+        carries twice the sampling penalty of the other direction, and the beat between the two clocks means the
+        latency is not constant &mdash; it walks.
+      </figcaption>
+    </figure>
+
+    <div class="panel">
+      <div class="panel-head"><span class="t">Staleness budget for the selected topic</span><span class="t mono" id="budTopic">&mdash;</span></div>
+      <div class="panel-body">
+        <div class="budget">
+          <div class="bbar" id="bbar"></div>
+          <div class="bkey" id="bkey"></div>
+        </div>
+        <div class="verdict" id="budVerdict" style="border-left-color:var(--info)">
+          <span class="lamp" style="background:var(--info)"></span><span id="budText">&mdash;</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="prose" style="margin-top:26px">
+      <p><b>Read the bar honestly.</b> The copy segment is drawn at a floor width so it stays visible; in reality
+      moving a few hundred bytes between two cores' view of the same pages is nanoseconds to low microseconds.
+      That is an order-of-magnitude statement, not a Siemens figure &mdash; but it is the right order, and it is
+      why arguing about shared memory versus PROFINET on <em>transport</em> speed misses the point. What you buy
+      with ROXSIE is the elimination of the network stack, the NIC and the second device; what you still pay is
+      two sampling boundaries and whatever DDS does afterwards.</p>
+      <p><b>And determinism is conditional.</b> The RIB manual is explicit: it does not guarantee deterministic
+      exchange when system utilisation is high or when large data blocks are exchanged, and timing depends on
+      utilisation, process priorities and hypervisor interrupts. The Software Controller side is genuinely
+      deterministic &mdash; it has its own core and the hypervisor does not pre-empt it. The Linux side is only
+      as deterministic as you configure it to be.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 6. PIPELINE ══════════════════════════ -->
+<section id="pipeline">
+  <div class="wrap">
+    <div class="sechead">
+      <p class="eyebrow">06 &middot; How you actually use it</p>
+      <h2>Generation is a loop, not a line</h2>
+      <p class="lede">
+        You cannot generate the ROS&nbsp;2 package in one pass, because the C++ structs have to match the
+        memory layout TIA Portal really produced. So ROXSIE stops halfway and asks for a <code>.psc</code>
+        export of your project.
+      </p>
+    </div>
+
+    <figure>
+      <div class="figframe">
+        <svg viewBox="0 0 920 220" role="img" aria-label="Generation loop: YAML into ROXSIE, SCL out to TIA Portal, PSC export back into ROXSIE, then the ROS 2 package out.">
+          <defs>
+            <marker id="ah4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+            </marker>
+          </defs>
+          <g fill="none" stroke="currentColor" opacity=".8">
+            <rect x="16" y="70" width="128" height="52" rx="3"/>
+            <rect x="240" y="70" width="170" height="52" rx="3" stroke="var(--accent)" stroke-width="1.5"/>
+            <rect x="512" y="70" width="170" height="52" rx="3"/>
+            <rect x="778" y="70" width="126" height="52" rx="3"/>
+          </g>
+          <text x="80" y="92" class="svg-title" fill="currentColor" text-anchor="middle">config.yaml</text>
+          <text x="80" y="109" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">you write this</text>
+          <text x="325" y="92" class="svg-title" fill="var(--accent)" text-anchor="middle">roxsie -c</text>
+          <text x="325" y="109" class="svg-label" fill="var(--accent)" opacity=".85" text-anchor="middle">pass 1 → SCL · pass 2 → ROS 2</text>
+          <text x="597" y="92" class="svg-title" fill="currentColor" text-anchor="middle">TIA Portal V20</text>
+          <text x="597" y="109" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">import SCL · generate blocks</text>
+          <text x="841" y="92" class="svg-title" fill="currentColor" text-anchor="middle">deploy</text>
+          <text x="841" y="109" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">docker compose up</text>
+
+          <g stroke="var(--accent)" fill="none" marker-end="url(#ah4)">
+            <line x1="146" y1="96" x2="236" y2="96"/>
+            <path d="M412 84 L508 84"/>
+            <path d="M597 126 L597 172 L325 172 L325 126"/>
+            <line x1="684" y1="96" x2="774" y2="96"/>
+          </g>
+          <text x="460" y="76" class="svg-label" fill="var(--accent)" text-anchor="middle">*_roxsie_generated_rib_scl_structs.scl</text>
+          <text x="461" y="190" class="svg-label" fill="var(--accent)" text-anchor="middle">tia_project.psc &mdash; the real UDT layout, hashed for matching</text>
+          <circle cx="325" cy="172" r="4" fill="var(--accent)" class="pulse"/>
+          <text x="80" y="40" class="svg-micro" fill="currentColor" opacity=".5">Linux / WSL</text>
+          <text x="597" y="40" class="svg-micro" fill="currentColor" opacity=".5">Windows</text>
+          <text x="841" y="40" class="svg-micro" fill="currentColor" opacity=".5">target device</text>
+        </svg>
+      </div>
+      <figcaption>
+        <b>The <code>.psc</code> round trip is the whole reason this is a two-pass tool.</b> RIB matches
+        generated structs by hash, so the C++ side must be derived from the UDTs TIA Portal actually built &mdash;
+        not from the IDL you started with. Change a message type and the entire generation must be re-run;
+        editing generated SCL or headers by hand is explicitly forbidden.
+      </figcaption>
+    </figure>
+
+    <div class="steps">
+      <div class="step"><div class="n">01</div><div class="b">
+        <div class="h"><b>Prepare the engineering system</b><span class="tag">Windows + WSL</span></div>
+        <p class="small muted">TIA Portal V20 &ge; Update&nbsp;1 on Windows 10/11, ROS&nbsp;2 Jazzy and
+        Docker &ge; v20 with the compose plugin in Ubuntu under WSL, VS Code with the Remote Development pack.</p>
+      </div></div>
+
+      <div class="step"><div class="n">02</div><div class="b">
+        <div class="h"><b>Install the generator</b><span class="tag">Linux</span></div>
+        <pre><span class="c"># the installer creates roxsie_workspace/ wherever you run it</span>
+sudo chmod +x &lt;ROXSIE_installer&gt;
+sudo bash &lt;ROXSIE_installer&gt;
+<span class="c"># detects /opt/ros/jazzy; asks whether you use custom .msg packages</span></pre>
+        <p class="xs muted">Writes <code>.env</code> with <code>USER_ROS2_INSTALLATION_PATH</code>,
+        <code>USER_ROXSIE_WORKSPACE_PATH</code> and optionally
+        <code>USER_ROS2_INTERFACE_INSTALLATION_PATH</code>. Move the workspace later and you must re-run the
+        installer in the new location.</p>
+      </div></div>
+
+      <div class="step"><div class="n">03</div><div class="b">
+        <div class="h"><b>Write the interface</b><span class="tag">input/</span></div>
+        <pre>system:
+  ros2:
+    package_name: roxsie_ros2_package
+    node_name:    roxsie_ros2_node
+  rib:
+    RIB_App_IPv4: 127.0.0.1
+    RIB_App_port: 27567
+    RIB_Version:  <span class="k">"v2.2.4"</span>
+
+ros2_to_plc:
+  topics:
+    - type: <span class="k">"geometry_msgs/msg/Twist.msg"</span>
+      ros2_topic: <span class="k">"/cmd_vel"</span>
+      rate: 100.0
+
+plc_to_ros2:
+  topics:
+    - type: <span class="k">"nav_msgs/msg/Odometry.msg"</span>
+      ros2_topic: <span class="k">"/odom"</span>
+      rate: 50.0</pre>
+        <p class="xs muted">Optional <code>plc:</code> block renames <code>RIB_CONFIG_DB</code> and
+        <code>RIB_CONNECT_STATE_MACHINE_FC</code>. Topic names must be unique; namespaces are allowed;
+        <code>rate</code> must be &gt; 0 and &le; 1000.</p>
+      </div></div>
+
+      <div class="step"><div class="n">04</div><div class="b">
+        <div class="h"><b>Validate, then generate the SCL</b><span class="tag">Linux</span></div>
+        <pre>start-roxsie                       <span class="c"># or: docker compose run --name ROXSIE --rm ROXSIE</span>
+roxsie --verify -c config.yaml     <span class="c"># syntax check only</span>
+roxsie -c config.yaml              <span class="c"># pass 1 — stops and asks for the .psc</span></pre>
+      </div></div>
+
+      <div class="step"><div class="n">05</div><div class="b">
+        <div class="h"><b>Import into TIA Portal and export the <code>.psc</code></b><span class="tag">Windows</span></div>
+        <p class="small muted">Import <code>&lt;timestamp&gt;_roxsie_generated_rib_scl_structs.scl</code> as an
+        external source file, generate blocks from it, then export the device as a PC system configuration file.
+        <b>No whitespace in the filename.</b> Drop it into the ROXSIE input directory and answer the prompt.</p>
+      </div></div>
+
+      <div class="step"><div class="n">06</div><div class="b">
+        <div class="h"><b>Or do the whole thing headless</b><span class="tag">CI</span></div>
+        <pre>roxsie --non_interactive -c config.yaml --psc_file tia_project.psc</pre>
+        <p class="xs muted"><code>-y</code> requires <code>-t</code>. Useful once the interface is stable; useless
+        for the first run, because you do not have a <code>.psc</code> yet.</p>
+      </div></div>
+
+      <div class="step"><div class="n">07</div><div class="b">
+        <div class="h"><b>Build the deployment container</b><span class="tag">Linux</span></div>
+        <pre>bash build_deploy_container.sh \
+  --ros2-version jazzy \
+  --container roxsie_bridge_example \
+  --rmw zenoh</pre>
+        <p class="xs muted">Output lands under <code>output/&lt;timestamp&gt;/output/</code> with
+        <code>plc_code/</code>, <code>ros2_deployment/</code>, the config that was used, and
+        <code>logs/</code> &mdash; check <code>*_extended_roxsie_logs.log</code> when generation fails.</p>
+      </div></div>
+
+      <div class="step"><div class="n">08</div><div class="b">
+        <div class="h"><b>Bring it up in the right order</b><span class="tag">target</span></div>
+        <pre>RIB_App --version            <span class="c"># confirm it matches RIB_Version in the YAML</span>
+RIB_App -l 10                <span class="c"># lifetime in ms; default 10, min 1</span>
+<span class="c"># then: download the PLC program, then: docker compose up</span></pre>
+        <p class="xs muted"><code>RIB_App</code> first, PLC second, ROS&nbsp;2 last. The connect state machine
+        on the PLC drives the handshake; <code>ODKP_ISC</code> in <code>OP_INIT</code> belongs in the startup
+        OB, never in a time-critical one.</p>
+      </div></div>
+    </div>
+
+    <div class="note warn">
+      <b>Version coupling is tight and mostly undocumented in one place.</b> <code>RIB_Version</code> in the YAML
+      must match the <code>RIB_App</code> on the target (<code>RIB_App --version</code>); RIB v2.1.1 allows 1024
+      symbols and v2.2.4 allows 8192; TIA Portal V19 only pairs with Software Controller V30.1, and V20 must be
+      at Update&nbsp;1 or later. Industrial OS ships fixed to the hardware generation &mdash; v3.x on the
+      IPC&nbsp;427E and CPU&nbsp;1515SP&nbsp;PC2, v4.x on the BX-39A and PC3. Getting one of these wrong usually
+      surfaces as a connect failure, not a version error.
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 7. LIMITS ══════════════════════════ -->
+<section id="limits">
+  <div class="wrap">
+    <div class="sechead">
+      <p class="eyebrow">07 &middot; Analysis</p>
+      <h2>Every published ceiling, in one place</h2>
+      <p class="lede">
+        Sorted by how likely it is to stop you. The ones at the top you will meet on your first real machine;
+        the ones at the bottom are theoretical for most applications.
+      </p>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Limit</th><th style="text-align:right">Value</th><th>Where it bites</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td><b>Cyclic interrupt OBs</b></td><td class="num">20 total<br>~16 per direction</td><td>Hard cap on topic count &mdash; and it is shared with the rest of your program, not reserved for ROXSIE.</td><td class="xs muted">ROXSIE limitations</td></tr>
+          <tr><td><b>Complex types above 100 Hz</b></td><td class="num">&gt; 100 Hz</td><td>Strings, sequences and nested structures risk data loss and PLC cycle-time violations. The practical rate ceiling, well below the documented one.</td><td class="xs muted">ROXSIE limitations</td></tr>
+          <tr><td><b>Topic rate</b></td><td class="num">&le; 1000 Hz</td><td>Rejected by YAML validation above this. Realistic only for flat scalar messages.</td><td class="xs muted">YAML config reference</td></tr>
+          <tr><td><b>Sequence length</b></td><td class="num">64 elements</td><td>Fixed at generation. Anything longer is <em>silently truncated</em> &mdash; data loss with no error.</td><td class="xs muted">ROXSIE limitations</td></tr>
+          <tr><td><b>String length</b></td><td class="num">254 bytes</td><td>Fixed byte array. <code>wstring</code> was unsupported until v0.3.2.</td><td class="xs muted">ROXSIE limitations · changelog</td></tr>
+          <tr><td><b>Client pairing</b></td><td class="num">1 ROS 2 + 1 SW-PLC</td><td>ROXSIE allows exactly one of each, although RIB itself guarantees 128 simultaneous socket clients. No multi-node fan-out through one bridge.</td><td class="xs muted">ROXSIE limitations · RIB §6.1</td></tr>
+          <tr><td><b>Thread safety</b></td><td class="num">none</td><td>The generated C++ API is not thread safe. Your node's callback design has to serialise access itself.</td><td class="xs muted">ROXSIE limitations</td></tr>
+          <tr><td><b>RIB symbol capacity</b></td><td class="num">1024 (v2.1.1)<br>8192 (v2.2.4)</td><td>Total symbols after flattening &mdash; a handful of wide messages gets you there faster than you expect.</td><td class="xs muted">ROXSIE limitations</td></tr>
+          <tr><td><b>Connect response size</b></td><td class="num">1 MiB</td><td>The JSON connection response is capped; long symbol names and descriptions count. Failure reads <code>TooLongMessage</code>.</td><td class="xs muted">RIB §6.7</td></tr>
+          <tr><td><b>VMM shared memory</b></td><td class="num">8 MB</td><td>Also bounded by Software Controller code memory, roughly 2&ndash;12.5 MB depending on CPU variant.</td><td class="xs muted">RIB §4.2.3 · ROXSIE limitations</td></tr>
+          <tr><td><b>Lifetime</b></td><td class="num">min 1 ms<br>default 10 ms</td><td>Set once per <code>RIB_App</code> instance, not per topic. No upper bound, but running near the limit is advised against.</td><td class="xs muted">RIB §6.1</td></tr>
+          <tr><td><b>Socket clients</b></td><td class="num">128 guaranteed</td><td>RIB's own figure; not the ROXSIE figure. IPv4 only &mdash; IPv6 is untested.</td><td class="xs muted">RIB §6.1</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:40px">Failure modes worth designing against</h3>
+    <div class="cards">
+      <div class="card">
+        <h4>Silent stale data</h4>
+        <p class="small muted">If <code>RIB_App</code> dies, the client notices and logs it &mdash; then
+        <b>never reconnects</b>, while shared-memory reads and writes keep succeeding. Without your own
+        heartbeat in the payload, both sides happily process data that stopped updating. Add a counter and
+        check it.</p>
+      </div>
+      <div class="card">
+        <h4>Truncated sequences</h4>
+        <p class="small muted">A vector longer than 64 elements loses the remainder. No exception, no return
+        code, nothing in the PLC. Validate length at the publisher, not at the bridge.</p>
+      </div>
+      <div class="card">
+        <h4>Case-sensitive name matching</h4>
+        <p class="small muted">RIB pairs provided and requested symbols by exact, case-sensitive name. A mismatch
+        is simply an unmatched symbol &mdash; the connection succeeds and the data never arrives.</p>
+      </div>
+      <div class="card">
+        <h4>The init cost</h4>
+        <p class="small muted"><code>ODKP_ISC</code> in <code>OP_INIT</code> resolves and decomposes every DB
+        symbol; the manual warns that a high symbol count can push the OB into <em>milliseconds</em>. Startup
+        OB only, and raise the CPU's maximum cycle time if the interface is large.</p>
+      </div>
+      <div class="card">
+        <h4>Pointer-update stalls</h4>
+        <p class="small muted">When the symbol set changes, refreshing a large number of symbol pointers inside
+        the application loop takes real time. On a realtime thread that is a missed deadline.</p>
+      </div>
+      <div class="card">
+        <h4><code>.psc</code> drift</h4>
+        <p class="small muted">A <code>.psc</code> from a different YAML fails generation with
+        <em>Wrong PSC File For Provided YAML Configuration</em>. The hash check is doing its job &mdash; but it
+        means your TIA project and your config are one versioned unit.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 8. FIT ══════════════════════════ -->
+<section id="fit">
+  <div class="wrap">
+    <div class="sechead">
+      <p class="eyebrow">08 &middot; The decision</p>
+      <h2>What you are actually choosing between</h2>
+      <p class="lede">
+        The alternative to ROXSIE is not &ldquo;no ROS&rdquo;. It is a separate industrial PC talking to the PLC
+        over PROFINET or OPC&nbsp;UA. Here is the difference, drawn.
+      </p>
+    </div>
+
+    <figure>
+      <div class="figframe">
+        <svg viewBox="0 0 920 240" role="img" aria-label="Comparison: ROXSIE collapses the ROS 2 node and the PLC into one device with a memory copy between them, whereas the conventional option keeps two devices with a NIC, cable and protocol stack on each side.">
+          <defs>
+            <marker id="ah5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+            </marker>
+          </defs>
+          <text x="14" y="24" class="svg-micro" fill="var(--accent)">A · ROXSIE — one device</text>
+          <rect x="14" y="36" width="430" height="74" rx="3" fill="none" stroke="var(--accent)" stroke-width="1.5"/>
+          <g fill="none" stroke="currentColor" opacity=".8">
+            <rect x="30" y="52" width="140" height="42" rx="3"/>
+            <rect x="290" y="52" width="138" height="42" rx="3"/>
+          </g>
+          <rect x="192" y="52" width="76" height="42" rx="3" fill="var(--accent)" opacity=".16"/>
+          <rect x="192" y="52" width="76" height="42" rx="3" fill="none" stroke="var(--accent)"/>
+          <text x="100" y="78" class="svg-label" fill="currentColor" text-anchor="middle">ROS 2 node</text>
+          <text x="230" y="72" class="svg-label" fill="var(--accent)" text-anchor="middle">shared</text>
+          <text x="230" y="86" class="svg-label" fill="var(--accent)" text-anchor="middle">memory</text>
+          <text x="359" y="78" class="svg-label" fill="currentColor" text-anchor="middle">SW-PLC</text>
+          <g stroke="var(--accent)" fill="none" marker-end="url(#ah5)" marker-start="url(#ah5)">
+            <line x1="176" y1="73" x2="188" y2="73"/><line x1="272" y1="73" x2="284" y2="73"/>
+          </g>
+          <text x="229" y="130" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">one memcpy · no NIC · no cable · no protocol stack</text>
+
+          <text x="476" y="24" class="svg-micro" fill="currentColor" opacity=".6">B · Conventional — two devices</text>
+          <g fill="none" stroke="currentColor" opacity=".8">
+            <rect x="476" y="36" width="182" height="74" rx="3"/>
+            <rect x="724" y="36" width="182" height="74" rx="3"/>
+            <rect x="492" y="52" width="150" height="20" rx="2"/>
+            <rect x="740" y="52" width="150" height="20" rx="2"/>
+          </g>
+          <text x="567" y="66" class="svg-label" fill="currentColor" text-anchor="middle">ROS 2 node</text>
+          <text x="815" y="66" class="svg-label" fill="currentColor" text-anchor="middle">PLC program</text>
+          <g fill="none" stroke="var(--crit)" stroke-width="1.5">
+            <rect x="492" y="80" width="150" height="20" rx="2"/>
+            <rect x="740" y="80" width="150" height="20" rx="2"/>
+          </g>
+          <text x="567" y="94" class="svg-label" fill="var(--crit)" text-anchor="middle">OPC UA / PN stack + NIC</text>
+          <text x="815" y="94" class="svg-label" fill="var(--crit)" text-anchor="middle">OPC UA / PN stack + NIC</text>
+          <g stroke="var(--crit)" stroke-width="1.5" fill="none" marker-end="url(#ah5)" marker-start="url(#ah5)">
+            <line x1="662" y1="90" x2="720" y2="90"/>
+          </g>
+          <text x="691" y="130" class="svg-label" fill="var(--crit)" text-anchor="middle">cable</text>
+          <text x="691" y="148" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">added: two stacks, a link, a second</text>
+          <text x="691" y="162" class="svg-label" fill="currentColor" opacity=".6" text-anchor="middle">device to power, mount, patch and spare</text>
+
+          <line x1="14" y1="188" x2="906" y2="188" stroke="currentColor" opacity=".2"/>
+          <text x="14" y="212" class="svg-label" fill="currentColor" opacity=".7">Option B buys back: any topic count, any message size, unlimited nodes, free choice of PLC hardware,</text>
+          <text x="14" y="230" class="svg-label" fill="currentColor" opacity=".7">and a ROS box you can specify for GPU compute. Option A buys: one enclosure, and no network in the loop.</text>
+        </svg>
+      </div>
+      <figcaption>
+        <b>Draw the edges that change.</b> ROXSIE removes two protocol stacks, a NIC pair and a cable. It adds
+        a hard coupling between your ROS interface and your TIA project, and it constrains you to Siemens
+        Industrial OS hardware with a Software Controller.
+      </figcaption>
+    </figure>
+
+    <div class="cards">
+      <div class="card">
+        <h4 style="color:var(--ok)">Reach for ROXSIE when</h4>
+        <ul class="tight small">
+          <li>The robot <b>is</b> the machine &mdash; one enclosure, one control cabinet, no room for a second PC.</li>
+          <li>The interface is narrow and stable: a handful of scalar or small fixed-size topics.</li>
+          <li>You need perception or planning in ROS but the motion and interlocks stay in the PLC, certified.</li>
+          <li>Removing the network from the loop genuinely matters &mdash; EMC, cable count, cost per unit.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--crit)">Do not reach for it when</h4>
+        <ul class="tight small">
+          <li>You need point clouds, images, or any sequence longer than 64 elements.</li>
+          <li>More than about a dozen topics, or an interface that will keep changing.</li>
+          <li>Several ROS nodes need to touch the PLC directly &mdash; you get exactly one client.</li>
+          <li>You want GPU compute on the same box, or a PLC that is not a Software Controller.</li>
+          <li>Anything safety-related crosses the boundary. It does not.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>The honest summary</h4>
+        <p class="small muted">ROXSIE is a good answer to a specific question: <em>how do I get a modest,
+        well-defined data interface between ROS&nbsp;2 and a Software Controller without a network?</em> It is a
+        poor answer to <em>how do I connect ROS to my PLC</em> in general. The narrower and more stable your
+        interface, the better it looks.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ 9. BOM ══════════════════════════ -->
+<section id="bom">
+  <div class="wrap">
+    <div class="sechead">
+      <p class="eyebrow">09 &middot; What you need to order</p>
+      <h2>Hardware, software, access</h2>
+      <p class="lede">One hardware option, all of the software options. Versions are not interchangeable.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Item</th><th>Choice</th><th>Versions</th><th>Example MLFB</th></tr></thead>
+        <tbody>
+          <tr><td rowspan="2"><b>Hardware</b><br><span class="xs muted">one required</span></td>
+              <td>ET 200SP Open Controller<br><span class="xs muted">CPU 1515SP PC2 / PC2 F</span></td>
+              <td class="xs">IndOS v3.x · SW-PLC v30.1 / v31.1</td>
+              <td class="ty xs">6ES7677-2DB43-0GB1<br>6ES7677-2SB43-0GB1 (F)</td></tr>
+          <tr><td>ET 200SP Open Controller<br><span class="xs muted">CPU 1515SP PC3 / PC3 F</span></td>
+              <td class="xs">IndOS v4.x · SW-PLC v40.0</td>
+              <td class="ty xs">6ES7677-2DD43-0GB0<br>6ES7677-2SD43-0GB0 (F)</td></tr>
+          <tr><td></td><td>SIMATIC IPC (box / panel)<br><span class="xs muted">IPC227G, IPC277G &mdash; CPU 1507S only</span></td>
+              <td class="xs">&ge; 4 GB free on target medium</td><td class="ty xs">6ES7647-8CE21-3AW1</td></tr>
+          <tr><td></td><td>IPC427E, IPC477E (Pro)<br>BX-39A, PX-39A (Pro)</td>
+              <td class="xs">NVRAM needed for remanent data without a UPS</td><td class="ty xs">6AG4141-…, 6AG4142-…</td></tr>
+          <tr><td><b>Industrial OS</b></td><td>SIMATIC Industrial OS (Linux)</td><td class="xs">V3.4.2 · V3.5.3 · V4.2</td><td class="ty xs">6ES7648-6LA81-0YA8</td></tr>
+          <tr><td rowspan="2"><b>Software Controller</b></td><td>CPU 1505SP (F)</td><td class="xs">V30.1 · V31.1 · V40.0</td><td class="xs muted">included with the Open Controller</td></tr>
+          <tr><td>CPU 1507S (F) / 1508S (F)</td><td class="xs">V30.1 · V31.1</td><td class="ty xs">6ES7672-7AD02-0YG0<br>6ES7672-8AD02-0YG0</td></tr>
+          <tr><td><b>Engineering</b></td><td>TIA Portal</td><td class="xs">V19 (SW-PLC V30.1 only) · V20 &ge; Update 1</td><td class="ty xs">6ES7810-5CC16-0YA5<br>6ES7810-5CC17-0YA5</td></tr>
+          <tr><td><b>Runtime middleware</b></td><td>Realtime Information Backbone</td><td class="xs">v2.1.1 · v2.2.4</td><td class="xs muted">install on IndOS; <code>RIB_App --version</code></td></tr>
+          <tr><td><b>ROS 2</b></td><td>Humble or Jazzy</td><td class="xs">Jazzy for the current toolchain; C++17</td><td class="xs muted">&mdash;</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="eyebrow">Sources</p>
+    <h3 style="margin-top:8px">Everything above is traceable</h3>
+    <p class="small muted" style="max-width:68ch; margin-top:10px">
+      Figures come from the RIB programming manual, the ROXSIE hardware and software requirements, and the
+      official Siemens developer documentation. Two things on this page are <em>derived</em> rather than quoted, and are labelled as such
+      in place: the per-message byte estimates in the budget table, computed from the documented fixed-size
+      mapping rules, and the order-of-magnitude claim about memcpy cost in the staleness budget.
+    </p>
+    <div class="srclist">
+      <div><b>RIB Programming Manual</b><br><span class="xs muted">A5E52046002-AD, 01/2025 &mdash; architecture, lifetime buffer, ODKP_ISC, RIB_App, RPC.</span></div>
+      <div><b>ROXSIE required hardware &amp; software V4</b><br><span class="xs muted">Entry 109987809 &mdash; MLFBs and version matrix.</span></div>
+      <div><a href="https://developer.siemens.com/roxsie/overview.html">developer.siemens.com/roxsie &mdash; Overview</a></div>
+      <div><a href="https://developer.siemens.com/roxsie/requirements.html">ROXSIE &mdash; Requirements</a></div>
+      <div><a href="https://developer.siemens.com/roxsie/limitations.html">ROXSIE &mdash; Limitations</a></div>
+      <div><a href="https://developer.siemens.com/roxsie/usage/usage.html">ROXSIE &mdash; Usage</a></div>
+      <div><a href="https://developer.siemens.com/roxsie/usage/additional_resources/yaml_config_structure.html">ROXSIE &mdash; YAML configuration structure</a></div>
+      <div><a href="https://developer.siemens.com/roxsie/usage/additional_resources/command_line_tool.html">ROXSIE &mdash; Command line tool</a></div>
+      <div><a href="https://developer.siemens.com/roxsie/setup/engineering_system.html">ROXSIE &mdash; Engineering system setup</a></div>
+      <div><a href="https://developer.siemens.com/roxsie/troubleshooting.html">ROXSIE &mdash; Troubleshooting</a></div>
+      <div><a href="https://developer.siemens.com/roxsie/CHANGELOG.html">ROXSIE &mdash; Changelog</a></div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

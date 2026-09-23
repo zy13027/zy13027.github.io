@@ -1,0 +1,50 @@
+/* Siemens design-system tokens — light, system-dark and explicit-dark.
+   Values taken from the Siemens Element / Healthineers token set. */
+
+/* ── Siemens design system tokens ──────────────────────────────────────── */
+:root{
+  --bg:#f3f3f0;            /* sie-light-sand */
+  --surface:#ffffff;
+  --surface-2:#ebebee;     /* sie-deep-blue-8 */
+  --surface-sunk:#e5e5e9;
+  --stroke:#ccccd4;        /* sie-deep-blue-20 */
+  --stroke-strong:#9999a9;
+  --ink:#000028;           /* sie-deep-blue */
+  --ink-2:#333353;
+  --ink-subtle:#66667e;
+  --ink-weak:#7d8099;
+  --accent:#009999;        /* sie-petrol */
+  --accent-2:#00646e;      /* sie-dark-green */
+  --accent-ink:#ffffff;
+  --accent-wash:#e0f2f1;
+  --info:#0087be;
+  --ok:#00af8e;
+  --warn:#f7c600;
+  --crit:#ec6602;
+  --err:#ef0137;
+  --grid:rgba(0,0,40,.10);
+  --shadow:0 1px 2px rgba(0,0,40,.10), 0 8px 24px rgba(0,0,40,.06);
+  --r-ctl:2px; --r-card:4px;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:"Siemens Sans","SiemensSans Pro",Arial,"Helvetica Neue",Helvetica,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#000028; --surface:#23233c; --surface-2:#1a1a35; --surface-sunk:#14142c;
+    --stroke:#4c4c68; --stroke-strong:#66667e;
+    --ink:#ffffff; --ink-2:#e5e5e9; --ink-subtle:#b3b3be; --ink-weak:#9999a9;
+    --accent:#00cccc; --accent-2:#00ffb9; --accent-ink:#000028; --accent-wash:#00243f;
+    --info:#00bedc; --ok:#01d65a; --warn:#ffd732; --crit:#ff9000; --err:#ff2640;
+    --grid:rgba(255,255,255,.08);
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#000028; --surface:#23233c; --surface-2:#1a1a35; --surface-sunk:#14142c;
+  --stroke:#4c4c68; --stroke-strong:#66667e;
+  --ink:#ffffff; --ink-2:#e5e5e9; --ink-subtle:#b3b3be; --ink-weak:#9999a9;
+  --accent:#00cccc; --accent-2:#00ffb9; --accent-ink:#000028; --accent-wash:#00243f;
+  --info:#00bedc; --ok:#01d65a; --warn:#ffd732; --crit:#ff9000; --err:#ff2640;
+  --grid:rgba(255,255,255,.08);
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+}

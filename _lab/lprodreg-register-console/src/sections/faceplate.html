@@ -1,0 +1,45 @@
+<section class="sec" id="faceplate"><div class="wrap">
+  <header>
+    <div class="eyebrow">Chapter 2.4 &amp; 3.9</div>
+    <h2>The HMI faceplate</h2>
+    <p class="lede"><span class="tag">LProdReg_Hmi_Main</span> is the backing block; <span class="tag">LProdReg_Faceplate</span> is what the operator actually sees &mdash; a categorised, filterable window into the live register, with delete functions built in.</p>
+  </header>
+
+  <div class="grid rf-fp-grid2">
+    <div class="card pad">
+      <h3 style="font-size:16px;margin-bottom:6px">LProdReg_Hmi_Main</h3>
+      <p style="font-size:13.5px;color:var(--text-2);margin:0 0 12px">Manages data exchange between the HMI and the product database, and lets the operator delete objects or search by filter characteristics. Called externally (3.8), so its <span class="mono">dataExchange</span> and <span class="mono">productDatabase</span> InOuts join the same DBs the RegisterManager uses.</p>
+      <div class="box notice"><b>Note</b>Using this block adds <b>two</b> internally called flow objects &mdash; a FO&#8209;SinkProduct and FO&#8209;SinkContainer, fixed at IDs 98 and 99. Increase <span class="mono">LPRODREG_NO_OF_ACTIVE_FLOW_OBJECTS</span> and the request/response buffer size by 2 to match.</div>
+      <ul class="rf-fp-func" style="margin-top:14px">
+        <li>Categorised view of the database by conveyor, station and pocket</li>
+        <li>Filtering by object parameter or characteristic</li>
+        <li>Configurable displayed parameters and column width, per category</li>
+        <li>Object detail view (parameters and characteristics)</li>
+        <li>Multi&#8209;select deletion via checkboxes</li>
+        <li>Delete&#8209;all for one category (conveyor or station)</li>
+      </ul>
+    </div>
+    <div>
+      <div class="card pad" style="margin-bottom:14px">
+        <h4 style="font-family:var(--f-mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px">Categories on screen</h4>
+        <div class="rf-cat-chips">
+          <span class="pill">Product on conveyor</span><span class="pill">Container on conveyor</span>
+          <span class="pill">Product in pocket</span><span class="pill">Container in pocket</span>
+          <span class="pill">Product in station</span><span class="pill">Container in station</span>
+        </div>
+        <p class="rf-note-small">Pick a category, then a conveyor or station number, to narrow the table.</p>
+      </div>
+      <div class="box caution"><b>Caution</b>Objects sitting in a container pocket (&ldquo;Product/Container in pocket&rdquo;) cannot be deleted from the faceplate at all.</div>
+    </div>
+  </div>
+
+  <div class="rf-h3row"><h3>Operating the faceplate</h3><span class="tag">chapter 3.9</span></div>
+  <ol class="rf-op-list">
+    <li><span class="rf-op-n">1</span><div><div class="rf-op-b">Categorised display</div><p>Choose a category (the six chips above) and, where relevant, the conveyor or station number.</p></div></li>
+    <li><span class="rf-op-n">2</span><div><div class="rf-op-b">Filter the list</div><p>Pick the parameter to filter on and enter its value.</p></div></li>
+    <li><span class="rf-op-n">3</span><div><div class="rf-op-b">Configure the display</div><p>Open the configuration icon for a category; set a priority (1, 2, 3&hellip;) per parameter to control column order &mdash; priority 0 hides it &mdash; and pick a gap width for the board.</p></div></li>
+    <li><span class="rf-op-n">4</span><div><div class="rf-op-b">Object details &amp; single delete</div><p>Select an object to see its full parameters and characteristics; the delete icon removes just that one.</p></div></li>
+    <li><span class="rf-op-n">5</span><div><div class="rf-op-b">Delete several via checkboxes</div><p>Tick objects (the top checkbox selects all shown), press delete, choose &ldquo;Delete selected&rdquo;, confirm twice.</p><p class="rf-note-small">A ticked row that shifts position when the list refreshes is automatically un&#8209;ticked.</p></div></li>
+    <li><span class="rf-op-n">6</span><div><div class="rf-op-b">Delete a whole category</div><p>With a category and number selected, press delete, choose &ldquo;Delete category&rdquo; instead, and confirm twice.</p></div></li>
+  </ol>
+</div></section>

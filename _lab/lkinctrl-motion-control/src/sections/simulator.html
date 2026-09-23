@@ -1,0 +1,90 @@
+<section class="sec" id="simulator">
+<div class="wrap">
+<header>
+<div class="eyebrow">Interactive &middot; &sect;3 Programming &amp; supported commands</div>
+<h2>Path lab</h2>
+<p class="lede">A PathData structure is just an array of commands &mdash; <span class="tag">LKinCtrl_typePathDataElement</span> entries read in order by <span class="tag">LKinCtrl_MC_MovePath</span>. Build one below in the manual's own command types, then watch it execute exactly as the block reports it: which entry is active, how fast the path is moving, and whether it is running, interrupted or stopped.</p>
+</header>
+
+<div class="sim-lab">
+
+<div class="sim-col sim-list">
+  <div class="card pad">
+    <div class="sim-h">PathData &middot; commands <button class="sim-reseed" id="simReseed" type="button">reload example</button></div>
+    <div class="sim-list-body" id="simListBody"></div>
+    <div class="sim-eop" id="simEopRow">cmdType &minus;1 &middot; End of path &mdash; no commands run after this entry</div>
+    <div class="sim-addbar">
+      <select id="simAddType"></select>
+      <button class="sim-btn" id="simAddBtn" type="button">Add command</button>
+    </div>
+  </div>
+</div>
+
+<div class="sim-col sim-canvas-col">
+  <div class="sim-canvas-wrap">
+    <canvas class="sim-canvas" id="simCanvas" width="960" height="720" aria-label="Kinematics workspace, top view, showing the commanded path and the current tool position"></canvas>
+    <div class="sim-stripe">
+      <span class="sim-state" id="simStateChip">Idle</span>
+      <span class="sim-metric" id="simActiveCmd">Executing: &mdash;</span>
+      <span class="sim-metric" id="simVelocity">Path velocity: 0 mm/s</span>
+      <button class="sim-followlink" id="simFollowLink" type="button" hidden>show live command &rsaquo;</button>
+    </div>
+    <div class="sim-progress" id="simProgress"></div>
+  </div>
+  <div class="box">
+    <b>Browser model</b>
+    This lab is a browser model of LKinCtrl's documented behaviour, built from the V5.3 manual. Geometry, blending and timing are illustrative &mdash; not the real TO Kinematics interpolator.
+  </div>
+</div>
+
+<div class="sim-col sim-fb">
+  <div class="card pad">
+    <div class="sim-h">LKinCtrl_MC_MovePath &middot; inputs</div>
+    <div class="sim-ctrlgrid" style="margin-top:8px">
+      <button class="sim-btn sim-primary" id="simExecute" type="button">Execute &uarr;</button>
+      <button class="sim-btn" id="simStop" type="button">Stop</button>
+      <button class="sim-btn" id="simInterrupt" type="button">Interrupt</button>
+      <button class="sim-btn" id="simContinue" type="button">Continue</button>
+      <button class="sim-btn" id="simReset" type="button">Reset</button>
+      <button class="sim-btn" id="simAck" type="button" hidden>Acknowledge flag</button>
+    </div>
+    <div class="sim-seqrow" style="margin-top:9px">
+      <span>sequenceMode</span>
+      <select id="simSeqMode">
+        <option value="0">0 &middot; Automatic</option>
+        <option value="1">1 &middot; Single step</option>
+      </select>
+    </div>
+    <div class="sim-ovrow" style="margin-top:7px">
+      <span>Speed&times;</span>
+      <input type="range" id="simOverride" min="0.25" max="2" step="0.05" value="1">
+      <span class="sim-ovval" id="simOverrideVal">100%</span>
+    </div>
+    <div class="sim-note">Viewer-only playback scaling of the simulated path velocity &mdash; not an FB input. Real velocity is set with the commands 70&ndash;72 (&sect;3.6).</div>
+  </div>
+  <div class="card pad">
+    <div class="sim-h">Outputs</div>
+    <dl class="sim-fb-grid" id="simOutGrid" style="margin-top:8px"></dl>
+  </div>
+  <div class="card pad">
+    <div class="sim-h">flags[0..6]</div>
+    <div class="sim-flagstrip" id="simFlagStrip" style="margin-top:8px"></div>
+    <div class="sim-note">Set by <span class="tag">setFlags</span> in the active command; click a lit flag to acknowledge a wait&ndash;point (flag modes 5, 25, 26).</div>
+  </div>
+</div>
+
+</div>
+
+<div class="sim-legend">
+  <span class="sim-litem"><span class="sim-sw sim-sw-trail"></span>Linear / circular (blended)</span>
+  <span class="sim-litem"><span class="sim-sw sim-sw-ptp"></span>MoveDirect / sPTP</span>
+  <span class="sim-litem"><span class="sim-sw sim-sw-centre"></span>Circle centre</span>
+  <span class="sim-litem"><span class="sim-sw sim-sw-aux"></span>Auxiliary point</span>
+  <span class="sim-litem"><span class="sim-sw sim-sw-ghost"></span>Programmed corner (cut by blending)</span>
+  <span class="sim-litem"><span class="sim-sw sim-sw-flag"></span>Flag switches here</span>
+  <span class="sim-litem"><span class="sim-sw sim-sw-wait"></span>Wait&#8209;time dwell</span>
+  <span class="sim-litem"><span class="sim-sw sim-sw-tool"></span>Current tool position</span>
+</div>
+
+</div>
+</section>

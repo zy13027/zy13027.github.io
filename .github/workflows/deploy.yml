@@ -10,6 +10,9 @@ name: Build and deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  # Pull requests run the full production build as a check; the deploy jobs skip.
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -18,8 +21,8 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.ref) || 'pages' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -78,6 +81,7 @@ jobs:
 
   deploy:
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -94,6 +98,7 @@ jobs:
   # -------------------------------------------------------------------------
   deploy-ecs:
     needs: build
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Download built site

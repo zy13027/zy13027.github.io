@@ -1,0 +1,72 @@
+/* base.css — global element resets, extracted verbatim from the original inline <style> block */
+
+*{ box-sizing:border-box; }
+::selection{ background:var(--ix-primary); color:#fff; }
+
+html{ color-scheme:light dark; }
+
+body{
+  margin:0;
+  background:var(--ix-1);
+  color:var(--ix-text);
+  font-family:var(--font-body);
+  font-size:16px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+.page{
+  padding-inline:16px;
+  padding-block:0 var(--sp-9);
+  overflow-x:hidden;
+}
+
+.wrap{
+  max-width:var(--max-w);
+  margin-inline:auto;
+}
+
+h1,h2,h3,h4{
+  font-family:var(--font-display);
+  font-weight:700;
+  margin:0;
+  line-height:1.05;
+  letter-spacing:-0.01em;
+}
+
+p{ margin:0; max-width:68ch; }
+p+p{ margin-top:var(--sp-3); }
+
+a{ color:var(--ix-primary); }
+
+button{ font-family:inherit; color:inherit; }
+
+.mono, code, pre, .tabular{
+  font-family:var(--font-mono);
+}
+.tabular, [data-live]{ font-variant-numeric:tabular-nums; }
+
+.sr-only{
+  position:absolute; width:1px; height:1px; overflow:hidden;
+  clip:rect(0 0 0 0); white-space:nowrap;
+}
+
+:focus-visible{
+  outline:2px solid var(--ix-primary);
+  outline-offset:2px;
+  border-radius:var(--r-sm);
+}
+
+hr.hair{
+  border:none; border-top:1px solid var(--ix-bdr); margin:0;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration:0.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.001ms !important;
+    scroll-behavior:auto !important;
+  }
+}

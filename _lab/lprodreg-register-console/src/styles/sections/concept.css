@@ -1,0 +1,56 @@
+/* ============ 10_concept.html ============ */
+.pc-intro-grid{grid-template-columns:repeat(auto-fit,minmax(280px,1fr));margin-top:22px}
+.pc-intro-grid h3{margin-bottom:10px}
+.pc-intro-grid p{font-size:14.5px;color:var(--text-2);margin-bottom:0}
+.pc-usecases{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;font-size:14.5px;color:var(--text-2)}
+.pc-usecases li{padding-left:18px;position:relative}
+.pc-usecases li::before{content:"";position:absolute;left:0;top:.55em;width:6px;height:6px;border-radius:50%;background:var(--grad)}
+.pc-tasktags{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.pc-tasktags .tag{white-space:normal}
+.pc-h3row{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:44px 0 14px}
+.pc-h3row .tag{font-size:.78em}
+.pc-arch-text{font-size:14.5px;color:var(--text-2);max-width:74ch;margin-bottom:18px}
+.pc-diagram{margin:22px 0 6px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-l);box-shadow:var(--shadow);padding:14px 14px 4px}
+.pc-diagram svg{width:100%;height:auto;display:block}
+.pc-diagram svg text{font-family:var(--f-body);fill:var(--text)}
+.pc-diagram svg .pc-mono{font-family:var(--f-mono)}
+.pc-diagram svg .pc-b{font-weight:700}
+.pc-diagram svg .pc-sub{fill:var(--text-2);font-size:9px}
+.pc-diagram svg .pc-sub2{fill:var(--text-dim);font-size:8.5px}
+.pc-diagram svg .pc-blue{fill:var(--blue)}
+.pc-diagram svg .pc-accent{fill:var(--accent)}
+.pc-diagram svg .pc-accent2{fill:var(--accent-2)}
+.pc-dg-wrap{fill:color-mix(in srgb,var(--accent-2) 10%,var(--surface));stroke:var(--accent-2);stroke-width:1.5;stroke-dasharray:5 4}
+.pc-dg-fo{fill:var(--surface-2);stroke:var(--line);stroke-width:1.4}
+.pc-dg-chan{fill:color-mix(in srgb,var(--blue) 9%,var(--surface));stroke:var(--blue);stroke-width:1.3;stroke-dasharray:5 4}
+.pc-dg-core{fill:color-mix(in srgb,var(--accent-2) 7%,var(--surface-2));stroke:var(--line);stroke-width:1.5}
+.pc-dg-db{fill:var(--surface-2);stroke:var(--accent);stroke-width:1.5}
+.pc-dg-line{stroke:var(--line);stroke-width:1.3}
+.pc-dg-dash{stroke:var(--text-dim);stroke-width:1.2;stroke-dasharray:3 3}
+.pc-dg-lock{fill:var(--accent)}
+.pc-arrow-req,.pc-arrow-res{stroke-dasharray:6 6}
+@keyframes pc-flow{to{stroke-dashoffset:-24}}
+@media (prefers-reduced-motion:no-preference){
+  .pc-arrow-req{animation:pc-flow 1.15s linear infinite}
+  .pc-arrow-res{animation:pc-flow 1.15s linear infinite}
+}
+.pc-diagram figcaption{font-size:12.5px;color:var(--text-dim);padding:10px 2px 14px;max-width:82ch}
+.pc-namerow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:18px 0 4px}
+.pc-chip{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-m);padding:8px 12px;text-align:center;min-width:64px}
+.pc-chip .pc-k{display:block;font-family:var(--f-mono);font-weight:600;font-size:14px;color:var(--text)}
+.pc-chip .pc-l{display:block;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);margin-top:3px}
+.pc-chip.pc-result{background:var(--grad);border-color:transparent}
+.pc-chip.pc-result .pc-k{color:var(--accent-ink)}
+.pc-chip.pc-result .pc-l{color:var(--accent-ink);opacity:.75}
+.pc-plus{color:var(--text-dim);font-family:var(--f-mono);font-size:15px}
+.pc-eq{color:var(--text-dim);font-family:var(--f-mono);font-size:16px;margin:0 2px}
+.pc-tasks{grid-template-columns:repeat(auto-fit,minmax(320px,1fr));margin-top:16px}
+.pc-tasks h3{display:flex;align-items:center;gap:8px}
+.pc-steps{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
+.pc-steps li{display:flex;gap:11px;font-size:14px;color:var(--text-2)}
+.pc-steps .pc-n{flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:var(--surface-3);color:var(--text);font-family:var(--f-mono);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.pc-tasks .card.pad{height:100%}
+.pc-benefits{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.pc-benefits li{font-size:13.5px;color:var(--text-2);background:var(--surface-2);border:1px solid var(--line-soft);border-radius:var(--r-m);padding:11px 13px;line-height:1.45}
+.pc-benefits b{color:var(--text);font-weight:600}
+

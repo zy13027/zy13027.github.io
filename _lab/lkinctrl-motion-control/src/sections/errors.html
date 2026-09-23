@@ -1,0 +1,84 @@
+<section class="sec" id="errors">
+<div class="wrap">
+<header>
+<div class="eyebrow">&sect;6&ndash;7 &mdash; Error handling &amp; PLC tags</div>
+<h2>Errors, status &amp; configuration tags</h2>
+<p class="lede">Every status and error identifier the library's blocks raise, grouped by the block that raises it &mdash; plus the PLC tag tables that configure and enumerate the library.</p>
+</header>
+
+<div class="card pad">
+<h3>Status &amp; error identifiers</h3>
+<p>Always read a block's <span class="mono">diagnostics</span> output for the full picture: it names the PathData command and internal state a MovePath error occurred in, on top of the status word itself.</p>
+<div class="rf-toolbar"><input class="rf-search" id="rf-err-search" type="search" placeholder="Search identifiers, values or meanings&hellip;" aria-label="Search error identifiers"></div>
+<div class="rf-pillrow" id="rf-err-pills"></div>
+<p class="rf-count" id="rf-err-count"></p>
+<div class="scrollx"><table class="rf-errtable"><thead><tr><th>Raised by</th><th>Identifier</th><th>Value</th><th>Kind</th><th>Meaning</th></tr></thead><tbody id="rf-err-body"></tbody></table></div>
+</div>
+
+<div class="rf-mt" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:1rem">
+
+<div class="card pad">
+<h3>LKinCtrl_Configuration <span class="tag">&sect;7.1</span></h3>
+<p>Application-level settings &mdash; sizes, name lengths and a handful of behavioural switches. These values may be changed to suit the project.</p>
+<div class="scrollx"><table class="rf-reftable"><thead><tr><th>Tag</th><th>Default</th><th>Governs</th></tr></thead><tbody>
+<tr><td class="mono">LKINCTRL_LENGTH_OF_CMDPOINT_NAME</td><td class="mono">30</td><td>Length of a point name.</td></tr>
+<tr><td class="mono">LKINCTRL_LENGTH_OF_OFFSET_NAME</td><td class="mono">20</td><td>Length of an offset (tool) name.</td></tr>
+<tr><td class="mono">LKINCTRL_LENGTH_OF_PATHDATA_NAME</td><td class="mono">20</td><td>Length of a PathData name.</td></tr>
+<tr><td class="mono">LKINCTRL_LENGTH_OF_TO_NAME</td><td class="mono">30</td><td>Length of technology-object names.</td></tr>
+<tr><td class="mono">LKINCTRL_NO_OF_CMD_SETFLAGS</td><td class="mono">3</td><td>Boolean flags configurable per command.</td></tr>
+<tr><td class="mono">LKINCTRL_NO_OF_CMD_VALUEFLAGS</td><td class="mono">4</td><td>LREAL flags configurable per command.</td></tr>
+<tr><td class="mono">LKINCTRL_NO_OF_CONVEYOR</td><td class="mono">5</td><td>Number of configurable conveyor sets.</td></tr>
+<tr><td class="mono">LKINCTRL_NO_OF_LAST_SETFLAG</td><td class="mono">10</td><td>Highest index of the Boolean flags array at MovePath.</td></tr>
+<tr><td class="mono">LKINCTRL_NO_OF_LAST_VALUEFLAG</td><td class="mono">10</td><td>Highest index of the LREAL valueFlags array at MovePath.</td></tr>
+<tr><td class="mono">LKINCTRL_NO_OF_OFFSETS</td><td class="mono">3</td><td>Number of configurable tool-offset sets.</td></tr>
+<tr><td class="mono">LKINCTRL_NO_OF_PATHDATA_ELEMENTS</td><td class="mono">20</td><td>Length of the PathData command array.</td></tr>
+<tr><td class="mono">LKINCTRL_NO_OF_PATHS</td><td class="mono">5</td><td>Number of paths.</td></tr>
+<tr><td class="mono">LKINCTRL_NO_OF_POINTS_AT_POINT_TABLE</td><td class="mono">30</td><td>Number of points in the Point Table.</td></tr>
+<tr><td class="mono">LKINCTRL_NO_OF_SEQ_EXECUTE_CMDS</td><td class="mono">1</td><td>Commands buffered per call after the first cycle (&sect;5.1).</td></tr>
+<tr><td class="mono">LKINCTRL_NO_OF_START_EXECUTE_CMDS</td><td class="mono">1</td><td>Commands buffered on the first cycle (&sect;5.1).</td></tr>
+<tr><td class="mono">LKINCTRL_NO_OF_ZONES</td><td class="mono">10</td><td>Number of zone definitions.</td></tr>
+<tr><td class="mono">LKINCTRL_SPTP_EXECUTION_STATUS_OUTPUT</td><td class="mono">0</td><td>0 regular time status &middot; 1 inverted &middot; 2 approximate Cartesian distance.</td></tr>
+<tr><td class="mono">LKINCTRL_DISABLE_FLAG_RESET</td><td class="mono">FALSE</td><td>TRUE disables the automatic flag reset at execute / done.</td></tr>
+<tr><td class="mono">LKINCTRL_NO_OF_CHANNELS</td><td class="mono">0</td><td>Number of channels &minus; 1; relevant to the HMI part only.</td></tr>
+<tr><td class="mono">LKINCTRL_PNP_WORKINGHEIGHT_MODE</td><td class="mono">1</td><td>1 workingHeight is the complete height &middot; 2 linear length only.</td></tr>
+</tbody></table></div>
+</div>
+
+<div class="card pad">
+<h3>LKinCtrl_Constants <span class="tag">&sect;7.2</span></h3>
+<p>Fixed values used to configure PathData commands by name instead of magic numbers. <span class="mono">cmdType</span> and flag-mode constants are listed inline in the Commands and Flags sections above; the remaining ones are gathered here.</p>
+<div class="scrollx"><table class="rf-reftable"><thead><tr><th>Tag</th><th>Value</th><th>Governs</th></tr></thead><tbody>
+<tr><td class="mono">LKINCTRL_PATHDATA_TYPE_REDUCED / _NORMAL / _ADVANCED</td><td class="mono">1 / 2 / 3</td><td>PathData type constants.</td></tr>
+<tr><td class="mono">LKINCTRL_FM_DISTANCE_TOLERANCE</td><td class="mono">0.01</td><td>Tolerance used by flagMode 10.</td></tr>
+<tr><td class="mono">LKINCTRL_NO_OF_VALID_BITS</td><td class="mono">6</td><td>Number of valid bits in ParameterValid.</td></tr>
+<tr><td class="mono">LKINCTRL_NO_OF_PATHDATA_PREBUFFER_ELEMENTS</td><td class="mono">5</td><td>Number of PreBuffer elements.</td></tr>
+<tr><td class="mono">LKINCTRL_NO_OF_SETFLAGS_BUFFER_ELEMENTS</td><td class="mono">15</td><td>Double the PreBuffer element count.</td></tr>
+<tr><td class="mono">LKINCTRL_PI</td><td class="mono">3.14159&hellip;</td><td>Constant value for &pi;.</td></tr>
+<tr><td class="mono">LKINCTRL_COMP_LEFT / _RIGHT</td><td class="mono">1 / 2</td><td>Tool-radius compensation side.</td></tr>
+<tr><td class="mono">LKINCTRL_OUTER_CORNER / _INNER_CORNER</td><td class="mono">1 / 2</td><td>Linear/linear intersection type for contour offset.</td></tr>
+<tr><td class="mono">LKINCTRL_CIRCMODE_GCODE</td><td class="mono">3</td><td>circMode value used in G-code notation.</td></tr>
+<tr><td class="mono">LKINCTRL_CS_NO_OF_FIRST/LAST_USER_FRAME</td><td class="mono">11 / 15</td><td>Index range of the five user frames (USER_FRAME_1&hellip;5).</td></tr>
+<tr><td class="mono">LKINCTRL_MEAS_CMD_WO_ACK / _WITH_ACK</td><td class="mono">1 / 2</td><td>Measurement-command mode (&sect;3.16).</td></tr>
+<tr><td class="mono">LKINCTRL_NO_OF_PATHDATA_ELEMENTS_ADVANCED / _REDUCED</td><td class="mono">20 / 10</td><td>Legacy PathData array lengths.</td></tr>
+<tr><td class="mono">LKINCTRL_FIRST/LAST_INDEX_INFO_BUFFER</td><td class="mono">&minus;10 / 20</td><td>Index range of the buffered-commands info output array.</td></tr>
+</tbody></table></div>
+</div>
+
+<div class="card pad">
+<h3>MC_Constants <span class="tag">&sect;7.3</span></h3>
+<p>Named constants for the same numeric settings TO Kinematics motion commands use directly &mdash; for configuring PathData or a standalone FB call without magic numbers.</p>
+<div class="scrollx"><table class="rf-reftable"><thead><tr><th>Tag</th><th>Value</th><th>Governs</th></tr></thead><tbody>
+<tr><td class="mono">BM_BUFFERED / _BLENDING_LOW / _BLENDING_HIGH</td><td class="mono">1 / 2 / 5</td><td>bufferMode.</td></tr>
+<tr><td class="mono">DA_DEFAULT / _DEACTIVATED / _WITH_VARIABLE_LIMITS / _WITH_CONSTANT_LIMITS</td><td class="mono">&minus;1 / 0 / 1 / 2</td><td>dynamicsAdaption.</td></tr>
+<tr><td class="mono">SM_ACTIVE_DYNAMICS / _MAX_DYNAMICS</td><td class="mono">0 / 1</td><td>Stop mode dynamics.</td></tr>
+<tr><td class="mono">PC_POSITIVE / _LONG_RUN_POSITIVE / _LONG_RUN_NEGATIVE</td><td class="mono">0 / 2 / 3</td><td>pathChoice.</td></tr>
+<tr><td class="mono">CP_XZ / _YZ / _XY</td><td class="mono">0 / 1 / 2</td><td>circlePlane / mainPathPlane.</td></tr>
+<tr><td class="mono">CM_BORDER / _CENTER / _RADIUS</td><td class="mono">0 / 1 / 2</td><td>circMode.</td></tr>
+<tr><td class="mono">IM_ACTIVE_DYNAMICS / _MAX_DYNAMICS</td><td class="mono">0 / 1</td><td>Interrupt mode dynamics.</td></tr>
+<tr><td class="mono">DIRA_POSITIVE / _NEGATIVE / _SHORTEST</td><td class="mono">1 / 2 / 3</td><td>orientationDirection / directionA.</td></tr>
+</tbody></table></div>
+</div>
+
+</div>
+</div>
+</section>

@@ -1,0 +1,41 @@
+<!-- ============================================================
+     S7 — STATUSWORD DECODER
+     ============================================================ -->
+<section class="section" id="s7">
+  <div class="wrap">
+    <p class="eyebrow">Diagnostics</p>
+    <h2>StatusWord decoder</h2>
+    <p class="section-intro">Click a bit to see what it means, or replay the handshake below and watch the bits light as it advances.</p>
+
+    <div class="word-group">
+      <h4>StatusWord</h4>
+      <div class="bit-board" id="statusBits" role="group" aria-label="StatusWord bits"></div>
+      <div class="bit-meaning" id="statusMeaning" aria-live="polite">Select a bit to see its meaning.</div>
+    </div>
+
+    <div class="word-group">
+      <h4>ErrorWord</h4>
+      <div class="bit-board" id="errorBits" role="group" aria-label="ErrorWord bits"></div>
+    </div>
+
+    <div class="word-group">
+      <h4>WarningWord</h4>
+      <div class="bit-board" id="warningBits" role="group" aria-label="WarningWord bits"></div>
+    </div>
+
+    <div class="tag-list">
+      <div class="row"><b>&lt;TO&gt;.ErrorDetail.LineNumber</b> &mdash; line number of the error</div>
+      <div class="row"><b>&lt;TO&gt;.ErrorDetail.ErrorInfo</b> &mdash; further error information</div>
+      <div class="row"><b>&lt;TO&gt;.ProgramName</b> &mdash; name of the loaded Interpreter program</div>
+      <div class="row"><b>&lt;TO&gt;.MappingName</b> &mdash; name of the loaded Interpreter mapping</div>
+      <div class="row"><b>&lt;TO&gt;.StatusInterpreter.ProgramMode</b> &mdash; current program mode</div>
+    </div>
+
+    <h3 style="font-family:var(--font-display);font-size:1.2rem;margin-top:var(--sp-8);margin-bottom:var(--sp-3);">Handshake</h3>
+    <div class="control-row">
+      <button class="btn primary" id="ribbonPlay" type="button">Replay handshake</button>
+    </div>
+    <div class="ribbon" id="ribbon" aria-live="polite"></div>
+    <p class="ribbon-branch">Branch: MC_StopProgram can move the sequence to X7 Stopping and then X8 Interrupted at any point after loading.</p>
+  </div>
+</section>

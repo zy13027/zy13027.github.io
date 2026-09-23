@@ -1,0 +1,16 @@
+{
+  "name": "lprodreg-register-console",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "An interactive guide to the Siemens LProdReg product register library, with a live pick-and-place line whose register fills and empties as you watch.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "artifact": "vite build && node tools/build-artifact.mjs"
+  },
+  "devDependencies": {
+    "vite": "^5.4.11"
+  }
+}

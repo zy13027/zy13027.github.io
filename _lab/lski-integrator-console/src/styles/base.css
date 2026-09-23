@@ -1,0 +1,23 @@
+/* Reset injected by the Artifact runtime skeleton (SPEC.md), carried here so the
+   standalone page renders identically; the page's own body rule below overrides
+   its font/background, exactly as it did when published. */
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#f7f7f5}
+img{max-width:100%}
+[hidden]{display:none!important}
+
+/* Element defaults, moved verbatim from the artifact's shell <style> block. */
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--f-body);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--f-disp);font-weight:700;line-height:1.12;text-wrap:balance;margin:0}
+p{margin:0 0 .9em}
+a{color:var(--accent);text-underline-offset:3px}
+code,.mono{font-family:var(--f-mono);font-size:.88em}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{text-align:left;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);font-weight:500;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+tbody tr:hover{background:var(--surface-2)}
+button,select,input{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent-2);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}

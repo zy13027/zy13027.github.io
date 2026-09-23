@@ -1,0 +1,88 @@
+#simulator .sim-lab{display:grid;gap:16px;grid-template-columns:minmax(0,340px) minmax(0,1fr) minmax(0,250px);grid-template-areas:"list canvas fb"}
+@media (max-width:980px){#simulator .sim-lab{grid-template-columns:1fr;grid-template-areas:"canvas" "fb" "list"}}
+#simulator .sim-col{min-width:0;display:flex;flex-direction:column;gap:10px}
+#simulator .sim-list{grid-area:list}
+#simulator .sim-canvas-col{grid-area:canvas}
+#simulator .sim-fb{grid-area:fb}
+#simulator .sim-h{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--text-dim);font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:8px}
+#simulator .sim-list-body{max-height:min(640px,68vh);overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding-right:2px}
+#simulator .sim-row{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--r-m);background:var(--surface-2);padding:8px 9px;cursor:pointer}
+#simulator .sim-row.sim-acc-amber{border-left-color:var(--amber)}
+#simulator .sim-row.sim-acc-pink{border-left-color:var(--pink)}
+#simulator .sim-row.sim-acc-blue{border-left-color:var(--blue)}
+#simulator .sim-row.sim-focused{outline:2px solid var(--accent-2);outline-offset:-1px;background:color-mix(in srgb,var(--accent) 9%,var(--surface-2))}
+#simulator .sim-row.sim-executing{box-shadow:0 0 0 2px var(--accent-2) inset}
+#simulator .sim-rhead{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+#simulator .sim-idx{font-family:var(--f-mono);font-size:11px;color:var(--text-dim);min-width:1.6em}
+#simulator .sim-tag{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.04em;font-weight:600;color:var(--text)}
+#simulator .sim-sub{font-size:11px;color:var(--text-dim);margin-left:auto;white-space:nowrap}
+#simulator .sim-rbtns{display:flex;gap:2px;margin-left:6px}
+#simulator .sim-rbtn{font-family:var(--f-mono);font-size:11px;line-height:1;background:var(--surface);border:1px solid var(--line);border-radius:5px;color:var(--text-2);padding:3px 6px;cursor:pointer}
+#simulator .sim-rbtn:hover{border-color:var(--accent);color:var(--accent)}
+#simulator .sim-fields{display:flex;flex-wrap:wrap;gap:6px 10px}
+#simulator .sim-field{display:flex;flex-direction:column;gap:2px;min-width:0}
+#simulator .sim-field span{font-family:var(--f-mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim)}
+#simulator .sim-field input,#simulator .sim-field select{background:var(--surface);border:1px solid var(--line);border-radius:5px;padding:3px 5px;font-size:12.5px;color:var(--text)}
+#simulator .sim-field input[type=number]{width:64px;font-variant-numeric:tabular-nums}
+#simulator .sim-field.sim-wide select{min-width:150px}
+#simulator .sim-field.sim-ro input{color:var(--text-dim);background:var(--surface-3)}
+#simulator .sim-dyngrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 10px;margin-top:4px}
+#simulator .sim-dynitem{display:flex;flex-direction:column;gap:2px}
+#simulator .sim-dynitem span{font-family:var(--f-mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-dim)}
+#simulator .sim-dynrow{display:flex;gap:4px;align-items:center}
+#simulator .sim-note{font-size:10.5px;color:var(--text-dim);margin-top:4px}
+#simulator .sim-eop{border:1px dashed var(--line);border-radius:var(--r-m);padding:7px 9px;font-family:var(--f-mono);font-size:11px;color:var(--text-dim);text-align:center}
+#simulator .sim-addbar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding-top:2px}
+#simulator .sim-addbar select{flex:1;min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:6px 7px;font-size:12.5px;color:var(--text)}
+#simulator .sim-btn{font-family:var(--f-body);font-weight:600;font-size:12.5px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--text);padding:6px 11px;cursor:pointer;white-space:nowrap}
+#simulator .sim-btn:hover{border-color:var(--accent);color:var(--accent)}
+#simulator .sim-btn.sim-primary{background:var(--grad);border-color:transparent;color:var(--accent-ink)}
+#simulator .sim-btn:disabled{opacity:.4;cursor:not-allowed}
+#simulator .sim-btn:disabled:hover{border-color:var(--line);color:var(--text)}
+#simulator .sim-reseed{font-family:var(--f-mono);font-size:10.5px;color:var(--accent);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:2px;padding:0}
+#simulator .sim-canvas-wrap{position:relative;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-l);padding:8px;box-shadow:var(--shadow)}
+#simulator canvas.sim-canvas{width:100%;height:auto;display:block;aspect-ratio:4/3;max-width:100%;border-radius:var(--r-m);background:var(--surface)}
+#simulator .sim-stripe{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;padding:9px 4px 2px;font-size:12px}
+#simulator .sim-state{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;border-radius:100px;padding:3px 10px;border:1px solid var(--line);background:var(--surface-2);color:var(--text-2);font-weight:600}
+#simulator .sim-state.sim-st-run{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok);border-color:transparent}
+#simulator .sim-state.sim-st-int{background:color-mix(in srgb,var(--warn) 20%,transparent);color:var(--warn);border-color:transparent}
+#simulator .sim-state.sim-st-stop{background:color-mix(in srgb,var(--err) 18%,transparent);color:var(--err);border-color:transparent}
+#simulator .sim-state.sim-st-wait{background:color-mix(in srgb,var(--blue) 18%,transparent);color:var(--blue);border-color:transparent}
+#simulator .sim-state.sim-st-done{background:color-mix(in srgb,var(--accent) 18%,transparent);color:var(--accent);border-color:transparent}
+#simulator .sim-metric{font-family:var(--f-mono);color:var(--text-2)}
+#simulator .sim-metric b{color:var(--text);font-weight:600}
+#simulator .sim-followlink{margin-left:auto;font-family:var(--f-mono);font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:2px;padding:0}
+#simulator .sim-progress{display:flex;gap:2px;padding:2px 4px 0}
+#simulator .sim-tick{flex:1;height:5px;border-radius:2px;background:var(--surface-3);cursor:pointer;min-width:3px}
+#simulator .sim-tick.sim-tick-done{background:var(--accent-2)}
+#simulator .sim-tick.sim-tick-cur{background:var(--accent);box-shadow:0 0 0 1px var(--accent-ink)}
+#simulator .sim-fb-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px 8px;font-size:12px}
+#simulator .sim-fb-grid>*{min-width:0;overflow-wrap:break-word;word-break:normal;hyphens:none}
+#simulator .sim-fb-grid dt{font-family:var(--f-mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-dim);margin:0}
+#simulator .sim-fb-grid dd{margin:1px 0 0;font-family:var(--f-mono);font-size:12px;color:var(--text);font-weight:600;font-variant-numeric:tabular-nums;word-break:break-word}
+#simulator .sim-fb-grid dd.sim-on{color:var(--ok)}
+#simulator .sim-fb-grid dd.sim-err{color:var(--err)}
+#simulator .sim-ctrlgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+#simulator .sim-ctrlgrid .sim-btn{width:100%}
+#simulator .sim-seqrow{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text-2)}
+#simulator .sim-seqrow select{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:12px;color:var(--text)}
+#simulator .sim-ovrow{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--text-2)}
+#simulator .sim-ovrow input[type=range]{flex:1}
+#simulator .sim-ovval{font-family:var(--f-mono);font-variant-numeric:tabular-nums;color:var(--text);min-width:3.4em;text-align:right}
+#simulator .sim-flagstrip{display:flex;flex-wrap:wrap;gap:5px}
+#simulator .sim-flag{font-family:var(--f-mono);font-size:11px;width:28px;height:24px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--text-dim);cursor:pointer;font-weight:700}
+#simulator .sim-flag.sim-on{background:var(--ok);border-color:transparent;color:#04241A}
+#simulator .sim-flag.sim-wait{outline:2px solid var(--blue);outline-offset:1px}
+#simulator .sim-ack{width:100%;margin-top:4px}
+#simulator .sim-legend{display:flex;flex-wrap:wrap;gap:10px 18px;padding:12px 2px 0;font-size:12px;color:var(--text-2)}
+#simulator .sim-litem{display:flex;align-items:center;gap:6px;white-space:nowrap}
+#simulator .sim-sw{width:16px;height:16px;flex:none;display:inline-block;position:relative}
+#simulator .sim-sw-trail{border-radius:2px;background:var(--grad)}
+#simulator .sim-sw-ptp{border-top:2px dashed var(--pink);width:16px;height:0;align-self:center}
+#simulator .sim-sw-centre{border-radius:50%;background:var(--amber)}
+#simulator .sim-sw-aux{background:var(--blue);transform:rotate(45deg);width:11px;height:11px;margin:2.5px}
+#simulator .sim-sw-ghost{border-radius:50%;border:2px solid var(--text-dim);background:none}
+#simulator .sim-sw-flag{background:var(--amber);clip-path:polygon(0 0,100% 0,100% 50%,0 50%);width:14px;height:14px}
+#simulator .sim-sw-wait{border-radius:50%;border:2px dashed var(--blue);background:none}
+#simulator .sim-sw-tool{border-radius:50%;background:var(--text);position:relative}
+@media(max-width:520px){#simulator .sim-fb-grid{grid-template-columns:1fr}}

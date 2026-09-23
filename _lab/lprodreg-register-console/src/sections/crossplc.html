@@ -1,0 +1,100 @@
+<section class="sec" id="crossplc"><div class="wrap">
+  <header>
+    <div class="eyebrow">Chapter 6</div>
+    <h2>Cross&#8209;PLC operation</h2>
+    <p class="lede">When one PLC's motion&#8209;control resources can't cover every conveyor and kinematic in the line, LProdReg keeps running on a &ldquo;main PLC&rdquo; and hands the real axes to a &ldquo;secondary PLC&rdquo; &mdash; exchanging only the mandatory I/O of the affected flow objects.</p>
+  </header>
+
+  <figure class="rf-xplc-diagram card">
+    <svg viewBox="0 0 780 300" role="img" aria-label="Main PLC and secondary PLC connected by three transfer-data channels">
+      <defs>
+        <marker id="rf-xarrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--accent-2)"></path>
+        </marker>
+      </defs>
+      <rect x="24" y="30" width="230" height="240" rx="14" fill="var(--surface-2)" stroke="var(--line)" stroke-width="1.4"></rect>
+      <text x="139" y="56" text-anchor="middle" font-family="var(--f-mono)" font-size="11" letter-spacing=".08em" fill="var(--text-dim)">MAIN PLC</text>
+      <rect x="42" y="70" width="194" height="36" rx="8" fill="var(--surface)" stroke="var(--line-soft)"></rect>
+      <text x="139" y="93" text-anchor="middle" font-family="var(--f-mono)" font-size="11.5" fill="var(--text)">LProdReg_RegisterManager</text>
+      <rect x="42" y="118" width="194" height="34" rx="8" fill="var(--surface)" stroke="var(--line-soft)"></rect>
+      <text x="139" y="139" text-anchor="middle" font-family="var(--f-mono)" font-size="11" fill="var(--text)">FO_ConveyorBelt</text>
+      <rect x="42" y="164" width="194" height="34" rx="8" fill="var(--surface)" stroke="var(--line-soft)"></rect>
+      <text x="139" y="185" text-anchor="middle" font-family="var(--f-mono)" font-size="11" fill="var(--text)">FO_Actuator</text>
+      <text x="139" y="230" text-anchor="middle" font-size="11.5" fill="var(--text-2)">Runs the register &amp;</text>
+      <text x="139" y="246" text-anchor="middle" font-size="11.5" fill="var(--text-2)">every flow object</text>
+
+      <rect x="526" y="30" width="230" height="240" rx="14" fill="var(--surface-2)" stroke="var(--line)" stroke-width="1.4"></rect>
+      <text x="641" y="56" text-anchor="middle" font-family="var(--f-mono)" font-size="11" letter-spacing=".08em" fill="var(--text-dim)">SECONDARY PLC</text>
+      <rect x="544" y="70" width="194" height="34" rx="8" fill="var(--surface)" stroke="var(--line-soft)"></rect>
+      <text x="641" y="91" text-anchor="middle" font-family="var(--f-mono)" font-size="11" fill="var(--text)">TO_Axis (belt)</text>
+      <rect x="544" y="116" width="194" height="34" rx="8" fill="var(--surface)" stroke="var(--line-soft)"></rect>
+      <text x="641" y="137" text-anchor="middle" font-family="var(--f-mono)" font-size="11" fill="var(--text)">TO_Kinematics</text>
+      <rect x="544" y="162" width="194" height="34" rx="8" fill="var(--surface)" stroke="var(--line-soft)"></rect>
+      <text x="641" y="183" text-anchor="middle" font-family="var(--f-mono)" font-size="11" fill="var(--text)">FB TrackConv (optional)</text>
+      <text x="641" y="230" text-anchor="middle" font-size="11.5" fill="var(--text-2)">Holds the real axes &amp;</text>
+      <text x="641" y="246" text-anchor="middle" font-size="11.5" fill="var(--text-2)">the kinematics logic</text>
+
+      <line x1="256" y1="135" x2="524" y2="135" stroke="var(--accent-2)" stroke-width="1.6" marker-end="url(#rf-xarrow)"></line>
+      <text x="390" y="122" text-anchor="middle" font-family="var(--f-mono)" font-size="10" fill="var(--accent-2)">typeTransferDataFoConveyor &middot; 22 B</text>
+      <text x="390" y="150" text-anchor="middle" font-size="9.5" fill="var(--text-dim)">main &#8594; secondary, conveyor position</text>
+
+      <line x1="524" y1="172" x2="256" y2="172" stroke="var(--blue)" stroke-width="1.6" marker-end="url(#rf-xarrow)"></line>
+      <text x="390" y="164" text-anchor="middle" font-family="var(--f-mono)" font-size="10" fill="var(--blue)">typeTransferDataFoActuator &middot; 126 B</text>
+
+      <line x1="256" y1="205" x2="524" y2="205" stroke="var(--blue)" stroke-width="1.6" marker-end="url(#rf-xarrow)"></line>
+      <text x="390" y="222" text-anchor="middle" font-family="var(--f-mono)" font-size="10" fill="var(--blue)">typeTransferDataTrackConv &middot; 50 B</text>
+      <text x="390" y="196" text-anchor="middle" font-size="9.5" fill="var(--text-dim)">object &amp; pick/place data, both directions</text>
+    </svg>
+    <figcaption>Both transfer directions ride on the same mechanism &mdash; a typed I/O tag on each side, cyclically exchanged. Direction of the arrow above is the data's origin; the underlying PROFINET relation is always bidirectional.</figcaption>
+  </figure>
+
+  <div class="rf-h3row"><h3>Setting it up</h3><span class="tag">chapter 6.2 &ndash; 6.3</span></div>
+  <p class="rf-lede">Two independent approaches, both built on the same transfer&#8209;area mechanism. Integrate every transfer type and transfer block of the library into the secondary PLC &mdash; nothing else from LProdReg is needed there.</p>
+  <div class="grid rf-xplc-grid">
+    <div class="card pad">
+      <h4>Direct data exchange (IRT)</h4>
+      <div class="rf-lim">Preferred whenever possible</div>
+      <ul>
+        <li>High&#8209;precision, deterministic, PROFINET IO with IRT</li>
+        <li>Only when every PLC is in the same TIA project</li>
+        <li>No PROFINET alarms</li>
+      </ul>
+      <div class="rf-xplc-steps">
+        <p class="rf-note-small" style="margin-top:10px"><b>Requirements</b> STEP&nbsp;7 V16+, firmware V2.8+, IRT&#8209;capable devices, one sync domain with a sync master/slave pair, IRT ports interconnected.</p>
+        <p class="rf-note-small"><b>Setup</b> create the comm. relation on the main PLC's PROFINET interface &rarr; add one transfer area per I/O tag pair, matching lengths exactly &rarr; assign each area to MC&#8209;Servo (or an isochronous OB) and a process image partition.</p>
+      </div>
+    </div>
+    <div class="card pad">
+      <h4>I&#8209;Device (RT / IRT)</h4>
+      <div class="rf-lim">For separate projects, or when direct exchange isn't possible</div>
+      <ul>
+        <li>Unlinks the projects &mdash; secondary PLC is exported as a GSD file and imported into the main project</li>
+        <li>Deterministic PROFINET RT (can use IRT on the higher&#8209;level controller, but not IRT and RT simultaneously on both sides)</li>
+        <li>Works even inside one shared project</li>
+      </ul>
+      <div class="rf-xplc-steps">
+        <p class="rf-note-small" style="margin-top:10px"><b>Setup</b> set the secondary interface's operating mode to I&#8209;device &rarr; assign the IO controller &rarr; tick &ldquo;parameter assignment by higher&#8209;level IO controller&rdquo; for IRT on the main side &rarr; export/import the GSD file &rarr; create and edit transfer areas exactly as for direct exchange.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="scrollx rf-xplc-limtbl"><table>
+    <thead><tr><th>Comm. method</th><th>Max. transfer area</th><th>Max. areas</th></tr></thead>
+    <tbody>
+      <tr><td>Direct data exchange</td><td class="num">3075 Byte</td><td class="num">128 sender / 512 receiver (&le;64 CPUs)</td></tr>
+      <tr><td>I&#8209;Device</td><td class="num">1440 Byte</td><td class="num">64</td></tr>
+    </tbody>
+  </table></div>
+  <div class="scrollx" style="margin-top:10px"><table>
+    <thead><tr><th>Flow object</th><th>Required transfer length</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">FO_ConveyorBelt</td><td class="num">22 Byte (data in)</td></tr>
+      <tr><td class="mono">FO_Actuator</td><td class="num">152 Byte &mdash; 126 B out + 50 B in</td></tr>
+    </tbody>
+  </table></div>
+  <p class="rf-note-small">Maximum data length for a single transfer area is 1024 Byte either way.</p>
+
+  <div class="rf-h3row"><h3>Synchronous operation for conveyor tracking</h3><span class="tag">chapter 6.4.2</span></div>
+  <p class="rf-sync-note">When the conveyor belt is on the main PLC but the kinematic tracking it is on a secondary PLC (or vice versa), a 1:1 gearing must run cross&#8209;PLC: the real belt's leading value goes over to a &ldquo;leading axis proxy&rdquo; technology object on the other side, which is then geared 1:1 to a <em>virtual representative</em> TO_Axis &mdash; and that virtual axis, once its delay time is configured correctly, is what conveyor tracking actually follows.</p>
+  <div class="box caution"><b>Caution</b>Cross&#8209;PLC synchronous operation is not possible over I&#8209;Device communication &mdash; conveyor tracking across PLCs needs direct data exchange.</div>
+</div></section>

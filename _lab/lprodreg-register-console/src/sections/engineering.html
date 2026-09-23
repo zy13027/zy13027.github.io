@@ -1,0 +1,130 @@
+<section class="sec" id="engineering"><div class="wrap">
+  <header>
+    <div class="eyebrow">Chapter 2.7 &amp; 3</div>
+    <h2>Bringing it into a project</h2>
+    <p class="lede">The manual's own path from an empty TIA project to a running register, in order. Each step expands with the concrete detail &mdash; and the machine used as the running example throughout is the same three&#8209;conveyor, two&#8209;picker setup as <a href="#scenarios">Scenario&nbsp;2</a>.</p>
+  </header>
+
+  <details class="rf-eng-step" open>
+    <summary><span class="rf-eng-n"></span><span class="rf-eng-t">Requirements</span><span class="rf-eng-s">2.7.1</span></summary>
+    <div class="rf-eng-body">
+      <p>A base TIA Portal V20 project. Nothing library&#8209;specific yet &mdash; just the usual axis groundwork:</p>
+      <div class="box"><b>Note</b>Before any axis motion command, the axis must be enabled and referenced with <span class="mono">MC_Power</span> and <span class="mono">MC_Home</span>. Errors reset via <span class="mono">MC_Reset</span>.</div>
+    </div>
+  </details>
+
+  <details class="rf-eng-step">
+    <summary><span class="rf-eng-n"></span><span class="rf-eng-t">Import the library</span><span class="rf-eng-s">2.7.2</span></summary>
+    <div class="rf-eng-body">
+      <ol>
+        <li>Drag <span class="mono">LProdReg_Tags</span> into the PLC's <b>PLC tags</b>.</li>
+        <li>Drag <span class="mono">LProdReg_Types</span> into <b>PLC data types</b>.</li>
+        <li>Drag <span class="mono">LProdReg_Blocks</span> into <b>Program blocks</b>.</li>
+        <li>The blocks can now be configured and called.</li>
+      </ol>
+      <p>For the HMI faceplate specifically: update the project library's Types from the global library, drag <span class="mono">LProdReg_Faceplate</span> onto a screen, connect its <b>Interface</b> tab to the matching PLC variable, then compile and download.</p>
+    </div>
+  </details>
+
+  <details class="rf-eng-step">
+    <summary><span class="rf-eng-n"></span><span class="rf-eng-t">Parametrise the configuration tags</span><span class="rf-eng-s">3.1</span></summary>
+    <div class="rf-eng-body">
+      <p>Work through <span class="mono">LProdReg_ConfigurationTags</span> by answering these questions for the application:</p>
+      <ul>
+        <li>How many product conveyors, how many container conveyors?</li>
+        <li>Maximum simultaneous products / containers on any one conveyor?</li>
+        <li>Maximum products / containers held in container pockets?</li>
+        <li>How many container groups &mdash; must equal the container&#8209;conveyor count?</li>
+        <li>Maximum container pockets across all groups?</li>
+        <li>How many stations, and max products/containers per station?</li>
+        <li>Maximum objects per camera picture, and required reference/object data buffer sizes?</li>
+        <li>How many coordinate frames &mdash; one per conveyor, one per sensor?</li>
+        <li>Maximum used flow objects, and the matching request/response buffer size (+2 if <span class="mono">LProdReg_Hmi_Main</span> is used)?</li>
+      </ul>
+      <div class="box notice"><b>Note</b>The exact number of internally called flow objects is only known for certain by reading <span class="mono">diagnostics.numberOfFlowObjects</span> after the first enable &mdash; use it to true up the buffer constants.</div>
+    </div>
+  </details>
+
+  <details class="rf-eng-step">
+    <summary><span class="rf-eng-n"></span><span class="rf-eng-t">Add user&#8209;definable object characteristics</span><span class="rf-eng-s">3.2</span></summary>
+    <div class="rf-eng-body">
+      <p>Add fields (colour, shape, &hellip;) to <span class="mono">LProdReg_typeObjectUserDefinedProperties</span> if the application needs them. They then become available to: prioritisation/sorting in the register, custom picking strategies at the FO&#8209;Actuator, and deletion by characteristic at an FO&#8209;Sink.</p>
+    </div>
+  </details>
+
+  <details class="rf-eng-step">
+    <summary><span class="rf-eng-n"></span><span class="rf-eng-t">Define coordinate systems</span><span class="rf-eng-s">3.3</span></summary>
+    <div class="rf-eng-body">
+      <p>One frame per conveyor and per sensor (camera / light switch), all referenced to the world coordinate system.</p>
+      <div class="rf-eng-machine">
+        <h5>Example machine</h5>
+        <ul class="rf-kv">
+          <li><b>WCS</b> Picker&nbsp;1's own position</li>
+          <li><b>3 frames</b> Conveyor_1 / 2 / 3, matching the digital twin</li>
+          <li><b>Picker 2's KCS</b> parametrised relative to picker&nbsp;1</li>
+        </ul>
+      </div>
+    </div>
+  </details>
+
+  <details class="rf-eng-step">
+    <summary><span class="rf-eng-n"></span><span class="rf-eng-t">Configure the RegisterManager</span><span class="rf-eng-s">3.4</span></summary>
+    <div class="rf-eng-body">
+      <p>Done in the shipped DB <span class="mono">LProdReg_RegisterManagerConfig</span>. The manual walks it through the example machine &mdash; a product conveyor, two container conveyors and two delta pickers:</p>
+      <div class="rf-eng-machine">
+        <h5>Product conveyor</h5>
+        <ul class="rf-kv"><li><b>ID 1</b> coordSystemIndex 1 (Conveyor_1); camera assigned to the same frame; sink zone at the belt's end; TO_PositioningAxis referenced.</li></ul>
+      </div>
+      <div class="rf-eng-machine">
+        <h5>Container conveyor 1</h5>
+        <ul class="rf-kv"><li><b>ID 2</b> coordSystemIndex 2 (Conveyor_2); light switch on the same frame; sink zone; TO_PositioningAxis referenced.</li></ul>
+      </div>
+      <div class="rf-eng-machine">
+        <h5>Container conveyor 2</h5>
+        <ul class="rf-kv"><li><b>ID 3</b> coordSystemIndex 3 (Conveyor_3); light switch; sink zone; TO_PositioningAxis referenced.</li></ul>
+      </div>
+      <div class="rf-eng-machine">
+        <h5>Actuator 1 (picker 1)</h5>
+        <ul class="rf-kv"><li><b>mode 2</b> pick products, place in container; <span class="mono">objectPickPriority</span> = <span class="mono">LPRODREG_EXAMPLE_USER_DEFINED_ACTUATOR_PRIORITY_CASE_2</span>; pick conveyor ID 1; place conveyor ID 2.</li></ul>
+      </div>
+      <div class="rf-eng-machine">
+        <h5>Actuator 2 (picker 2)</h5>
+        <ul class="rf-kv"><li><b>mode 2</b> pick whole containers, place in container; <span class="mono">objectPickPriority</span> = <span class="mono">LPRODREG_PRIO_NO_PRIO</span> (entry order); pick conveyor ID 2; place conveyor ID 3.</li></ul>
+      </div>
+    </div>
+  </details>
+
+  <details class="rf-eng-step">
+    <summary><span class="rf-eng-n"></span><span class="rf-eng-t">Call the FB in the project</span><span class="rf-eng-s">3.5</span></summary>
+    <div class="rf-eng-body">
+      <p>Instantiate in Main OB or a Pre&#8209;Servo OB, depending on timing needs, and interconnect with the library's own <span class="mono">LProdReg_DataExchange</span>, <span class="mono">LProdReg_ProductDataBase</span>, <span class="mono">LProdReg_ActuatorInterface</span> and <span class="mono">LProdReg_RegisterManagerConfig</span> DBs. From there, hook <span class="mono">ActuatorInterface</span> to whatever controls the pickers.</p>
+    </div>
+  </details>
+
+  <details class="rf-eng-step">
+    <summary><span class="rf-eng-n"></span><span class="rf-eng-t">Provide object data to it</span><span class="rf-eng-s">3.6</span></summary>
+    <div class="rf-eng-body">
+      <p>Feed the sensor inputs described in the block interface above: light switch triggers from digital signals plus a prepared object&#8209;data DB per conveyor, and camera triggers plus incoming object count/data from the vision interface.</p>
+    </div>
+  </details>
+
+  <details class="rf-eng-step">
+    <summary><span class="rf-eng-n"></span><span class="rf-eng-t">Interconnect with a FB controlling kinematics</span><span class="rf-eng-s">3.7</span></summary>
+    <div class="rf-eng-body">
+      <p>Wire the manager's <span class="mono">actuatorInterface</span> InOut to whatever FB drives the picker. If that FB is built on the <span class="mono">LKinCtrl</span> library, its <span class="mono">MC_TrackConveyorBelt</span> input <span class="mono">conveyorBeltOrigin</span> must be configured to match &mdash; positions from the RegisterManager are already in the world coordinate system, so X/Y/Z stay at 0.0 and only orientation A (if the conveyor is rotated against the WCS) matters.</p>
+      <div class="box caution"><b>Caution</b>The orientation set here must match the RegisterManager's own conveyor coordinate system exactly, or conveyor tracking drifts. Link the two values directly rather than entering them twice.</div>
+    </div>
+  </details>
+
+  <details class="rf-eng-step">
+    <summary><span class="rf-eng-n"></span><span class="rf-eng-t">Interconnect externally called flow objects</span><span class="rf-eng-s">3.8</span></summary>
+    <div class="rf-eng-body">
+      <p>Some flow objects are never called from inside the RegisterManager and must be placed and wired by hand into the shared <span class="mono">dataExchange</span> DB:</p>
+      <ul>
+        <li><span class="mono">LProdReg_FoStation</span> &mdash; stations always live outside the manager.</li>
+        <li><span class="mono">LProdReg_Hmi_Main</span> &mdash; the HMI faceplate's backing block.</li>
+        <li>Additional FO&#8209;Sinks &mdash; e.g. for deletion by user&#8209;defined characteristic.</li>
+      </ul>
+    </div>
+  </details>
+</div></section>

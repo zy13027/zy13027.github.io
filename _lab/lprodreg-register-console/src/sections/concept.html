@@ -1,0 +1,188 @@
+<section class="sec" id="concept"><div class="wrap">
+  <header>
+    <div class="eyebrow">1.1&ndash;1.2 &middot; Introduction &amp; mode of operation</div>
+    <h2>What LProdReg does, and how it is wired</h2>
+    <p class="lede">A central product register for process chains: it watches products and containers arrive on running conveyors, keeps their position current while they travel, and hands the right one to a handling device or a sequence of processing stations at the right moment.</p>
+  </header>
+
+  <div class="card pad grid pc-intro-grid">
+    <div>
+      <h3>What it is</h3>
+      <p>LProdReg is the central product register for a process chain. Products and containers are detected as they arrive &mdash; randomly &mdash; on running conveyors, tracked and updated as they move, prioritised or sorted by position or by a user-defined rule, and handed to actuators as position data for picking. Objects can also be deleted, manually or automatically through defined zones. A separate, static <b>station-based</b> mode shifts objects through a chain of processing stations on the FIFO principle instead of a conveyor. The typical field of application is a &ldquo;pick and place&rdquo; task combined with the system function conveyor tracking.</p>
+    </div>
+    <div>
+      <h3>What it's used for</h3>
+      <ul class="pc-usecases">
+        <li>Detecting randomly incoming products/containers via a camera or a light switch</li>
+        <li>Tracking and updating them as they travel along the line</li>
+        <li>Position-based or user-defined prioritising and sorting</li>
+        <li>Providing position data to handling devices (kinematics)</li>
+        <li>Deleting objects manually, or automatically via defined zones</li>
+        <li>Shifting objects through processing stations in station-based mode</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="pc-h3row"><h3>The library's main tasks</h3></div>
+  <div class="pc-tasktags">
+    <span class="tag">Object recognition via sensors</span>
+    <span class="tag">Sensor activation via output cam / measuring input / digital input</span>
+    <span class="tag">Matching reference data to object data</span>
+    <span class="tag">Inserting detected objects into the register</span>
+    <span class="tag">Duplicate detection</span>
+    <span class="tag">Minimum-gap-violation detection</span>
+    <span class="tag">Prioritisation &amp; sorting</span>
+    <span class="tag">Position tracking along the line</span>
+    <span class="tag">Provision of object data to an actuator</span>
+    <span class="tag">Automatic / manual deletion</span>
+    <span class="tag">Successive shifting through stations</span>
+  </div>
+
+  <div class="pc-h3row"><h3>Architecture: a client/server core behind every moving part</h3></div>
+  <p class="pc-arch-text">Every real machine part &mdash; a conveyor belt, a sensor, an actuator &mdash; is modelled as a configurable function block called a <b>flow object (FO)</b>. FOs never touch the data directly: they send a <span class="mono">REQUEST</span> to the core FB <span class="tag">LProdReg_ProductDataBaseManager</span> and get back a <span class="mono">RESPONSE</span>, over the global DB <span class="tag">LProdReg_DataExchange</span> &mdash; a client/server architecture. Only the core FB may read or write the global DB <span class="tag">LProdReg_ProductDataBase</span> (the &ldquo;register&rdquo;), which is exactly what keeps every FO's access conflict-free. Above all of it sits the wrapper FB <span class="tag">LProdReg_RegisterManager</span>, which configures, calls, manages and diagnoses the library blocks beneath it &mdash; the recommended, streamlined alternative to wiring the manager and every FO by hand.</p>
+
+  <figure class="pc-diagram">
+    <svg viewBox="0 0 1000 400" role="img" aria-label="Flow objects send REQUEST messages and receive RESPONSE messages from the core FB LProdReg_ProductDataBaseManager over the global DB LProdReg_DataExchange. Only that core FB may read or write the register LProdReg_ProductDataBase. LProdReg_RegisterManager optionally wraps the flow objects and the core FB, configuring and calling them so the user does not wire requests and responses by hand.">
+      <defs>
+        <marker id="pc-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor"></path>
+        </marker>
+      </defs>
+
+      <!-- RegisterManager wrapper -->
+      <rect class="pc-dg-wrap" x="40" y="18" width="745" height="38" rx="8"></rect>
+      <text x="412" y="37" text-anchor="middle" class="pc-mono pc-b pc-accent2" style="font-size:13px">LProdReg_RegisterManager</text>
+      <text x="412" y="50" text-anchor="middle" class="pc-sub">configures &middot; calls &middot; manages &middot; diagnoses &mdash; recommended wrapper</text>
+      <line class="pc-dg-dash" x1="155" y1="56" x2="155" y2="92"></line>
+      <line class="pc-dg-dash" x1="660" y1="56" x2="660" y2="100"></line>
+
+      <!-- flow objects, staggered -->
+      <rect class="pc-dg-fo" x="40" y="92" width="230" height="38" rx="6"></rect>
+      <text x="155" y="108" text-anchor="middle" class="pc-mono pc-b" style="font-size:12px">FO-Conveyor</text>
+      <text x="155" y="122" text-anchor="middle" class="pc-sub">Belt &middot; StaticStorage</text>
+
+      <rect class="pc-dg-fo" x="54" y="138" width="230" height="38" rx="6"></rect>
+      <text x="169" y="154" text-anchor="middle" class="pc-mono pc-b" style="font-size:12px">FO-Source</text>
+      <text x="169" y="168" text-anchor="middle" class="pc-sub">Source &middot; SourceStation</text>
+
+      <rect class="pc-dg-fo" x="68" y="184" width="230" height="38" rx="6"></rect>
+      <text x="183" y="200" text-anchor="middle" class="pc-mono pc-b" style="font-size:12px">FO-Sensor</text>
+      <text x="183" y="214" text-anchor="middle" class="pc-sub">Camera &middot; LightSwitch &middot; Zone</text>
+
+      <rect class="pc-dg-fo" x="82" y="230" width="230" height="38" rx="6"></rect>
+      <text x="197" y="246" text-anchor="middle" class="pc-mono pc-b" style="font-size:12px">FO-Actuator</text>
+      <text x="197" y="260" text-anchor="middle" class="pc-sub">Kinematic</text>
+
+      <rect class="pc-dg-fo" x="96" y="276" width="230" height="38" rx="6"></rect>
+      <text x="211" y="292" text-anchor="middle" class="pc-mono pc-b" style="font-size:12px">FO-Station</text>
+      <text x="211" y="306" text-anchor="middle" class="pc-sub">Station</text>
+
+      <rect class="pc-dg-fo" x="110" y="322" width="230" height="38" rx="6"></rect>
+      <text x="225" y="338" text-anchor="middle" class="pc-mono pc-b" style="font-size:12px">FO-Sink</text>
+      <text x="225" y="352" text-anchor="middle" class="pc-sub">Product &middot; Container</text>
+
+      <line class="pc-dg-line" x1="270" y1="111" x2="360" y2="111"></line>
+      <line class="pc-dg-line" x1="284" y1="157" x2="360" y2="157"></line>
+      <line class="pc-dg-line" x1="298" y1="203" x2="360" y2="203"></line>
+      <line class="pc-dg-line" x1="312" y1="249" x2="360" y2="249"></line>
+      <line class="pc-dg-line" x1="326" y1="295" x2="360" y2="295"></line>
+      <line class="pc-dg-line" x1="340" y1="341" x2="360" y2="341"></line>
+      <line class="pc-dg-line" x1="360" y1="111" x2="360" y2="341"></line>
+
+      <!-- data exchange channel -->
+      <rect class="pc-dg-chan" x="372" y="100" width="168" height="210" rx="10"></rect>
+      <text x="456" y="118" text-anchor="middle" class="pc-mono pc-b pc-blue" style="font-size:11.5px">LProdReg_DataExchange</text>
+      <text x="456" y="131" text-anchor="middle" class="pc-sub">global DB &middot; request / response channel</text>
+
+      <line class="pc-arrow-req pc-blue" x1="360" y1="175" x2="540" y2="175" stroke="currentColor" stroke-width="2" marker-end="url(#pc-arrow)"></line>
+      <text x="456" y="167" text-anchor="middle" class="pc-mono pc-b pc-blue" style="font-size:10.5px">REQUEST</text>
+      <text x="456" y="193" text-anchor="middle" class="pc-sub2">requestID &middot; flowObjectID &middot; parameters(1..n)</text>
+
+      <line class="pc-arrow-res pc-accent" x1="540" y1="255" x2="360" y2="255" stroke="currentColor" stroke-width="2" marker-end="url(#pc-arrow)"></line>
+      <text x="456" y="247" text-anchor="middle" class="pc-mono pc-b pc-accent" style="font-size:10.5px">RESPONSE</text>
+      <text x="456" y="273" text-anchor="middle" class="pc-sub2">responseID &middot; flowObjectID &middot; parameters(1..n)</text>
+
+      <!-- core -->
+      <rect class="pc-dg-core" x="550" y="100" width="220" height="260" rx="10"></rect>
+      <text x="660" y="184" text-anchor="middle" class="pc-mono pc-b" style="font-size:10.5px">LProdReg_</text>
+      <text x="660" y="200" text-anchor="middle" class="pc-mono pc-b" style="font-size:10.5px">ProductDataBaseManager</text>
+      <text x="660" y="222" text-anchor="middle" class="pc-sub">the core &middot; processes every</text>
+      <text x="660" y="235" text-anchor="middle" class="pc-sub">FO's requests, sends responses</text>
+      <text x="660" y="340" text-anchor="middle" class="pc-sub2">one instance per application</text>
+
+      <!-- core to register -->
+      <line x1="770" y1="230" x2="787" y2="230" stroke="var(--accent)" stroke-width="2" marker-end="url(#pc-arrow)" marker-start="url(#pc-arrow)"></line>
+      <rect class="pc-dg-lock" x="772" y="216" width="13" height="9" rx="1.6"></rect>
+      <path d="M775,216 v-4 a3.5,3.5 0 0 1 7,0 v4" stroke="var(--accent)" stroke-width="1.7" fill="none"></path>
+      <text x="778" y="203" text-anchor="middle" class="pc-mono pc-b pc-accent" style="font-size:9px">sole accessor</text>
+
+      <!-- register -->
+      <rect class="pc-dg-db" x="790" y="140" width="170" height="180" rx="10"></rect>
+      <text x="875" y="176" text-anchor="middle" class="pc-mono pc-b pc-accent" style="font-size:10.5px">LProdReg_</text>
+      <text x="875" y="192" text-anchor="middle" class="pc-mono pc-b pc-accent" style="font-size:10.5px">ProductDataBase</text>
+      <text x="875" y="212" text-anchor="middle" class="pc-b" style="font-size:12px">the register</text>
+      <text x="875" y="230" text-anchor="middle" class="pc-sub">product + container data,</text>
+      <text x="875" y="243" text-anchor="middle" class="pc-sub">plus FO-specific data</text>
+      <text x="875" y="298" text-anchor="middle" class="pc-sub2">written only by the core FB</text>
+    </svg>
+    <figcaption>How a request becomes a register update: every flow object exchanges typed REQUEST / RESPONSE messages with the core FB <span class="mono">LProdReg_ProductDataBaseManager</span> over the global DB <span class="mono">LProdReg_DataExchange</span>; only that core FB may touch the register <span class="mono">LProdReg_ProductDataBase</span> itself, which is what keeps access conflict-free. <span class="mono">LProdReg_RegisterManager</span> (dashed, top) is the optional wrapper that configures, calls and diagnoses the blocks beneath it instead of the user wiring them by hand.</figcaption>
+  </figure>
+
+  <div class="box notice"><b>Note</b>The FB LProdReg_RegisterManager serves as a standalone solution for integrating the LProdReg blocks seamlessly into PLCs. It's an alternative to the modular configuration of the FB LProdReg_ProductDataBaseManager and the FOs, presenting users with a more streamlined and integrated solution &mdash; user interaction then occurs exclusively via the FB's own interface.</div>
+
+  <div class="pc-h3row"><h3>The FO naming schema</h3></div>
+  <p style="font-size:14.5px;color:var(--text-2);max-width:70ch">Every FO's block name spells out its type, so it can be recognised on sight. The six FO types are <b>Conveyors</b>, <b>Sources</b>, <b>Sensors</b>, <b>Actuators</b>, <b>Stations</b> and <b>Sinks</b>.</p>
+  <div class="pc-namerow">
+    <div class="pc-chip"><span class="pc-k">LProdReg_</span><span class="pc-l">library prefix</span></div>
+    <span class="pc-plus">+</span>
+    <div class="pc-chip"><span class="pc-k">Fo</span><span class="pc-l">flow object</span></div>
+    <span class="pc-plus">+</span>
+    <div class="pc-chip"><span class="pc-k">Sensor</span><span class="pc-l">FO type</span></div>
+    <span class="pc-plus">+</span>
+    <div class="pc-chip"><span class="pc-k">Camera</span><span class="pc-l">FO name</span></div>
+    <span class="pc-eq">=</span>
+    <div class="pc-chip pc-result"><span class="pc-k">LProdReg_FoSensorCamera</span><span class="pc-l">the block</span></div>
+  </div>
+
+  <div class="pc-h3row"><h3>Two shapes of automation task</h3></div>
+  <div class="grid pc-tasks">
+    <div class="card pad">
+      <h3><span class="tag">1.2.2</span> Conveyor-based</h3>
+      <ol class="pc-steps">
+        <li><span class="pc-n">1</span><span>Products or containers arrive, in no fixed order, on one or more running conveyor belts.</span></li>
+        <li><span class="pc-n">2</span><span>A FO-Sensor (camera or light switch) detects them &mdash; triggered via TO_OutputCam or TO_MeasuringInput for precision, or a plain digital input, which is less precise.</span></li>
+        <li><span class="pc-n">3</span><span>On trigger, the sensor's FO saves the belt's actual position as <b>reference data</b>, ready to be matched with the detected object's position and characteristics (<b>object data</b>) once it arrives.</span></li>
+        <li><span class="pc-n">4</span><span>A FO-Source, fed directly by the sensor's outputs (or driven manually), sends the matched object to the core FB, which inserts it into the register &mdash; each FO-Source instance inserts only one array element per trigger.</span></li>
+        <li><span class="pc-n">5</span><span>Before insertion the object is prioritised per that conveyor's configured priority mode, then insertion-sorted into its storage array.</span></li>
+        <li><span class="pc-n">6</span><span>From there it is tracked continuously: the FO-Conveyor cyclically updates every object's position in the register as the belt moves.</span></li>
+        <li><span class="pc-n">7</span><span>A FO-Zone can mark a rectangular area on the belt; objects entering it are tagged with that zone's ID &mdash; used by a FO-Sink to delete objects automatically (e.g. at the belt's end), or by a FO-Actuator as a working zone.</span></li>
+        <li><span class="pc-n">8</span><span>When an object enters a FO-Actuator's working zone, the actuator selects the highest-priority object and provides its position &mdash; optionally with <span class="mono">MC_TrackConveyorBelt</span> for time-optimised picking while the belt keeps running, plus an optional user picking strategy layered on top.</span></li>
+        <li><span class="pc-n">9</span><span>The user drives the pick-and-place sequence via control signals, from picking the object to placing it in a container or onto another conveyor.</span></li>
+      </ol>
+    </div>
+    <div class="card pad">
+      <h3><span class="tag">1.2.3</span> Station-based</h3>
+      <ol class="pc-steps">
+        <li><span class="pc-n">1</span><span>Products or containers pass through a series of processing stations of any kind; each station is a FO-Station with its own FIFO storage area in the register.</span></li>
+        <li><span class="pc-n">2</span><span>A FO-SourceStation inserts an object into a station; objects are arranged there strictly on the FIFO principle.</span></li>
+        <li><span class="pc-n">3</span><span>As soon as an object has been inserted, its information (object ID, name, characteristics) is output and it becomes available for processing under the station's selected mode.</span></li>
+        <li><span class="pc-n">4</span><span><b>Products:</b> Mode&nbsp;1 shifts the object to the next station, Mode&nbsp;2 places it on a conveyor belt, or Mode&nbsp;3 places it in a pocket of a container held in the same station.</span></li>
+        <li><span class="pc-n">5</span><span><b>Containers:</b> Mode&nbsp;1 shifts the object to the next station, or Mode&nbsp;2 places it on a conveyor belt.</span></li>
+        <li><span class="pc-n">6</span><span>When processing is triggered, the object's characteristics can be overridden &mdash; e.g. to save the process parameters that station just applied, into the object itself.</span></li>
+      </ol>
+      <div class="box notice" style="margin-top:16px"><b>Note</b>FO-SourceStation and FO-Station are not configurable or manageable via LProdReg_RegisterManager. They must be inserted and called separately in the TIA project, alongside it.</div>
+    </div>
+  </div>
+
+  <div class="pc-h3row"><h3>Benefits</h3></div>
+  <ul class="pc-benefits">
+    <li><b>Modular structure</b> &mdash; usable across applications, one block per real machine part</li>
+    <li><b>Individual configuration interface</b> per module &mdash; conveyor, sensor, actuator, &hellip;</li>
+    <li><b>User-defined prioritisation &amp; picking strategies</b>, based on object characteristics</li>
+    <li><b>User-definable product/container characteristics</b></li>
+    <li><b>Combination with conveyor tracking</b> &mdash; <span class="mono">MC_TrackConveyorBelt</span></li>
+    <li><b>Cross-PLC operation</b> for conveyor belts and actuators (kinematic)</li>
+    <li><b>HMI faceplate</b> for categorised visualisation of the register, with delete and filter functions</li>
+    <li><b>SIMATIC Kinematics Integrator</b> integration, via its ProductRegister plugin</li>
+  </ul>
+</div></section>

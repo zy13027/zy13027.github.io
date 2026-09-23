@@ -1,0 +1,53 @@
+<!-- ============================================================
+     S8 — ENGINEER'S NOTES
+     ============================================================ -->
+<section class="section" id="s8">
+  <div class="wrap">
+    <p class="eyebrow">Field notes</p>
+    <h2>Engineer&rsquo;s notes</h2>
+    <p class="section-intro">The things that bite.</p>
+
+    <div class="notes-list">
+      <div class="note-item">
+        <span class="lead">Assignment vs writeVar.</span>
+        <p><code>x := value</code> takes effect during PREPARATION; <code>writeVar(x, value)</code> takes effect during EXECUTION. Reading a tag in the Interpreter program returns the value valid at the time of PREPARATION.</p>
+      </div>
+      <div class="note-item">
+        <span class="lead">Blending is declared in the preceding job.</span>
+        <p>Unlike the Motion Control instructions, an MCL motion job carries the blending for the transition INTO the next job.</p>
+      </div>
+      <div class="note-item">
+        <span class="lead">Program override multiplies.</span>
+        <p>It works in addition to the technology objects&rsquo; own overrides: program override 50&nbsp;% with a kinematics velocity override of 50&nbsp;% gives 25&nbsp;% resulting velocity override, and 50&nbsp;% for acceleration and deceleration. Changes do not affect jobs already prepared. Range 1&ndash;100&nbsp;%.</p>
+      </div>
+      <div class="note-item">
+        <span class="lead">The 30-kinematics-job ceiling is fixed.</span>
+        <p>The job sequence holds at most 30 kinematics motion jobs whatever &lt;TO_Kinematics&gt;.MotionQueue.MaxNumberOfCommands says.</p>
+      </div>
+      <div class="note-item">
+        <span class="lead">Unload before you load.</span>
+        <p>To load a different or modified program, unload the current one first (MC_LoadProgram Mode 0). After CPU STOP or POWER OFF you must reload.</p>
+      </div>
+      <div class="note-item">
+        <span class="lead">move() never finishes by itself.</span>
+        <p>For motion jobs that do not end automatically, ControlledByInterpreter clears as soon as the TO reaches the specified state &mdash; so MC_StopProgram will not cancel them unless you used setControlledByInterpreter().</p>
+      </div>
+      <div class="note-item">
+        <span class="lead">Debug mode changes the rules. <span class="chip sev-warning" style="cursor:default;">warning</span></span>
+        <p>In &ldquo;Debug&rdquo; program mode, MC_StopProgram and MC_Reset with Restart = TRUE are NOT executed for the Interpreter TO, the program runs with a delay and works with preparation-time values, and the dynamics and path can differ from &ldquo;Automatic&rdquo; mode. The user program keeps running in parallel and can move other axes. Debug mode exists as of technology version V9.0; V8.0 had &ldquo;Automatic&rdquo; only.</p>
+      </div>
+      <div class="note-item">
+        <span class="lead">Read-only mappings must be declared.</span>
+        <p>If the mapped DB variable has the &ldquo;Read only&rdquo; property, the Read only check box must be set for that entry in the mapping.</p>
+      </div>
+      <div class="note-item">
+        <span class="lead">User-defined data types of identical structure are not supported.</span>
+        <p>Only the listed TO_Struct_Ipr_* / TO_Struct_Kinematics_* types map in the Interpreter mapping.</p>
+      </div>
+      <div class="note-item">
+        <span class="lead">It needs a licence.</span>
+        <p>A runtime licence is required per technology CPU: SIMATIC Motion Interpreter basic, 6ES7823-0SJ00-1AA0. You can test the functions with SIMATIC S7-PLCSIM or S7-PLCSIM Advanced.</p>
+      </div>
+    </div>
+  </div>
+</section>

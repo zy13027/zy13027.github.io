@@ -1,0 +1,311 @@
+<section class="sec" id="gettingstarted">
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">Getting started &middot; Entry ID 109755891 &middot; LKinCtrl V5.3 &middot; 04/2026</div>
+  <h2>The getting&#8209;started demo, opened up</h2>
+  <p class="lede">Siemens ships LKinCtrl with a ready&#8209;to&#8209;run TIA Portal project: a simulated 4&#8209;axis kinematics running three scenarios &mdash; a traced contour, a pick&amp;place packaging cell and a conveyor&#8209;tracking hand&#8211;off &mdash; driven by a Unified HMI. Everything below is read out of that project's own exported source, not paraphrased from the manual: real block names, real tag names, and the actual PathData the demo executes.</p>
+</header>
+
+<div class="gs-stack">
+
+<!-- ===================== 1. WHAT IT IS ===================== -->
+<div class="gs-intro-grid">
+  <div class="gs-stack" style="gap:14px">
+    <p>The project consists of four TO&nbsp;PositioningAxis configured as <b>virtual</b> (simulated) axes, connected to a TO&nbsp;Kinematics defined as a <b>3D Rollpicker with orientation</b>. Two further virtual TO&nbsp;PositioningAxis represent the conveyor belts used for conveyor tracking. On the PLC side the example contains two call environments &mdash; one that drives the kinematics, one that feeds the Unified HMI &mdash; plus one FB per scenario that runs its automatic sequencing. Since the HMI is optional, every scenario can equally be driven from a Watch table.</p>
+    <div class="card pad">
+      <h4>Components used <span class="tag">&sect;1.2</span></h4>
+      <div class="scrollx"><table><thead><tr><th>Component</th><th>Qty</th><th>Article no.</th><th>Note</th></tr></thead><tbody>
+        <tr><td>CPU 1518T&#8209;2 PN</td><td class="num">1</td><td class="mono">6ES7 518&#8209;4UP00&#8209;0AB0</td><td>Or other S7&#8209;1500T CPU, FW &ge; 3.1.0</td></tr>
+        <tr><td>MTP2200 Unified Comfort PRO</td><td class="num">1</td><td class="mono">6AV2 128&#8209;3XB27&#8209;0BX0</td><td>Or other WinCC Unified panel, FW V19.0.0.2</td></tr>
+      </tbody></table></div>
+      <p style="margin:10px 0 0;font-size:12.5px">The project file inspected for this page (<span class="mono">…TiaPrj_V19_V21</span>) is the same demo re&#8209;saved in TIA&nbsp;Portal V21 Update&nbsp;2 HF1; the manual's own steps below assume TIA&nbsp;V19 or higher.</p>
+    </div>
+    <div class="box notice"><b>Kinematics trace</b>The kinematics trace is already configured to start recording on every execute of <span class="mono">LKinCtrl_MC_MovePath</span>, and it traces OCS1&#8211;3 as well &mdash; so a scenario's actual path can be checked against its predefined contour without adding anything.</div>
+  </div>
+
+  <div class="gs-stack" style="gap:10px">
+    <div class="card pad gs-scenario gs-acc-blue">
+      <div class="gs-schead"><span class="gs-dot gs-dot-blue"></span><b>Scenario 1A / 1B &middot; Contour</b><span class="tag">Path 1 / 2</span></div>
+      <p>Traces the outline of an &ldquo;S&rdquo; and its circumscribing circle &mdash; a stand&#8209;in for glue, print or cutting work where the TCP must follow a predefined contour precisely. 1A runs in the world coordinate system; 1B runs the identical shape inside OCS3, so redefining that frame simply relocates the whole contour.</p>
+    </div>
+    <div class="card pad gs-scenario gs-acc-pink">
+      <div class="gs-schead"><span class="gs-dot gs-dot-pink"></span><b>Scenario 2 &middot; Packaging</b><span class="tag">Path 3</span></div>
+      <p>A product arrives on a (simulated) conveyor, is picked, rotated 90&deg; and placed into one of four slots in a box; the place point is re&#8209;derived from a UCS each cycle so the same path serves all four slots. Path data is written directly in SCL, not via the HMI.</p>
+    </div>
+    <div class="card pad gs-scenario gs-acc-amber">
+      <div class="gs-schead"><span class="gs-dot gs-dot-amber"></span><b>Scenario 3 &middot; Pick&amp;place tracking</b><span class="tag">Path 4</span></div>
+      <p>A product on conveyor&nbsp;1 is picked on the fly, carried to conveyor&nbsp;2 and placed there while both belts keep moving &mdash; the TCP tracks OCS1 then OCS2. Path data is also written directly in SCL. Stopping mid&#8209;tracking raises a TO error by design and must be acknowledged.</p>
+    </div>
+  </div>
+</div>
+
+<div class="card pad gs-mt2">
+  <h4>Flags &amp; points these scenarios share <span class="tag">&sect;2.1&ndash;2.2</span></h4>
+  <p style="font-size:13px;margin:0 0 8px">All three scenarios read and write the same <span class="mono">setFlagNames</span> / <span class="mono">pointTable</span> arrays in <span class="mono">ExampleProject_Data</span> &mdash; these are the indices Scenario&nbsp;1 and 2 name.</p>
+  <div class="scrollx"><table><thead><tr><th>Kind</th><th>Index</th><th>Name</th><th>Comment</th></tr></thead><tbody>
+    <tr><td>SetFlag</td><td class="num">0</td><td class="mono">S1 Enable actuator</td><td>rising edge: enable actuator</td></tr>
+    <tr><td>SetFlag</td><td class="num">1</td><td class="mono">S1 Disable actuator</td><td>rising edge: disable actuator</td></tr>
+    <tr><td>SetFlag</td><td class="num">2</td><td class="mono">S2 Pick ready</td><td>TRUE: product ready to be picked</td></tr>
+    <tr><td>SetFlag</td><td class="num">3</td><td class="mono">S2 Open actuator</td><td>rising edge: open actuator</td></tr>
+    <tr><td>SetFlag</td><td class="num">4</td><td class="mono">S2 Close actuator</td><td>rising edge: close actuator</td></tr>
+    <tr><td>Point</td><td class="num">1</td><td class="mono">S2 Above place</td><td>position above the place location</td></tr>
+    <tr><td>Point</td><td class="num">2</td><td class="mono">S2 Place</td><td>position to place the product</td></tr>
+  </tbody></table></div>
+  <p style="font-size:12.5px;margin:8px 0 0">Watch the Scenario&nbsp;1 actuator live at <span class="mono">"InstExampleProject_S1_Contour".actuator</span>, Scenario&nbsp;2's at <span class="mono">"InstExampleProject_S2_Packaging".actuator</span>, and the place cycle at <span class="mono">"InstExampleProject_S2_Packaging".placeIndex</span>; Scenario&nbsp;3's conveyor speeds and product interval are set at <span class="mono">"ExampleProject_Control".scenario3VelocityConveyor1/2</span> and <span class="mono">.scenario3ProductIntervalConveyor1</span>.</p>
+</div>
+
+<!-- ===================== 2. COMMISSIONING STEPS ===================== -->
+<div class="gs-mt">
+<h3>Commissioning the example <span class="tag">&sect;3</span></h3>
+<p style="color:var(--text-2);max-width:70ch;margin:2px 0 14px">In the manual's own order: prepare and download once, then drive it from either a Watch table or the Unified HMI.</p>
+
+<details class="gs-step" open>
+  <summary><span class="gs-stepnum">1</span>Prepare and download<span class="gs-chev">&#10148;</span></summary>
+  <div class="gs-stepbody">
+    <ul>
+      <li>Open the example project in TIA Portal V19 or higher.</li>
+      <li><i>Optional</i> &mdash; if PLCSIM or PLCSIM&nbsp;Advanced is used, skip this. On a real PLC: right&#8209;click it &rarr; <b>Change device</b>, select the real PLC and firmware, confirm.</li>
+      <li>Right&#8209;click the PLC &rarr; <b>Download to device</b> &mdash; download hardware and software, then start the PLC.</li>
+    </ul>
+  </div>
+</details>
+
+<details class="gs-step">
+  <summary><span class="gs-stepnum">2</span>Operate via Watch table<span class="gs-chev">&#10148;</span></summary>
+  <div class="gs-stepbody">
+    <ol class="gs-ol">
+      <li>Right&#8209;click the PLC &rarr; <b>Go online</b>; open Watch table <span class="mono">&ldquo;Start scenario&rdquo;</span>.</li>
+      <li>Enable monitoring on the Watch table.</li>
+      <li>Set <span class="mono">"ExampleProject_Control".masterControlWatchTable</span> to <b>TRUE</b> &mdash; while FALSE, Watch table signals are ignored or overwritten.</li>
+      <li>Set <span class="mono">.resetAxes</span>, <span class="mono">.enableAxes</span> and <span class="mono">.homeAxes</span> to TRUE. Reset and home act on a <b>rising edge</b>.</li>
+      <li>Choose a scenario via <span class="mono">.watchTableScenario</span>: <span class="tag">1</span> Scenario&nbsp;1A &middot; <span class="tag">2</span> Scenario&nbsp;1B &middot; <span class="tag">3</span> Scenario&nbsp;2 &middot; <span class="tag">4</span> Scenario&nbsp;3.</li>
+      <li>Confirm all axes are enabled and homed, with no error on axes or move path.</li>
+      <li>Set <span class="mono">.pathOverride</span> to the desired velocity override, then set <span class="mono">.executeScenario</span> to TRUE.</li>
+    </ol>
+    <p style="font-size:13px;margin:8px 0 0">Driven this way, a scenario retriggers indefinitely as soon as the move path is ready again &mdash; stop it with a rising edge on <span class="mono">.stopMovePath</span> (also: <span class="mono">.interruptMovePath</span>, <span class="mono">.resetMovePath</span>). This is <i>Full operation</i> mode: no HMI restrictions apply.</p>
+  </div>
+</details>
+
+<details class="gs-step">
+  <summary><span class="gs-stepnum">3</span>Operate via the Unified HMI<span class="gs-chev">&#10148;</span></summary>
+  <div class="gs-stepbody">
+    <ul>
+      <li><i>Optional</i> &mdash; skip if using a Unified Runtime simulation. On a real panel: right&#8209;click the HMI &rarr; <b>Change device / version</b>, select it, confirm.</li>
+      <li>Start the Unified HMI simulation, or download to the real HMI. A simulated runtime opens in a browser at <span class="mono">https://localhost</span> (or the computer's name in place of <i>localhost</i>).</li>
+      <li>The library's screens sit inside a title bar, sub navigation and status bar that the example project adds around it. The sub navigation's screen list is a JSON string on the faceplate in screen <span class="mono">01_Layout</span>: <pre class="gs-code scrollx">{"default": [
+  {"screen": "LKinCtrl_Editor_Layout", "textListIndex": 1},
+  {"screen": "LKinCtrl_Commissioning_Layout", "textListIndex": 2},
+  {"screen": "LKinCtrl_Diagnostics_Layout", "textListIndex": 3}
+]}</pre> the same mechanism configures the main navigation in screen <span class="mono">03_MainNavigation</span>.</li>
+      <li>In the status bar, pick an operation mode:
+        <div class="scrollx"><table><thead><tr><th>Mode</th><th>Editing</th><th>Program exec.</th><th>Teaching</th></tr></thead><tbody>
+          <tr><td>No operation</td><td>locked</td><td>locked</td><td>locked</td></tr>
+          <tr><td>Automatic</td><td>possible</td><td>possible</td><td>locked</td></tr>
+          <tr><td>Manual</td><td>possible</td><td>locked</td><td>possible (manual vel.)</td></tr>
+          <tr><td>Test run</td><td>possible</td><td>possible</td><td>possible (test&#8209;run vel.)</td></tr>
+          <tr><td>Full operation</td><td colspan="3">No HMI in use &mdash; no restrictions; used automatically when driven from the Watch table</td></tr>
+        </tbody></table></div>
+      </li>
+      <li>Start a scenario: select <b>Automatic</b> or <b>Test run</b> &rarr; pick the scenario &rarr; reset, enable and home the axes &rarr; press play. The play control only enables once the mode is right and every axis is homed, enabled and fault&#8209;free.</li>
+    </ul>
+    <p style="font-size:13px;margin:12px 0 6px">The status bar's kinematics controls, from the manual's own table:</p>
+    <div class="scrollx"><table><thead><tr><th>Control</th><th>Action</th></tr></thead><tbody>
+      <tr><td>Home</td><td>homes all connected kinematic &amp; conveyor axes; LED green once every axis is homed</td></tr>
+      <tr><td>Enable</td><td>toggles enable for all connected axes; LED green once every axis is enabled</td></tr>
+      <tr><td>Reset</td><td>resets the kinematics and all connected axes; LED red on any fault (axes, conveyors or move path)</td></tr>
+      <tr><td>Start / continue</td><td>starts, or resumes an interrupted, path motion execution</td></tr>
+      <tr><td>Interrupt</td><td>interrupts the path motion execution</td></tr>
+      <tr><td>Abort</td><td>aborts the path motion execution</td></tr>
+    </tbody></table></div>
+    <div class="box notice"><b>Note &sect;3.2.2</b>In <i>Automatic</i> the scenario repeats until stopped by hand; in <i>Test run</i> it executes once. Path motion can only start in <i>Automatic</i> or <i>Test run</i>, and only once every connected axis is homed, enabled and fault&#8209;free &mdash; and status&#8209;bar input is ignored entirely while the Watch table's master control is enabled.</div>
+    <div class="box caution"><b>Note &sect;2.3</b>Stopping Scenario&nbsp;3 while it is tracking a conveyor raises a technology&#8209;object error by system design &mdash; it must be acknowledged before the next run, or stop it cleanly by switching to <i>Test run</i> and letting the current cycle finish.</div>
+    <p style="font-size:12.5px;margin:10px 0 0">The status bar's user icon opens a login dialog. The project ships predefined user roles that aren't evaluated by default; enabling user administration on the Settings page then locks the HMI until <span class="mono">Administrator</span> / <span class="mono">Administrator</span> logs in.</p>
+  </div>
+</details>
+</div>
+
+<!-- ===================== 3. WHAT'S INSIDE ===================== -->
+<div class="gs-mt">
+<h3>What's actually inside the project</h3>
+<p style="color:var(--text-2);max-width:70ch;margin:2px 0 14px">Read straight out of the TIA Openness/VCI export under <span class="mono">Vci/</span> &mdash; real object names, and the folder each lives in so you can find it again in TIA Portal.</p>
+
+<div class="gs-obj-grid">
+
+  <div class="card pad">
+    <h4>Kinematics &amp; axes <span class="tag">Technology objects</span></h4>
+    <ul class="gs-objlist">
+      <li><b>Rollpicker</b> &mdash; TO_Kinematics, &ldquo;3D Rollpicker with orientation&rdquo;<span class="gs-path">Vci/PLC/Technology objects/ExampleProject_TOs/Rollpicker.xml</span></li>
+      <li><b>Rollpicker_A1 &hellip; Rollpicker_A4</b> &mdash; 4&times; TO_PositioningAxis, virtual kinematic axes<span class="gs-path">…/ExampleProject_TOs/Rollpicker_A1 … A4/</span></li>
+      <li><b>ConveyorAxis_1, ConveyorAxis_2</b> &mdash; 2&times; TO_PositioningAxis, virtual conveyor axes (Scenario 3)<span class="gs-path">…/ExampleProject_TOs/ConveyorAxis_1, _2/</span></li>
+    </ul>
+    <p style="margin:8px 0 0;font-size:12px">The project also ships a GSDML for a SINAMICS S210 servo drive (<span class="mono">AdditionalFiles/GSD/</span>), even though every axis above is configured virtual &mdash; the six drive channels aren't exercised by this demo.</p>
+  </div>
+
+  <div class="card pad">
+    <h4>Program blocks <span class="tag">ExampleProject_Blocks</span></h4>
+    <ul class="gs-objlist">
+      <li><b>ExampleProject_Main</b> &mdash; OB123, Program Cycle. Calls <span class="mono">Call_Env</span>, <span class="mono">Call_Env_HMI</span> and the three scenario FBs.</li>
+      <li><b>ExampleProject_Startup</b> &mdash; Startup OB. Initialises flag/point names and writes Scenario&nbsp;2 &amp; 3's PathData into retain memory.</li>
+      <li><b>Call_Env</b>, <b>Call_Env_HMI</b> &mdash; the two call&#8209;environment FCs (kinematics control; Unified HMI feed).</li>
+      <li><b>ExampleProject_S1_Contour</b>, <b>_S2_Packaging</b>, <b>_S3_PickAndPlaceTracking</b> &mdash; the three scenario FBs (called as <span class="mono">InstExampleProject_S1&#8230;</span> etc.). Their own body isn't included in this export &mdash; only their calls and interface are visible.</li>
+      <li><b>ExampleProject_Data</b> &mdash; the recipe DB: <span class="mono">pathDataArray</span>, <span class="mono">pointTable</span>, flag names, settings. Retentive.</li>
+      <li><b>ExampleProject_Control</b> / <b>_Status</b> &mdash; the Watch table / command &amp; status interface (see step&nbsp;2 above).</li>
+      <li><b>Statusbar_HMI</b> &mdash; the project's own status&#8209;bar FB; not part of the library.</li>
+    </ul>
+  </div>
+
+  <div class="card pad">
+    <h4>LKinCtrl library blocks present <span class="tag">LKinCtrl_Blocks</span></h4>
+    <ul class="gs-objlist">
+      <li><b>LKinCtrl_MC_MovePath</b>, <b>_MC_JogFrame</b>, <b>_MC_MovePickAndPlaceLinear</b>, <b>_PathDataConversion</b> &mdash; top&#8209;level motion FBs.</li>
+      <li><b>LKinCtrl_AuxBlocks</b> &mdash; <span class="mono">_MC_GroupPower</span>, <span class="mono">_MC_GroupReset</span>, <span class="mono">_MC_GroupHome</span> plus the status/warning/error&#8209;word helpers.</li>
+      <li><b>LKinCtrl_SubBlocks</b> &mdash; the execution engine: <span class="mono">_MC_ExecuteKinMotionCmd</span> and <span class="mono">_PreBuffer</span> directly, plus <span class="mono">_ContOffsetBlocks</span> (1 file), <span class="mono">_MovePickAndPlaceBlocks</span> (19 files &mdash; pick&amp;place geometry) and <span class="mono">_SubCalcBlocks</span> (37 files &mdash; frame transforms, blending distance, flag control and the rest of the path maths).</li>
+      <li><b>LKinCtrl_HMI_Blocks</b> &mdash; the faceplate logic behind the Unified HMI: Commissioning (Configuration, Control Panel), Diagnostics, Editor (Path Editor, Point Editor), Shared (Pickers, Teach Kinematics, Utilities) and the Teach Kinematics blocks.</li>
+      <li>Matching PLC data types under <span class="mono">LKinCtrl_Types</span> / <span class="mono">LKinCtrl_HMI_Types</span>, and tag tables <span class="mono">LKinCtrl_Configuration</span>, <span class="mono">LKinCtrl_Constants</span>, <span class="mono">MC_Constants</span>.</li>
+    </ul>
+  </div>
+
+  <div class="card pad">
+    <h4>HMI <span class="tag">Unified Comfort</span></h4>
+    <ul class="gs-objlist">
+      <li>Device <b>HMI_RT_2</b>, type MTP2200 Unified Comfort PRO, RT firmware 19.0.0.2 &mdash; matching the manual's stated hardware.</li>
+      <li>Screens export as numbered runtime files (<span class="mono">IM/HMI/I/0/Saved/screens/screen_&lt;id&gt;.rdf</span>) rather than by name, so screen names above (<span class="mono">01_Layout</span>, <span class="mono">03_MainNavigation</span>, the module screens) are taken from the manual, not decoded from this export.</li>
+      <li>Instances called from <span class="mono">Call_Env_HMI</span>: <span class="mono">InstStatusbar_HMI</span>, <span class="mono">InstLKinCtrl_Editor_HMI</span>, <span class="mono">InstLKinCtrl_Commissioning_HMI</span>, <span class="mono">InstLKinCtrl_Diagnostics_HMI</span>, <span class="mono">InstLKinCtrl_TeachKinematics_HMI</span>.</li>
+    </ul>
+  </div>
+
+</div>
+<div class="box"><b>Not in this export</b>The Vci/Openness export is PLC software plus a WinCC Unified content export &mdash; it carries no device/network (hardware) configuration, so the actually&#8209;configured CPU model can't be independently confirmed here; the hardware table above is the manual's own. The three scenario FBs' bodies are likewise outside this export &mdash; only their calls, instance names and interfaces are visible.</div>
+</div>
+
+<!-- ===================== 4. PATHDATA ===================== -->
+<div class="gs-mt">
+<h3>The example's own PathData</h3>
+<p style="color:var(--text-2);max-width:70ch;margin:2px 0 14px">Scenario&nbsp;1's contour was authored on the HMI and ships as retained start values inside <span class="mono">"ExampleProject_Data".pathDataArray</span> &mdash; decoded below from that DB's exported start values. Scenarios&nbsp;2 and&nbsp;3 are written directly in SCL, in <span class="mono">ExampleProject_Startup</span>, precisely to show a use case with no HMI involved.</p>
+
+<div class="card pad">
+  <div class="gs-tabbar" role="tablist" aria-label="Scenario path data">
+    <button class="pill on" role="tab" aria-selected="true" data-gstab="s1" id="gs-tabbtn-s1">Scenario 1A &middot; Contour</button>
+    <button class="pill" role="tab" aria-selected="false" data-gstab="s2" id="gs-tabbtn-s2">Scenario 2 &middot; Packaging</button>
+    <button class="pill" role="tab" aria-selected="false" data-gstab="s3" id="gs-tabbtn-s3">Scenario 3 &middot; Pick&amp;place tracking</button>
+  </div>
+
+  <div class="gs-pathpanel" role="tabpanel" id="gs-tab-s1" aria-labelledby="gs-tabbtn-s1">
+    <p style="font-size:13px;margin:2px 0 10px">10 active commands, <span class="mono">pathDataArray[1]</span>, all in WCS. Positions in mm (the TO's configured engineering unit); path velocity likewise per second. The circular moves give their aux point as an offset from the previous target and a travel arc in degrees rather than a radius &mdash; that's <span class="mono">circMode&nbsp;=&nbsp;1</span> (centre + arc) on all three of them here. The DB provisions five path slots in total; only four are used by these scenarios &mdash; the fifth, named &ldquo;Path 5&rdquo;, ships empty.</p>
+    <div class="scrollx"><table><thead><tr><th>#</th><th>Name</th><th>Command</th><th>Target</th><th>Buffer</th><th>Vel</th><th>Notes</th></tr></thead><tbody>
+      <tr><td class="num">1</td><td class="mono">B_up</td><td>MoveLinAbs</td><td class="mono">x0 y28.28 z50 a0</td><td>BlendingLow</td><td class="num">300</td><td>SetFlag 1 (disable actuator) before move</td></tr>
+      <tr><td class="num">2</td><td class="mono">B</td><td>MoveLinAbs</td><td class="mono">x0 y28.28 z0 a0</td><td>BlendingLow</td><td class="num">300</td><td>&mdash;</td></tr>
+      <tr><td class="num">3</td><td class="mono">Circ</td><td>MoveCircAbs</td><td class="mono">arc 360&deg;</td><td>Buffered</td><td class="num">150</td><td>SetFlag 0 (enable actuator) before &mdash; the circumference circle</td></tr>
+      <tr><td class="num">4</td><td class="mono">D_up</td><td>MoveLinAbs</td><td class="mono">x10 y10 z50 a0</td><td>Buffered</td><td class="num">300</td><td>&mdash;</td></tr>
+      <tr><td class="num">5</td><td class="mono">D</td><td>MoveLinAbs</td><td class="mono">x10 y10 z0 a0</td><td>BlendingLow</td><td class="num">300</td><td>&mdash;</td></tr>
+      <tr><td class="num">6</td><td class="mono">&mdash;</td><td>WaitTime</td><td class="mono">3000&nbsp;ms</td><td>Buffered</td><td>&mdash;</td><td><span class="tag">cmdActivated = FALSE</span> &mdash; disabled by default; flip it TRUE (Watch table or HMI) to pause 3&nbsp;s after cmd&nbsp;5</td></tr>
+      <tr><td class="num">7</td><td class="mono">S_up</td><td>MoveCircAbs</td><td class="mono">aux &Delta;y10, arc 235&deg;</td><td>Buffered</td><td class="num">150</td><td>SetFlag 0 (enable actuator) before</td></tr>
+      <tr><td class="num">8</td><td class="mono">F</td><td>MoveLinAbs</td><td class="mono">x5.74 y&minus;1.81 z0 a0</td><td>BlendingLow</td><td class="num">300</td><td>&mdash;</td></tr>
+      <tr><td class="num">9</td><td class="mono">S_lo</td><td>MoveCircAbs</td><td class="mono">aux &Delta;y&minus;10, arc 235&deg;</td><td>BlendingLow</td><td class="num">150</td><td>SetFlag 1 (disable actuator) after</td></tr>
+      <tr><td class="num">10</td><td class="mono">&mdash;</td><td>MoveLinRel</td><td class="mono">&Delta;z +50</td><td>Buffered</td><td>&minus;1 (TO default)</td><td>retract, closing the loop back to the start height</td></tr>
+    </tbody></table></div>
+    <p style="font-size:12.5px;margin:10px 0 0">Scenario&nbsp;1B (<span class="mono">pathDataArray[2]</span>, &ldquo;contourOCS&rdquo;) repeats this exact shape, prefixed with one extra command &mdash; <span class="mono">SetOcsFrame</span> assigning OCS3 an origin of <span class="mono">x100 y0 z0</span> &mdash; and every subsequent command's coordinate system switched from WCS to OCS3. Move the frame, and the whole &ldquo;S&rdquo; moves with it.</p>
+  </div>
+
+  <div class="gs-pathpanel" role="tabpanel" id="gs-tab-s2" hidden aria-labelledby="gs-tabbtn-s2">
+    <p style="font-size:13px;margin:2px 0 10px">7 commands, <span class="mono">pathDataArray[3]</span>, written in <span class="mono">ExampleProject_Startup</span>, region <span class="mono">WRITE_PATH_SCENARIO_2</span>. WCS except the two point references, which resolve against UCS1.</p>
+    <div class="scrollx"><table><thead><tr><th>#</th><th>Command</th><th>Target</th><th>Buffer</th><th>Notes</th></tr></thead><tbody>
+      <tr><td class="num">1</td><td>SetPathDynamics</td><td class="mono">vel 100</td><td>&mdash;</td><td>accel/decel &minus;1 (TO default), jerk &minus;2 (keep current)</td></tr>
+      <tr><td class="num">2</td><td>MoveLinAbs</td><td class="mono">x0 y0 z50 a0 &middot; &ldquo;above pick&rdquo;</td><td>BlendingHigh</td><td>SetFlag 2: wait for pick&#8209;ready, once &middot; SetFlag 3: open actuator before</td></tr>
+      <tr><td class="num">3</td><td>MoveLinAbs</td><td class="mono">x0 y0 z10 a0 &middot; &ldquo;pick&rdquo;</td><td>BlendingHigh</td><td>SetFlag 4: close actuator after</td></tr>
+      <tr><td class="num">4</td><td>MoveLinAbs</td><td class="mono">x0 y0 z50 a0 &middot; &ldquo;above pick&rdquo;</td><td>Buffered</td><td>&mdash;</td></tr>
+      <tr><td class="num">5</td><td>MoveLinAbs</td><td class="mono">Point 1 &ldquo;S2 Above place&rdquo;</td><td>BlendingHigh</td><td>place index re&#8209;written each cycle by the scenario FB</td></tr>
+      <tr><td class="num">6</td><td>MoveLinAbs</td><td class="mono">Point 2 &ldquo;S2 Place&rdquo;</td><td>BlendingHigh</td><td>SetFlag 3: open actuator after</td></tr>
+      <tr><td class="num">7</td><td>MoveLinAbs</td><td class="mono">Point 1 &ldquo;S2 Above place&rdquo;</td><td>Buffered</td><td>&mdash;</td></tr>
+    </tbody></table></div>
+  </div>
+
+  <div class="gs-pathpanel" role="tabpanel" id="gs-tab-s3" hidden aria-labelledby="gs-tabbtn-s3">
+    <p style="font-size:13px;margin:2px 0 10px">3 motion commands and 2 waits, <span class="mono">pathDataArray[4]</span>, region <span class="mono">WRITE_PATH_SCENARIO_3</span> &mdash; each motion command is a <span class="mono">MoveLinPickAndPlace</span> (cmdType&nbsp;11), the command that wraps <span class="mono">LKinCtrl_MC_MovePickAndPlaceLinear</span> for use inside a path.</p>
+    <div class="scrollx"><table><thead><tr><th>#</th><th>Command</th><th>CS / conveyor</th><th>Target</th><th>Vel / accel / decel</th><th>Notes</th></tr></thead><tbody>
+      <tr><td class="num">1</td><td>MoveLinPickAndPlace</td><td>OCS1, conveyor&nbsp;1</td><td class="mono">x0 y0 z10 a0</td><td class="num">500 / 5000 / 5000</td><td>working height 60&nbsp;mm, variable dynamic limits &mdash; pick from conveyor&nbsp;1</td></tr>
+      <tr><td class="num">2</td><td>WaitTime</td><td>&mdash;</td><td class="mono">200&nbsp;ms</td><td>&mdash;</td><td>&mdash;</td></tr>
+      <tr><td class="num">3</td><td>MoveLinPickAndPlace</td><td>OCS2, conveyor&nbsp;2</td><td class="mono">x0 y0 z10 a90</td><td class="num">500 / 5000 / 5000</td><td>start &amp; target working height 60&nbsp;mm &mdash; place on conveyor&nbsp;2, product turned 90&deg;</td></tr>
+      <tr><td class="num">4</td><td>WaitTime</td><td>&mdash;</td><td class="mono">200&nbsp;ms</td><td>&mdash;</td><td>&mdash;</td></tr>
+      <tr><td class="num">5</td><td>MoveLinPickAndPlace</td><td>WCS, no conveyor</td><td class="mono">x50 y0 z80 a0</td><td class="num">500 / 5000 / 5000</td><td>depart vertically 60&nbsp;mm, no target direction &mdash; return to the wait position</td></tr>
+    </tbody></table></div>
+  </div>
+</div>
+</div>
+
+<!-- ===================== 5. HOW IT CALLS THE LIBRARY ===================== -->
+<div class="gs-mt">
+<h3>How the example calls the library</h3>
+<p style="color:var(--text-2);max-width:70ch;margin:2px 0 14px">Two call chains hang off <span class="mono">ExampleProject_Main</span> (OB123): one drives the kinematics, one feeds the Unified HMI.</p>
+
+<div class="card pad gs-chain">
+  <div class="gs-chainroot"><span class="tag">OB123</span><b>ExampleProject_Main</b><span class="gs-chainnote">Program Cycle</span></div>
+  <div class="gs-chainbranch">
+    <div class="gs-chainnode">
+      <div class="gs-chainhead"><span class="tag">FC</span><b>Call_Env</b><span class="gs-chainnote">kinematics control</span></div>
+      <ul class="gs-chainkids">
+        <li class="mono">InstLKinCtrl_MC_GroupPower</li>
+        <li class="mono">InstLKinCtrl_MC_GroupReset</li>
+        <li class="mono">InstLKinCtrl_MC_GroupHome</li>
+        <li class="mono gs-emph">InstLKinCtrl_MC_MovePath</li>
+      </ul>
+    </div>
+    <div class="gs-chainnode">
+      <div class="gs-chainhead"><span class="tag">FC</span><b>Call_Env_HMI</b><span class="gs-chainnote">Unified HMI feed</span></div>
+      <ul class="gs-chainkids">
+        <li class="mono">InstStatusbar_HMI</li>
+        <li class="mono">InstLKinCtrl_Editor_HMI</li>
+        <li class="mono">InstLKinCtrl_Commissioning_HMI</li>
+        <li class="mono">InstLKinCtrl_Diagnostics_HMI</li>
+        <li class="mono">InstLKinCtrl_TeachKinematics_HMI</li>
+      </ul>
+    </div>
+  </div>
+  <div class="gs-chainroot" style="margin-top:10px"><span class="gs-chainnote">also called directly from Main:</span> <span class="mono">InstExampleProject_S1_Contour</span> <span class="mono">InstExampleProject_S2_Packaging</span> <span class="mono">InstExampleProject_S3_PickAndPlaceTracking</span></div>
+</div>
+
+<p style="margin:16px 0 6px">Two real FBD call signatures, read straight from the exported networks. <span class="mono">ExampleProject_Main</span> wires the <b>Rollpicker</b> TO_Kinematics and the whole <span class="mono">ExampleProject_Data</span> record into <span class="mono">Call_Env</span>'s InOuts; <span class="mono">Call_Env</span> passes the same objects straight on into <span class="mono">InstLKinCtrl_MC_MovePath</span>:</p>
+<div class="gs-iogrid">
+  <div class="card pad">
+    <h4 style="font-size:13.5px">Call_Env <span class="tag">FC</span></h4>
+    <div class="gs-io"><div><b>IN</b><span>executeMovePath, stopMovePath, interruptMovePath, resetMovePath, abortMeasurementCmd, groupPower, groupReset, groupHome, selectedPath</span></div>
+    <div><b>OUT</b><span>movePathTracking, movePathReadyForNextPath, movePathDone, movePathAborted, movePathError</span></div>
+    <div><b>INOUT</b><span>homeMode, <span class="gs-emph">kinematics</span> (TO_Kinematics), settings, pathData[*], pointTable, setFlags, valueFlags</span></div></div>
+  </div>
+  <div class="card pad">
+    <h4 style="font-size:13.5px">LKinCtrl_MC_MovePath <span class="tag">FB</span></h4>
+    <div class="gs-io"><div><b>IN</b><span>execute, stop, interrupt, reset, sequenceMode, pathTransition, bufferMode, transitionParameter, configuration, abortMeasurementCmd</span></div>
+    <div><b>OUT</b><span>done, busy, active, commandAborted, error, status, diagnostics, activePathData, activeCmdNo, remainingDistanceActCmd, readyForNextPath, activeUserFrames, bufferedCommands</span></div>
+    <div><b>INOUT</b><span><span class="gs-emph">axesGroup</span> (TO_Kinematics), pathData, pointTable, flags, valueFlags</span></div></div>
+  </div>
+</div>
+<p style="font-size:12.5px;margin:8px 0 0">Only <span class="mono">selectedPath</span> and <span class="mono">settings</span> travel in from the Watch table / HMI side of <span class="mono">Call_Env</span> to choose &amp; configure the path; <span class="mono">sequenceMode</span>, <span class="mono">pathTransition</span>, <span class="mono">bufferMode</span>, <span class="mono">transitionParameter</span> and <span class="mono">configuration</span> on the inner <span class="mono">MC_MovePath</span> call are set inside <span class="mono">Call_Env</span> itself, not exposed further out.</p>
+
+<h4 class="gs-mt2">Standalone blocks the project uses</h4>
+<div class="scrollx"><table><thead><tr><th>Block</th><th>Where it runs</th><th>How it's invoked here</th></tr></thead><tbody>
+  <tr><td class="mono">LKinCtrl_MC_GroupPower</td><td class="mono">InstLKinCtrl_MC_GroupPower</td><td>Called directly by <span class="mono">Call_Env</span>; input <span class="mono">enable</span> driven from <span class="mono">.enableAxes</span> / the HMI's power control.</td></tr>
+  <tr><td class="mono">LKinCtrl_MC_GroupReset</td><td class="mono">InstLKinCtrl_MC_GroupReset</td><td>Called directly by <span class="mono">Call_Env</span>; <span class="mono">execute</span> driven from <span class="mono">.resetAxes</span> (rising edge).</td></tr>
+  <tr><td class="mono">LKinCtrl_MC_GroupHome</td><td class="mono">InstLKinCtrl_MC_GroupHome</td><td>Called directly by <span class="mono">Call_Env</span>; <span class="mono">execute</span> driven from <span class="mono">.homeAxes</span> (rising edge).</td></tr>
+  <tr><td class="mono">LKinCtrl_MC_JogFrame</td><td class="mono">instJogFrame</td><td>Instantiated <i>inside</i> the library's own <span class="mono">LKinCtrl_TeachKinematics</span> block (called via <span class="mono">InstLKinCtrl_TeachKinematics_HMI</span> / <span class="mono">_Commissioning_HMI</span>) for manual jog moves in Teach mode and Commissioning &mdash; the example project never calls it directly. Region <span class="mono">JOG_FRAME</span> triggers it from whichever HMI faceplate or external jog input is active: <span class="mono">jogForward</span>, <span class="mono">jogBackward</span>, <span class="mono">jogToPosition</span> and <span class="mono">jogSPTP</span> each combine an HMI and an &ldquo;external&rdquo; source with a validity check.</td></tr>
+  <tr><td class="mono">LKinCtrl_MC_MovePickAndPlaceLinear</td><td class="mono">instMC_MovePickAndPlaceLinear[1..2]</td><td>A 2&#8209;element multi&#8209;instance array <i>inside</i> <span class="mono">LKinCtrl_MC_ExecuteKinMotionCmd</span> &mdash; <span class="mono">MC_MovePath</span>'s own engine dispatches into it whenever a PathData command has <span class="mono">cmdType&nbsp;=&nbsp;11</span>. This is exactly what Scenario&nbsp;3's three motion commands run as.</td></tr>
+</tbody></table></div>
+
+<p style="margin:14px 0 6px">The dispatch itself, quoted from <span class="mono">LKinCtrl_MC_ExecuteKinMotionCmd</span>:</p>
+<div class="scrollx"><pre class="gs-code">// Reset instance
+#instMC_MovePickAndPlaceLinear[#statFBCounterMoveLinPnP](axesGroup := #to_Kinematics,
+                                                         execute   := FALSE);
+IF #instMC_MovePickAndPlaceLinear[#statFBCounterMoveLinPnP].busy = FALSE THEN
+  ...
+  // Trigger command
+  #instMC_MovePickAndPlaceLinear[#statFBCounterMoveLinPnP](execute     := TRUE,
+                                                           position    := #pathDataElementPreBuf.cmdCoordinates.targetPosition,
+                                                           coordSystem := #pathDataElementPreBuf.cmdCoordinates.coordSystem,
+                                                           ...);</pre></div>
+
+<p style="margin:16px 0 0;font-size:13px">From here: the full 29&#8209;command <span class="mono">cmdType</span> catalogue and every flag mode live in <a href="#commands">Commands</a> and <a href="#flags">Flags</a> above; to reshape any of these three paths interactively rather than read them off a table, try the <a href="#simulator">Path lab</a>.</p>
+
+</div>
+</div>
+</div>
+</section>

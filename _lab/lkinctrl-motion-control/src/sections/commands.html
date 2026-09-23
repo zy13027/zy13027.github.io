@@ -1,0 +1,31 @@
+<section class="sec" id="commands">
+<div class="wrap">
+<header>
+<div class="eyebrow">&sect;3.1&ndash;3.16 &mdash; Command reference</div>
+<h2>Command catalogue</h2>
+<p class="lede">The <span class="mono">cmdType</span> field on a PathData entry selects one of 29 command types across 12 families, plus the measurement flag that rides along on a motion command. Filter by family or search across names, parameters and rules.</p>
+</header>
+
+<div class="rf-toolbar"><input class="rf-search" id="rf-cmd-search" type="search" placeholder="Search commands &mdash; e.g. zone, circMode, tool&hellip;" aria-label="Search commands"></div>
+<div class="rf-pillrow" id="rf-cmd-pills">
+<button type="button" class="pill on" data-fam="all">All families &middot; 29</button>
+<button type="button" class="pill" data-fam="linear">Linear &middot; 2</button>
+<button type="button" class="pill" data-fam="circular">Circular &middot; 2</button>
+<button type="button" class="pill" data-fam="sptp">MoveDirect / sPTP &middot; 2</button>
+<button type="button" class="pill" data-fam="modal">Modal dynamics &middot; 3</button>
+<button type="button" class="pill" data-fam="frame">Frame &middot; 4</button>
+<button type="button" class="pill" data-fam="zone">Zone &middot; 6</button>
+<button type="button" class="pill" data-fam="conveyor">Conveyor &middot; 2</button>
+<button type="button" class="pill" data-fam="flagonly">FlagOnly &middot; 1</button>
+<button type="button" class="pill" data-fam="wait">Wait time &middot; 1</button>
+<button type="button" class="pill" data-fam="offset">Offset &amp; radius comp. &middot; 3</button>
+<button type="button" class="pill" data-fam="shift">Relative OCS shift &middot; 2</button>
+<button type="button" class="pill" data-fam="pnp">Pick &amp; place &middot; 1</button>
+<button type="button" class="pill" data-fam="measurement">Measurement &middot; flag</button>
+</div>
+<p class="rf-count" id="rf-cmd-count"></p>
+
+<div class="rf-cmd-grid" id="rf-cmd-grid"></div>
+
+</div>
+</section>

@@ -7,7 +7,7 @@ title: 中文
 permalink: /zh/
 description: 机器人与运动控制工程师。
 nav: true
-nav_order: 4
+nav_order: 5
 ---
 
 <div class="zy-doc" lang="zh">
@@ -64,6 +64,24 @@ nav_order: 4
     <p class="zy-muted">通过 TIA 博途 Openness 按规格书程序化生成画面、变量与程序块；PLC 与 HMI 变量的自动化交接，使不匹配在生成阶段即报错，而非在现场调试时才暴露；对 SCL 与 SimaticML 做静态分析，检出未被读取的互锁、未被调用的程序块、断裂的报警链路与缺少限幅的操作员设定值；并用 PLCSIM Advanced 在硬件到位前验证控制逻辑。</p>
   </div>
 </div>
+
+<h2 class="zy-mono zy-label zy-label-gap">交互式学习笔记</h2>
+
+<p class="zy-muted">学习这些系统时制作的单页交互式笔记——仿真与现场指南，全部在浏览器本地运行。页面内容为英文。</p>
+
+<div class="zy-zh-projects">
+{%- for g in site.data.lab.groups -%}
+{%- for e in g.pages %}
+  <a class="zy-zh-project zy-zh-lab" href="{{ '/lab/' | append: e.slug | append: '/' | relative_url }}">
+    <div class="zy-mono zy-row-cat">{{ g.zh_title }}</div>
+    <h3 class="zy-h3">{{ e.zh_title }}</h3>
+    <p class="zy-muted">{{ e.zh_blurb }}</p>
+  </a>
+{%- endfor -%}
+{%- endfor %}
+</div>
+
+<p class="zy-muted zy-small"><a href="{{ '/lab/' | relative_url }}">全部列表 →</a>　西门子相关页面为基于公开手册的非官方学习笔记，并非西门子出版物。</p>
 
 <h2 class="zy-mono zy-label zy-label-gap">技能</h2>
 

@@ -1,0 +1,174 @@
+<section class="sec" id="concept">
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">Introduction &middot; Chapter 1</div>
+      <h2>One command list, one function block</h2>
+      <p class="lede">LKinCtrl gives the TO Kinematics technology object a command-list driven way to run path
+        motions, plus HMI screens — documented separately — to commission and diagnose the kinematics and its
+        axes. This is why the library exists, and what it is built from.</p>
+    </header>
+
+    <div class="card pad pc-thesis">
+      <p>Instead of executing and handling several single motion commands in the user program, the TO Kinematics
+        is controlled by only one core function block. Path information is provided by a list of commands, not by
+        program logic. Path motions can be stopped, interrupted and continued during execution just by inputs on
+        that one block. Detailed information on the path execution status, together with error diagnostics, comes
+        back out of the same block.</p>
+    </div>
+
+    <h3>Before and after</h3>
+    <p>A conventional program wires up one motion block per step and handles each one's own done / busy / error
+      logic in turn. LKinCtrl collapses that into a single instance of <span class="mono">LKinCtrl_MC_MovePath</span>
+      reading a <span class="mono">PathData</span> command list.</p>
+
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs>
+        <marker id="pc-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" style="fill:var(--text-dim)"></path>
+        </marker>
+        <marker id="pc-arrow-accent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"></path>
+        </marker>
+      </defs>
+    </svg>
+
+    <div class="pc-diagram">
+      <div class="pc-panel card pad pc-before">
+        <div class="pc-panel-label"><span class="pc-dot"></span>Without LKinCtrl</div>
+        <svg viewBox="0 0 420 300" role="img" aria-label="User program logic wired individually to four separate motion command blocks, each handled on its own">
+          <rect x="10" y="110" width="120" height="80" rx="8" style="fill:var(--surface-2);stroke:var(--line)"></rect>
+          <text x="70" y="145" text-anchor="middle" style="font:600 12px var(--f-body);fill:var(--text)">User program</text>
+          <text x="70" y="161" text-anchor="middle" style="font:12px var(--f-body);fill:var(--text)">logic</text>
+
+          <g style="font:11px var(--f-mono);fill:var(--text-2)">
+            <rect x="230" y="20" width="180" height="40" rx="6" style="fill:var(--surface-3);stroke:var(--line)"></rect>
+            <text x="320" y="44" text-anchor="middle">MC_MoveLinear</text>
+
+            <rect x="230" y="86" width="180" height="40" rx="6" style="fill:var(--surface-3);stroke:var(--line)"></rect>
+            <text x="320" y="110" text-anchor="middle">MC_MoveCircular</text>
+
+            <rect x="230" y="152" width="180" height="40" rx="6" style="fill:var(--surface-3);stroke:var(--line)"></rect>
+            <text x="320" y="176" text-anchor="middle">MC_MoveDirectAbsolute</text>
+
+            <rect x="230" y="218" width="180" height="40" rx="6" style="fill:var(--surface-3);stroke:var(--line)"></rect>
+            <text x="320" y="242" text-anchor="middle">MC_MoveLinear</text>
+          </g>
+
+          <g style="stroke:var(--text-dim);stroke-width:1.4;fill:none">
+            <line x1="132" y1="130" x2="225" y2="40" marker-end="url(#pc-arrow)"></line>
+            <line x1="132" y1="144" x2="225" y2="106" marker-end="url(#pc-arrow)"></line>
+            <line x1="132" y1="158" x2="225" y2="172" marker-end="url(#pc-arrow)"></line>
+            <line x1="132" y1="172" x2="225" y2="238" marker-end="url(#pc-arrow)"></line>
+          </g>
+          <text x="70" y="260" text-anchor="middle" style="font:10px var(--f-body);fill:var(--text-dim)">done / busy / error</text>
+          <text x="70" y="273" text-anchor="middle" style="font:10px var(--f-body);fill:var(--text-dim)">handled per command</text>
+        </svg>
+        <p class="pc-panel-note">Four commands, four sets of interface handling — and the sequencing itself lives
+          in the user program.</p>
+      </div>
+
+      <div class="pc-panel card pad pc-after">
+        <div class="pc-panel-label"><span class="pc-dot"></span>With LKinCtrl</div>
+        <svg viewBox="0 0 420 300" role="img" aria-label="A PathData command list feeding one LKinCtrl_MC_MovePath block, which drives TO Kinematics and returns status and diagnostics">
+          <rect x="8" y="90" width="130" height="120" rx="8" style="fill:var(--surface-2);stroke:var(--line)"></rect>
+          <text x="73" y="112" text-anchor="middle" style="font:600 11px var(--f-body);fill:var(--text)">PathData</text>
+          <g style="font:10px var(--f-mono);fill:var(--text-2)">
+            <text x="20" y="132">1 MoveLinear</text>
+            <text x="20" y="150">2 MoveCircular</text>
+            <text x="20" y="168">3 MoveDirectAbs.</text>
+            <text x="20" y="186">4 MoveLinear</text>
+          </g>
+
+          <line x1="140" y1="150" x2="200" y2="150" style="stroke:var(--accent);stroke-width:1.6" marker-end="url(#pc-arrow-accent)"></line>
+
+          <rect x="204" y="105" width="150" height="90" rx="8" style="fill:color-mix(in srgb, var(--accent) 12%, var(--surface-2));stroke:var(--accent)"></rect>
+          <text x="279" y="140" text-anchor="middle" style="font:600 11px var(--f-mono);fill:var(--text)">LKinCtrl_MC_</text>
+          <text x="279" y="155" text-anchor="middle" style="font:600 11px var(--f-mono);fill:var(--text)">MovePath</text>
+          <text x="279" y="174" text-anchor="middle" style="font:10px var(--f-body);fill:var(--text-dim)">FB 35000</text>
+
+          <line x1="358" y1="150" x2="405" y2="150" style="stroke:var(--text-dim);stroke-width:1.4" marker-end="url(#pc-arrow)"></line>
+          <text x="410" y="130" text-anchor="end" style="font:10px var(--f-body);fill:var(--text-dim)">TO</text>
+          <text x="410" y="145" text-anchor="end" style="font:10px var(--f-body);fill:var(--text-dim)">Kinematics</text>
+
+          <path d="M279,105 C279,60 150,50 90,88" style="stroke:var(--text-dim);stroke-width:1.2;fill:none;stroke-dasharray:3 3" marker-end="url(#pc-arrow)"></path>
+          <text x="185" y="55" text-anchor="middle" style="font:10px var(--f-body);fill:var(--text-dim)">status &middot; diagnostics</text>
+          <text x="185" y="68" text-anchor="middle" style="font:10px var(--f-body);fill:var(--text-dim)">readyForNextPath</text>
+        </svg>
+        <p class="pc-panel-note">One instance keeps reading the list, keeps the MotionQueue full, and reports
+          progress and errors back through a single interface.</p>
+      </div>
+    </div>
+
+    <h3>Architecture and concept</h3>
+    <p>The path motion is defined by parametrizing a command list, called <span class="mono">PathData</span>. Its
+      parametrization follows the parametrization of the underlying system functions and includes the available
+      system motion commands for TO Kinematics; the PathData length can be adapted to the use case through an
+      internal library user constant.</p>
+    <p>PathData serves as an <span class="mono">IN_OUT</span> parameter for the application's core FB
+      <span class="mono">LKinCtrl_MC_MovePath</span>. This function block controls the TO Kinematics and internally
+      executes the motion commands as defined in the PathData. It can interrupt, continue and stop the path
+      motion, and offers detailed diagnostics information in its interface. It also manages to steadily keep the
+      TO's job sequence full without overloading it, so that a maximum look-ahead in terms of dynamic planning is
+      achieved.</p>
+
+    <h3>Benefits</h3>
+    <div class="pc-benefits">
+      <!-- benefit items -->
+      <div class="pc-benefit"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" style="fill:color-mix(in srgb, var(--accent) 18%, transparent);stroke:var(--accent)"></circle><path d="M4.5 8.3 L7 10.8 L11.5 5.3" style="fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"></path></svg><span>Comfortable path definition in a command list</span></div>
+      <div class="pc-benefit"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" style="fill:color-mix(in srgb, var(--accent) 18%, transparent);stroke:var(--accent)"></circle><path d="M4.5 8.3 L7 10.8 L11.5 5.3" style="fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"></path></svg><span>Execution of motion commands according to the command list</span></div>
+      <div class="pc-benefit"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" style="fill:color-mix(in srgb, var(--accent) 18%, transparent);stroke:var(--accent)"></circle><path d="M4.5 8.3 L7 10.8 L11.5 5.3" style="fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"></path></svg><span>Single step / automatic mode for path execution</span></div>
+      <div class="pc-benefit"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" style="fill:color-mix(in srgb, var(--accent) 18%, transparent);stroke:var(--accent)"></circle><path d="M4.5 8.3 L7 10.8 L11.5 5.3" style="fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"></path></svg><span>Diagnostic interface</span></div>
+      <div class="pc-benefit"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" style="fill:color-mix(in srgb, var(--accent) 18%, transparent);stroke:var(--accent)"></circle><path d="M4.5 8.3 L7 10.8 L11.5 5.3" style="fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"></path></svg><span>Flags for actuator control depending on path status</span></div>
+      <div class="pc-benefit"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" style="fill:color-mix(in srgb, var(--accent) 18%, transparent);stroke:var(--accent)"></circle><path d="M4.5 8.3 L7 10.8 L11.5 5.3" style="fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"></path></svg><span>Flags for sequence control (wait conditions)</span></div>
+      <div class="pc-benefit"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" style="fill:color-mix(in srgb, var(--accent) 18%, transparent);stroke:var(--accent)"></circle><path d="M4.5 8.3 L7 10.8 L11.5 5.3" style="fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"></path></svg><span>Wait times in command sequence</span></div>
+      <div class="pc-benefit"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" style="fill:color-mix(in srgb, var(--accent) 18%, transparent);stroke:var(--accent)"></circle><path d="M4.5 8.3 L7 10.8 L11.5 5.3" style="fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"></path></svg><span>Activation / deactivation of single path commands</span></div>
+      <div class="pc-benefit"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" style="fill:color-mix(in srgb, var(--accent) 18%, transparent);stroke:var(--accent)"></circle><path d="M4.5 8.3 L7 10.8 L11.5 5.3" style="fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"></path></svg><span>Compensation of tool and radius length</span></div>
+      <div class="pc-benefit"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" style="fill:color-mix(in srgb, var(--accent) 18%, transparent);stroke:var(--accent)"></circle><path d="M4.5 8.3 L7 10.8 L11.5 5.3" style="fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"></path></svg><span>Complete set of configuration functions programmable in the command list</span></div>
+      <div class="pc-benefit"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" style="fill:color-mix(in srgb, var(--accent) 18%, transparent);stroke:var(--accent)"></circle><path d="M4.5 8.3 L7 10.8 L11.5 5.3" style="fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"></path></svg><span>Auxiliary functions to enable / home / reset all axes of the axes group</span></div>
+      <div class="pc-benefit"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" style="fill:color-mix(in srgb, var(--accent) 18%, transparent);stroke:var(--accent)"></circle><path d="M4.5 8.3 L7 10.8 L11.5 5.3" style="fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"></path></svg><span>Familiar interface behaviour of motion commands</span></div>
+      <div class="pc-benefit"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" style="fill:color-mix(in srgb, var(--accent) 18%, transparent);stroke:var(--accent)"></circle><path d="M4.5 8.3 L7 10.8 L11.5 5.3" style="fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"></path></svg><span>Memory and runtime optimised function blocks</span></div>
+      <div class="pc-benefit"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" style="fill:color-mix(in srgb, var(--accent) 18%, transparent);stroke:var(--accent)"></circle><path d="M4.5 8.3 L7 10.8 L11.5 5.3" style="fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"></path></svg><span>Comfortable point definition in a point table</span></div>
+      <div class="pc-benefit"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" style="fill:color-mix(in srgb, var(--accent) 18%, transparent);stroke:var(--accent)"></circle><path d="M4.5 8.3 L7 10.8 L11.5 5.3" style="fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"></path></svg><span>Encapsulated command sequence for pick and place applications, with integrated conveyor tracking</span></div>
+      <div class="pc-benefit"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" style="fill:color-mix(in srgb, var(--accent) 18%, transparent);stroke:var(--accent)"></circle><path d="M4.5 8.3 L7 10.8 L11.5 5.3" style="fill:none;stroke:var(--accent);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"></path></svg><span>Measurement command functionality to abort a single command within a path</span></div>
+    </div>
+
+    <h3>Components used</h3>
+    <p>Alongside the core FB, the library ships two further motion blocks that share its interface conventions:
+      <span class="mono">MC_JogFrame</span> provides jogging of a kinematics in Cartesian directions X, Y, Z
+      including the orientation axis — continuously, incrementally, or to a specified target position — and
+      <span class="mono">LKinCtrl_MC_MovePickAndPlaceLinear</span> encapsulates a linear MC command sequence for
+      typical pick-and-place applications, usable like a standard MC block, with conveyor tracking integrated so no
+      additional command is needed to establish tracking.</p>
+
+    <div class="pc-comp-grid">
+      <div class="card pad">
+        <table>
+          <caption>Hardware used to build this application example</caption>
+          <thead><tr><th>Component</th><th class="num">No.</th><th>Article number</th><th>Note</th></tr></thead>
+          <tbody>
+            <tr><td>CPU 1518T&#8209;2 PN</td><td class="num">1</td><td class="mono">6ES7 518&#8209;4UP00&#8209;0AB0</td><td>Or other S7&#8209;1500T CPU with FW&nbsp;3.1.0</td></tr>
+          </tbody>
+        </table>
+        <p style="font-size:0.8rem;margin-top:0.6rem">Available from the Siemens Industry Mall.</p>
+      </div>
+      <div class="card pad">
+        <table>
+          <caption>Files that make up the application example</caption>
+          <tbody>
+            <tr><td>LKinCtrl library</td><td class="mono" style="font-size:0.78rem">LKinCtrl_V5_3_1_TiaLib_V19.zip</td></tr>
+            <tr><td>LKinCtrl manual</td><td class="mono" style="font-size:0.78rem">LKinCtrl_V5_3_1_Manual_en.pdf</td></tr>
+            <tr><td>LKinCtrl manual HMI</td><td class="mono" style="font-size:0.78rem">LKinCtrl_V5_3_1_Manual_HMI_en.pdf</td></tr>
+            <tr><td>Getting started project</td><td class="mono" style="font-size:0.78rem">LKinCtrl_V5_3_1_GettingStarted_TiaPrj_V19.zip</td></tr>
+            <tr><td>Getting started manual</td><td class="mono" style="font-size:0.78rem">LKinCtrl_V5_3_1_GettingStarted_Manual_en.pdf</td></tr>
+            <tr><td>Changelog</td><td class="mono" style="font-size:0.78rem">LKinCtrl_V5_3_1_Changelog_en.pdf</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="box">
+      <b>NOTE</b> The application can run on all 1500T CPU types with firmware V3.1.0 or greater and motion
+      control V8.0 or greater. The Unified HMI requires firmware V19.0.0.2 or greater.
+    </div>
+  </div>
+</section>

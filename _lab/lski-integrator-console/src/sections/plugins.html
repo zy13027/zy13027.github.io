@@ -1,0 +1,42 @@
+<section class="sec" id="plugins">
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">Table 1&#8209;4 &amp; 1&#8209;5 &middot; Chapters 7&ndash;18</div>
+      <h2>Plugin explorer</h2>
+      <p class="lede">LSKI is modular. <span class="tag">LSKI_Core</span> is the only mandatory block &mdash; every other row here is optional and, per the manual, should be deleted from the Program blocks folder, the PLC tags and the PLC data types when unused, purely to save code&#8209;work memory on smaller CPUs.</p>
+    </header>
+
+    <div class="rf-legend">
+      <span><span class="rf-swatch" style="background:var(--amber-bright)"></span>Core &mdash; mandatory</span>
+      <span><span class="rf-swatch" style="background:var(--blue)"></span>HMI plugin</span>
+      <span><span class="rf-swatch" style="background:var(--accent)"></span>Technology (PLC) plugin</span>
+      <span><span class="rf-swatch" style="background:var(--pink)"></span>Both PLC &amp; HMI parts</span>
+    </div>
+
+    <div class="rf-toolbar">
+      <input type="text" id="rf-plugin-search" class="rf-search" placeholder="Search plugin, block name or trap&hellip;" aria-label="Search plugins">
+      <div class="rf-chipset" id="rf-plugin-chips" role="group" aria-label="Filter by kind">
+        <button type="button" class="pill on rf-chip" data-kind="all">All &middot; 14</button>
+        <button type="button" class="pill rf-chip" data-kind="core">Core &middot; 1</button>
+        <button type="button" class="pill rf-chip" data-kind="hmi">HMI &middot; 5</button>
+        <button type="button" class="pill rf-chip" data-kind="tech">Technology &middot; 6</button>
+        <button type="button" class="pill rf-chip" data-kind="both">Both &middot; 2</button>
+      </div>
+      <select id="rf-plugin-sort" class="rf-select" aria-label="Sort plugins">
+        <option value="name">Sort: name A&ndash;Z</option>
+        <option value="code">Sort: code&#8209;work kB (high&rarr;low)</option>
+        <option value="data">Sort: data&#8209;work kB (high&rarr;low)</option>
+        <option value="load">Sort: load kB (high&rarr;low)</option>
+      </select>
+      <span class="rf-count" id="rf-plugin-count"></span>
+    </div>
+
+    <div class="card scrollx">
+      <table class="rf-plugin-table">
+        <thead><tr><th>Plugin</th><th>Function block(s)</th><th>What it does &amp; the trap</th><th>Config node</th><th>Memory (code / data / load, kB)</th></tr></thead>
+        <tbody id="rf-plugin-tbody"></tbody>
+      </table>
+    </div>
+    <p class="lede" style="font-size:13px;margin-top:12px">Bars are scaled per column against the highest value in that column across all 14 rows (code&#8209;work max 384&nbsp;kB, data&#8209;work max 863&nbsp;kB, load max 10555&nbsp;kB) &mdash; so Core, GCode, ProductRegister and Programming stand out on code&#8209;work while AxisCoupling, AxisSafeBrakeTest and GenericExternalDevice barely register.</p>
+  </div>
+</section>

@@ -1,0 +1,148 @@
+/* path-simulator.css — S4 MCL path simulator styles, extracted verbatim from the original inline <style> block */
+
+/* ============================================================
+   S4 — MCL PATH SIMULATOR
+   ============================================================ */
+.mcl-panel{
+  display:grid;
+  grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr);
+  gap:var(--sp-4);
+}
+@media (max-width:860px){
+  .mcl-panel{ grid-template-columns:1fr; }
+}
+.mcl-source{
+  background:var(--ix-1);
+  border:1px solid var(--ix-bdr);
+  border-radius:var(--r-md);
+  overflow:auto;
+  max-height:460px;
+  font-family:var(--font-mono);
+  font-size:0.78rem;
+  line-height:1.6;
+}
+:root[data-theme="dark"] .mcl-source{ background:var(--ix-2); }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .mcl-source{ background:var(--ix-2); } }
+.mcl-source .line{
+  display:grid;
+  grid-template-columns:2.4em 1fr;
+  padding-inline:var(--sp-2);
+  white-space:pre;
+}
+.mcl-source .line .ln{
+  color:var(--ix-weak);
+  text-align:right;
+  padding-right:var(--sp-2);
+  user-select:none;
+}
+.mcl-source .line.active{
+  background:rgba(255,187,0,0.16);
+  box-shadow:inset 3px 0 0 var(--ix-warning);
+}
+.mcl-source .line.active .ln{ color:var(--ix-critical); font-weight:600; }
+.mcl-source .cm{ color:var(--ix-weak); }
+
+.mcl-canvas-side{
+  display:flex; flex-direction:column; gap:var(--sp-3);
+}
+.mcl-canvas-wrap{
+  position:relative;
+  background:var(--ix-3);
+  border:1px solid var(--ix-bdr);
+  border-radius:var(--r-md);
+  aspect-ratio:4/3;
+  overflow:hidden;
+  display:flex;
+}
+:root[data-theme="dark"] .mcl-canvas-wrap{ background:var(--ix-2); }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .mcl-canvas-wrap{ background:var(--ix-2); } }
+.mcl-canvas-wrap canvas{ width:100%; height:100%; display:block; }
+.z-gauge{
+  flex:none;
+  width:34px;
+  border-left:1px solid var(--ix-bdr);
+  display:flex; flex-direction:column; align-items:center;
+  padding:var(--sp-2) 0;
+  gap:var(--sp-1);
+}
+.z-gauge .track{
+  position:relative;
+  flex:1;
+  width:8px;
+  background:var(--ix-1);
+  border:1px solid var(--ix-bdr);
+  border-radius:var(--r-pill);
+  overflow:hidden;
+}
+:root[data-theme="dark"] .z-gauge .track{ background:var(--ix-3); }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .z-gauge .track{ background:var(--ix-3); } }
+.z-gauge .fill{
+  position:absolute; bottom:0; left:0; right:0;
+  height:0%;
+  background:var(--grad-flow);
+}
+.z-gauge .lbl{
+  font-family:var(--font-mono);
+  font-size:0.62rem;
+  color:var(--ix-weak);
+  writing-mode:vertical-rl;
+}
+.z-gauge .val{
+  font-family:var(--font-mono);
+  font-size:0.62rem;
+  color:var(--ix-soft);
+}
+.gripper-lamp{
+  display:flex; align-items:center; gap:var(--sp-2);
+  font-size:0.8rem;
+  color:var(--ix-soft);
+}
+.gripper-lamp .dot{
+  width:10px; height:10px; border-radius:var(--r-pill);
+  background:var(--ix-8);
+  flex:none;
+}
+.gripper-lamp[data-state="wait"] .dot{ background:var(--ix-warning); }
+.gripper-lamp[data-state="ok"] .dot{ background:var(--ix-success); }
+.gripper-lamp[hidden]{ display:none; }
+
+.scrub-row{ display:flex; align-items:center; gap:var(--sp-3); }
+.scrub-row input[type="range"]{ flex:1; }
+
+.mcl-controls{
+  margin-top:var(--sp-4);
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:var(--sp-4);
+}
+.formula-strip{
+  margin-top:var(--sp-3);
+  font-family:var(--font-mono);
+  font-size:0.85rem;
+  padding:var(--sp-3);
+  background:var(--ix-1);
+  border:1px solid var(--ix-bdr);
+  border-radius:var(--r-sm);
+  color:var(--ix-text);
+}
+:root[data-theme="dark"] .formula-strip{ background:var(--ix-2); }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .formula-strip{ background:var(--ix-2); } }
+.formula-strip .accent{ color:var(--ix-primary); font-weight:600; }
+.canvas-caption{
+  font-size:0.82rem;
+  color:var(--ix-soft);
+}
+.preset-tabs{
+  display:flex; gap:var(--sp-2); flex-wrap:wrap;
+  margin-bottom:var(--sp-4);
+}
+.mcl-side-note{
+  margin-top:var(--sp-5);
+  color:var(--ix-soft);
+  font-size:0.92rem;
+}
+.mcl-side-note p+p{ margin-top:var(--sp-2); }
+.syntax-card{
+  margin-top:var(--sp-4);
+}
+
