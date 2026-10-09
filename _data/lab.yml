@@ -81,3 +81,24 @@ groups:
         tags: [Simulink, ODK 1500S, code generation]
         zh_title: SIMATIC Target for Simulink
         zh_blurb: 从 Simulink 模型到在 S7-1500 CPU 或 Industrial Edge 上运行的 ODK 代码，附可交互的 PID 示例。
+      - slug: s7-1500t-interpreter-explorer
+        title: S7-1500T Interpreter Explorer
+        kind: lab
+        blurb: Explore native SIMATIC Motion Interpreter and LInterpr, with interactive kinematics and command-sequence learning models.
+        tags: [S7-1500T, Motion Interpreter, LInterpr]
+        zh_title: S7-1500T 解释器学习指南
+        zh_blurb: 对比 SIMATIC 运动解释器与 LInterpr，结合运动机构演示和指令序列交互学习。
+      - slug: sicar-architecture-explorer
+        title: SICAR Architecture Explorer
+        kind: field guide
+        blurb: Explore SICAR software units, operating-mode areas, station interfaces and WinCC Unified, with interactive architecture and diagnostic views.
+        tags: [SICAR, Software Units, WinCC Unified]
+        zh_title: SICAR 架构学习指南
+        zh_blurb: 通过交互式架构与诊断视图，学习 SICAR 软件单元、运行模式区域、工位接口和 WinCC Unified。
+      - slug: lloadbal-learning-lab
+        title: LLoadBal Learning Lab
+        kind: lab
+        blurb: An interactive learning model of load balancing between leading and following drives, including torque comparison and speed correction.
+        tags: [LLoadBal, SINAMICS, load balancing]
+        zh_title: LLoadBal 负载平衡学习实验
+        zh_blurb: 通过主动驱动与从动驱动的交互式模型，学习转矩比较、转速修正和负载平衡。
