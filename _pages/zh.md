@@ -31,7 +31,7 @@ nav_order: 5
     <span class="zy-pill"><span class="zy-dot"></span>仿真测试已完成 · 正在验证复现与准备发布</span>
     <h3 class="zy-h3">差速驱动 AGV 导航栈</h3>
     <p class="zy-muted">基于 ROS 2 Jazzy 与 Gazebo Harmonic 的差速驱动 AGV 仿真：URDF 与 ros2_control 仿真接口、轮式里程计与 IMU 的 EKF 融合、已保存地图上的 AMCL 定位，以及 NavFn 与 Regulated Pure Pursuit 导航。2026 年 10 月 10 日的测试记录中，30 次常规导航任务全部完成，未发生障碍物接触。</p>
-    <p class="zy-muted zy-small">当前正在验证全新克隆环境中的复现与准备发布，仓库尚未公开，目标仍为 2026 年 11 月。原始严格测试集为 78/80 通过，失败记录保留，包括一次启动前检查失败和一次无接触的障碍场景进度中止。结果仅适用于已测试的仿真场景，不代表实机验证。</p>
+    <p class="zy-muted zy-small">当前正在验证全新克隆环境中的复现与准备发布，仓库尚未公开，目标仍为 2026 年 11 月。原始严格测试集为 78/80 通过，失败记录保留。一次启动前检查失败，另一次障碍场景未到达目标，但未发生接触，并在有限次恢复尝试后终止。结果仅适用于已测试的仿真场景，不代表实机验证。</p>
     <div class="zy-mono zy-stackline">ROS 2 Jazzy · Nav2 · robot_localization · ros2_control · Gazebo Harmonic</div>
   </div>
 </div>

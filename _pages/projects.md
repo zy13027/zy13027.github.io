@@ -77,7 +77,7 @@ nav_order: 2
             </li>
           {% endfor %}
         </ol>
-        <p class="zy-muted zy-small">My strongest robotics work dates from 2022. Rather than claim currency, I am rebuilding it in public with the current toolchain — the repository history is the evidence.</p>
+        <p class="zy-muted zy-small">Simulation milestones are backed by retained benchmark results. Clean-clone verification and public repository release remain pending.</p>
       </div>
       {% endif %}
     </div>
