@@ -75,8 +75,8 @@ cv:
 
     Projects:
       - name: Differential-drive AGV navigation stack
-        summary: "ROS 2 Jazzy, nav2, EKF localisation, ros2_control. In progress — target November 2026."
-        url: ""
+        summary: "ROS 2 Jazzy, Gazebo Harmonic, Nav2, planar EKF and gz_ros2_control. Public source and clean-clone verification confirmed 13 October 2026; versioned release and public demonstration pending."
+        url: "https://github.com/zy13027/agv-ros2-sim"
 
       - name: Quadruped robot navigation
         summary: "EKF, A*, LiDAR processing for a legged platform at Geely Research Institute."

@@ -5,4 +5,4 @@ inline: true
 related_posts: false
 ---
 
-Building a differential-drive AGV navigation stack in ROS 2 Jazzy — EKF localisation and nav2. Repo public in November.
+Building a differential-drive AGV navigation stack in ROS 2 Jazzy — EKF localisation and Nav2. [Public source](https://github.com/zy13027/agv-ros2-sim) and clean-clone verification confirmed on 13 October 2026; versioned release and public demonstration pending.
