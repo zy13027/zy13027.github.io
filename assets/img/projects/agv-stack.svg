@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 960" width="1200" height="960" role="img" aria-labelledby="t d">
   <title id="t">Differential-drive AGV navigation stack — architecture</title>
-  <desc id="d">Data flow from simulated sensors through EKF state estimation and costmaps into the nav2 planner, controller and behaviour servers, then out through ros2_control to the drive motors, with encoder feedback closing the loop.</desc>
+  <desc id="d">Gazebo Harmonic simulation: wheel feedback and IMU feed the planar EKF; LiDAR supports SLAM Toolbox or AMCL and costmaps. Nav2 sends TwistStamped commands through Collision Monitor and the health supervisor to diff_drive_controller, then through gz_ros2_control's simulated joint interface to the wheel joints.</desc>
   <defs>
     <style>
       text { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; fill: #334155; }
@@ -33,11 +33,11 @@
 
   <!-- header -->
   <text x="60" y="52" class="cap">AGV NAVIGATION STACK · ROS 2 JAZZY</text>
-  <text x="1140" y="52" class="cap" text-anchor="end">PLANNED ARCHITECTURE · SEP 2026</text>
+  <text x="1140" y="52" class="cap" text-anchor="end">SIMULATION · OCT 2026</text>
 
   <!-- simulated sensor group -->
   <rect x="60" y="92" width="1080" height="118" class="sim"/>
-  <text x="80" y="118" class="cap">SIMULATED IN GAZEBO / MUJOCO</text>
+  <text x="80" y="118" class="cap">SIMULATED IN GAZEBO HARMONIC</text>
 
   <g transform="translate(110,136)">
     <rect width="260" height="56" class="box"/>
@@ -60,7 +60,7 @@
   </g>
   <g transform="translate(830,290)">
     <rect width="260" height="72" class="box"/>
-    <text x="130" y="31" class="lbl" text-anchor="middle">SLAM / AMCL</text>
+    <text x="130" y="31" class="lbl" text-anchor="middle" style="font-size:18px">SLAM Toolbox / AMCL</text>
     <text x="130" y="55" class="sub" text-anchor="middle">map → odom</text>
   </g>
 
@@ -85,12 +85,12 @@
   <g transform="translate(110,596)">
     <rect width="300" height="84" class="key"/>
     <text x="150" y="33" class="lbl" text-anchor="middle">planner server</text>
-    <text x="150" y="58" class="sub" text-anchor="middle">global path</text>
+    <text x="150" y="58" class="sub" text-anchor="middle">NavFn · global path</text>
   </g>
   <g transform="translate(450,596)">
     <rect width="300" height="84" class="key"/>
     <text x="150" y="33" class="lbl" text-anchor="middle">controller server</text>
-    <text x="150" y="58" class="sub" text-anchor="middle">local plan → cmd_vel</text>
+    <text x="150" y="58" class="sub" text-anchor="middle">RPP → stamped commands</text>
   </g>
   <g transform="translate(790,596)">
     <rect width="300" height="84" class="key"/>
@@ -104,33 +104,47 @@
   <!-- planner → controller -->
   <path d="M410,638 H450" class="flowk"/>
 
+  <!-- stamped command checks -->
+  <g transform="translate(110,714)">
+    <rect width="460" height="56" class="key"/>
+    <text x="230" y="23" class="lbl" text-anchor="middle">Collision Monitor</text>
+    <text x="230" y="46" class="sub" text-anchor="middle">/cmd_vel_nav → /cmd_vel_checked</text>
+  </g>
+  <g transform="translate(630,714)">
+    <rect width="460" height="56" class="key"/>
+    <text x="230" y="23" class="lbl" text-anchor="middle">health supervisor</text>
+    <text x="230" y="46" class="sub" text-anchor="middle">→ /base_controller/cmd_vel</text>
+  </g>
+  <path d="M600,680 V698 H340 V714" class="flowk"/>
+  <path d="M940,680 V688 H600 V698" class="flowk"/>
+  <path d="M570,742 H630" class="flowk"/>
+
   <!-- ros2_control row -->
-  <text x="60" y="748" class="cap">ROS2_CONTROL</text>
-  <g transform="translate(110,764)">
+  <text x="60" y="804" class="cap">ROS2_CONTROL · TWISTSTAMPED INPUT</text>
+  <g transform="translate(110,820)">
     <rect width="400" height="72" class="box"/>
     <text x="200" y="31" class="lbl" text-anchor="middle">diff_drive_controller</text>
-    <text x="200" y="55" class="sub" text-anchor="middle">cmd_vel → wheel velocities</text>
+    <text x="200" y="55" class="sub" text-anchor="middle">stamped command → wheel velocities</text>
   </g>
-  <g transform="translate(550,764)">
+  <g transform="translate(550,820)">
     <rect width="300" height="72" class="box"/>
-    <text x="150" y="31" class="lbl" text-anchor="middle">hardware interface</text>
-    <text x="150" y="55" class="sub" text-anchor="middle">sim plugin · later: real drive</text>
+    <text x="150" y="31" class="lbl" text-anchor="middle" style="font-size:18px">simulated joint interface</text>
+    <text x="150" y="55" class="sub" text-anchor="middle">gz_ros2_control</text>
   </g>
-  <g transform="translate(890,764)">
+  <g transform="translate(890,820)">
     <rect width="200" height="72" class="box"/>
-    <text x="100" y="31" class="lbl" text-anchor="middle">motors</text>
+    <text x="100" y="31" class="lbl" text-anchor="middle">wheel joints</text>
     <text x="100" y="55" class="sub" text-anchor="middle">L · R</text>
   </g>
   <!-- controller → ros2_control chain -->
-  <path d="M600,680 V722 H310 V764" class="flowk"/>
-  <text x="615" y="712" class="tf">cmd_vel</text>
-  <path d="M510,800 H550" class="flow"/>
-  <path d="M850,800 H890" class="flow"/>
+  <path d="M860,770 V786 H510 V812 H310 V820" class="flowk"/>
+  <path d="M510,856 H550" class="flow"/>
+  <path d="M850,856 H890" class="flow"/>
 
   <!-- encoder feedback loop -->
-  <path d="M1090,800 H1168 V76 H240 V136" class="fb"/>
+  <path d="M1090,856 H1168 V76 H240 V136" class="fb"/>
   <text x="1178" y="470" class="sub" transform="rotate(90 1178 470)" text-anchor="middle">joint states → odometry (feedback)</text>
 
   <!-- footer -->
-  <text x="60" y="920" class="sub">The same problem as an industrial servo axis — closed-loop position control, trajectory following, fault recovery — expressed in ROS vocabulary.</text>
+  <text x="60" y="930" class="sub">Simulation only · stamped command checks · wheel-joint feedback · GUI/GPU and native Ubuntu unverified.</text>
 </svg>

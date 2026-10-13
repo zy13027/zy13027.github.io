@@ -48,7 +48,7 @@ nav_order: 2
                width="1200" height="960" loading="lazy" decoding="async">
         </div>
         <figcaption class="zy-mono zy-figcap">
-          <span>Planned architecture<span class="zy-figcap-hint"> — swipe to pan</span></span>
+          <span>Simulation architecture<span class="zy-figcap-hint"> — swipe to pan</span></span>
           <a href="{{ featured.diagram | relative_url }}" target="_blank" rel="noopener">open full size&nbsp;↗</a>
         </figcaption>
       </figure>
@@ -77,7 +77,7 @@ nav_order: 2
             </li>
           {% endfor %}
         </ol>
-        <p class="zy-muted zy-small">Simulation milestones are backed by retained benchmark results. Clean-clone verification and public repository release remain pending.</p>
+        <p class="zy-muted zy-small">Simulation benchmarks and clean-clone verification are recorded. <a href="https://github.com/zy13027/agv-ros2-sim">Public source →</a> Versioned release and public demonstration remain pending.</p>
       </div>
       {% endif %}
     </div>

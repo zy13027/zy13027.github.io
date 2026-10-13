@@ -39,10 +39,13 @@ nav_order: 5
 
 <div class="zy-card zy-zh-card">
   <div class="zy-zh-card-head">
-    <span class="zy-pill"><span class="zy-dot"></span>仿真测试已完成 · 正在验证复现与准备发布</span>
+    <span class="zy-pill"><span class="zy-dot"></span>源码已公开 · 全新克隆验证通过</span>
     <h3 class="zy-h3">差速驱动 AGV 导航栈</h3>
-    <p class="zy-muted">基于 ROS 2 Jazzy 与 Gazebo Harmonic 的差速驱动 AGV 仿真：URDF 与 ros2_control 仿真接口、轮式里程计与 IMU 的 EKF 融合、已保存地图上的 AMCL 定位，以及 NavFn 与 Regulated Pure Pursuit 导航。2026 年 10 月 10 日的测试记录中，30 次常规导航任务全部完成，未发生障碍物接触。</p>
-    <p class="zy-muted zy-small">当前正在验证全新克隆环境中的复现与准备发布，仓库尚未公开，目标仍为 2026 年 11 月。原始严格测试集为 78/80 通过，失败记录保留。一次启动前检查失败，另一次障碍场景未到达目标，但未发生接触，并在有限次恢复尝试后终止。结果仅适用于已测试的仿真场景，不代表实机验证。</p>
+    <p class="zy-muted">基于 ROS 2 Jazzy 与 Gazebo Harmonic 的差速驱动 AGV 仿真：gz_ros2_control 仿真关节接口、轮式里程计与 IMU 的平面 EKF 融合、SLAM Toolbox 建图、已保存地图上的 AMCL 定位，以及 NavFn 与 Regulated Pure Pursuit 导航。带时间戳的速度指令依次经过 Nav2、Collision Monitor、健康监控节点和差速控制器。2026 年 10 月 10 日的测试记录中，30 次常规导航任务全部完成，未发生障碍物接触。</p>
+    <p class="zy-muted zy-small">2026 年 10 月 13 日，源码仓库已公开，全新克隆验证通过：三个软件包构建成功，七项测试通过，畅通路线导航成功，接触和恢复次数均为零，最终误差为 0.0819 m / 0.0495 rad。验证使用 WSL2 上的 Ubuntu 24.04 容器、软件渲染，运行时网络已禁用。项目采用 Apache-2.0 许可证。</p>
+    <p class="zy-muted zy-small">50 次已完成的故障测试满足计划中的停车或有限时间终止要求。原始严格测试集仍为 78/80 通过，失败记录保留；首次启动未运动即失败的测试种子，在源码未改动的情况下补测完成，共记录 81 次尝试。脚本障碍场景为 4/5 到达目标，另一次无接触停车后，在有限次恢复尝试后因未取得进展而终止。常规任务的最大位置误差为 0.1458 m，接近 0.15 m 目标，余量有限。</p>
+    <p class="zy-muted zy-small">当前工作是带版本号的发布及公开演示与产物，尚无 GitHub Release 或版本标签。150 秒本地演示是测量数据回放，并非 Gazebo 图形界面录像，尚无已验证的公开链接。原始录包与工作站日志保留在本地。图形界面、GPU 和原生 Ubuntu 安装尚未验证；结果仅适用于已测试的仿真场景，不代表实机验证。</p>
+    <p class="zy-muted zy-small"><a href="https://github.com/zy13027/agv-ros2-sim">公开仓库 →</a> · <a href="{{ '/projects/1_agv_nav_stack/' | relative_url }}">项目说明与测试证据 →</a></p>
     <div class="zy-mono zy-stackline">ROS 2 Jazzy · Nav2 · robot_localization · ros2_control · Gazebo Harmonic</div>
   </div>
 </div>
