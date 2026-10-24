@@ -77,7 +77,7 @@ nav_order: 2
             </li>
           {% endfor %}
         </ol>
-        <p class="zy-muted zy-small">Simulation benchmarks and clean-clone verification are recorded. <a href="https://github.com/zy13027/agv-ros2-sim">Public source →</a> Versioned release and public demonstration remain pending.</p>
+        <p class="zy-muted zy-small">Status as of {{ bl.as_of }}. Latest recorded verification: {{ bl.verified_on }}. <a href="https://github.com/zy13027/agv-ros2-sim">Public source →</a> Versioned release and public demonstration remain pending.</p>
       </div>
       {% endif %}
     </div>

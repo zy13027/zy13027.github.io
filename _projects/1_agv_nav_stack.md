@@ -21,7 +21,8 @@ demonstrates:
 
 **Stack:** ROS 2 Jazzy · Nav2 · robot_localization (EKF) · ros2_control · Gazebo Harmonic
 
-**Status, 13 October 2026:** public source and clean-clone verification confirmed.
+**Status as of 24 November 2026:** public source is available. The latest recorded
+clean-clone verification was completed on 13 October 2026.
 The [repository](https://github.com/zy13027/agv-ros2-sim) is available; no versioned
 GitHub release or tag has been published. Public demonstration and artefact
 publishing remain pending.

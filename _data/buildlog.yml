@@ -6,7 +6,9 @@
 title: Differential-drive AGV navigation stack
 url: /projects/1_agv_nav_stack/
 status: Public source · clean-clone verified
-summary: Gazebo Harmonic simulation with EKF localisation and Nav2. All 30 nominal navigation goals completed without obstacle contacts. Public source and clean-clone verification confirmed on 13 October 2026; versioned release and public demonstration remain pending.
+as_of: "24 November 2026"
+verified_on: "13 October 2026"
+summary: Gazebo Harmonic simulation with EKF localisation and Nav2. All 30 nominal navigation goals completed without obstacle contacts. Public source is available; versioned release and public demonstration remain pending.
 stack: ROS 2 Jazzy · Nav2 · robot_localization · ros2_control · Gazebo Harmonic
 
 steps:
@@ -34,6 +36,6 @@ steps:
   - when: 13 Oct 2026
     what: Public repository available — agv-ros2-sim
     state: done
-  - when: 13 Oct 2026
+  - when: Next
     what: Versioned release + public demonstration / artefact publishing
     state: current
