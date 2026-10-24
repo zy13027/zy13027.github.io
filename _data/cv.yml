@@ -79,7 +79,7 @@ cv:
 
       - name: YoboGo quadruped motion control
         summary: "MIT Mini Cheetah-derived C++ control stack, Up Board bring-up and LCM interfaces during a 2022 internship at Geely Research Institute."
-        url: ""
+        url: "/projects/2_quadruped_navigation/"
 
       - name: Servo motion control library
         summary: "Reusable SCL axis-control blocks across S120, S200 and V90 drive systems."
