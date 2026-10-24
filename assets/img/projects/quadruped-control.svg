@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="740" viewBox="0 0 1040 740" role="img" aria-labelledby="title desc">
+  <title id="title">Reference locomotion control path</title>
+  <desc id="desc">Motion intent and estimated state feed convex MPC. Commands can pass through optional whole-body control or take a direct path to LegController. A platform adapter packs commands, with feedback returning to state and leg data. This is a conceptual map of public MIT Cheetah software, not a YoboGo wiring diagram.</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#39716f"/></marker></defs>
+  <rect width="1040" height="740" fill="#fbfdfc"/>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#183c40">
+    <text x="40" y="46" font-size="27" font-weight="700">From locomotion goals to leg commands</text>
+    <text x="40" y="76" font-size="16" fill="#566e73">Public MIT Cheetah reference · logical dependencies · no measured timing implied</text>
+    <rect x="40" y="112" width="610" height="112" rx="12" fill="#eaf6f3" stroke="#b8d8d0"/>
+    <text x="62" y="148" font-size="22" font-weight="700">Motion intent + estimated state</text>
+    <text x="62" y="179" font-size="18">Desired motion · body state · leg kinematics</text>
+    <text x="62" y="205" font-size="16" fill="#566e73">Inputs consumed by the locomotion controller</text>
+    <rect x="700" y="112" width="300" height="112" rx="12" fill="#f0f4f7" stroke="#cedbe2"/>
+    <text x="720" y="148" font-size="21" font-weight="700">State / leg data</text>
+    <text x="720" y="178" font-size="17">Orientation · position / velocity</text>
+    <text x="720" y="204" font-size="17">Joint feedback · foot kinematics</text>
+    <rect x="40" y="290" width="300" height="130" rx="12" fill="#eaf6f3" stroke="#9ecbc2"/>
+    <text x="62" y="326" font-size="22" font-weight="700">Gait + convex MPC</text>
+    <text x="62" y="358" font-size="18">Body / foot references</text>
+    <text x="62" y="388" font-size="18">Contact states + force targets</text>
+    <rect x="390" y="290" width="260" height="130" rx="12" fill="#fff7e7" stroke="#dfc68d"/>
+    <text x="412" y="326" font-size="22" font-weight="700">Optional WBC</text>
+    <text x="412" y="358" font-size="18">Whole-body control</text>
+    <text x="412" y="388" font-size="17">When use_wbc is enabled</text>
+    <rect x="700" y="290" width="300" height="130" rx="12" fill="#eaf6f3" stroke="#9ecbc2"/>
+    <text x="722" y="326" font-size="22" font-weight="700">LegController</text>
+    <text x="722" y="358" font-size="18">Torque · position · velocity</text>
+    <text x="722" y="388" font-size="18">PD gains · enable state</text>
+    <rect x="700" y="490" width="300" height="105" rx="12" fill="#f0f4f7" stroke="#cedbe2"/>
+    <text x="722" y="528" font-size="21" font-weight="700">Platform hardware adapter</text>
+    <text x="722" y="561" font-size="18">Pack selected command format</text>
+    <rect x="700" y="630" width="300" height="70" rx="12" fill="#f0f4f7" stroke="#cedbe2"/>
+    <text x="722" y="659" font-size="20" font-weight="700">Hardware / simulator</text>
+    <text x="722" y="684" font-size="17">Feedback to the control stack</text>
+    <g fill="none" stroke="#39716f" stroke-width="2.5" marker-end="url(#arrow)">
+      <path d="M700 168H655"/>
+      <path d="M190 224V284"/>
+      <path d="M340 355H384"/>
+      <path d="M650 355H694"/>
+      <path d="M850 420V484"/>
+      <path d="M850 595V624"/>
+      <path d="M1000 665H1018V168H1006"/>
+      <path d="M190 420V455H674V385H694" stroke-dasharray="7 5"/>
+    </g>
+    <text x="270" y="446" font-size="16" fill="#566e73">Direct leg-command path when WBC is disabled</text>
+    <rect x="40" y="500" width="610" height="190" rx="12" fill="#fff" stroke="#d9e5e2"/>
+    <text x="62" y="538" font-size="21" font-weight="700">Read the branch, then inspect the fields</text>
+    <text x="62" y="574" font-size="18">Convex MPC runs before the optional WBC call.</text>
+    <text x="62" y="606" font-size="18">Leg commands carry feed-forward and feedback terms.</text>
+    <text x="62" y="638" font-size="18">Hardware command packing is a separate responsibility.</text>
+    <text x="62" y="671" font-size="16" fill="#566e73">Source c71c5a1 · architecture context, not authorship evidence</text>
+  </g>
+</svg>

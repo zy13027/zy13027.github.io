@@ -445,6 +445,49 @@ code, kbd, pre, .zy-mono {
   font-size: 12px;
 }
 
+// Source-linked quadruped technical diagrams and expandable explanations.
+.zy-quad-tech {
+  margin-top: 40px;
+  code { white-space: normal; overflow-wrap: anywhere; }
+}
+.zy-quad-figure {
+  margin: 24px 0;
+  border: 1px solid var(--zy-border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--zy-card-alt);
+  figcaption { padding: 12px 16px; font-size: 13px; color: var(--zy-muted); }
+  figcaption a { display: inline-block; margin-left: 8px; }
+}
+.zy-quad-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  img { display: block; width: 100%; min-width: 860px; height: auto; margin: 0; }
+}
+.zy-quad-scroll:focus-visible, .zy-quad-equation:focus-visible, .zy-quad-table:focus-visible {
+  outline: 2px solid var(--zy-teal);
+  outline-offset: -2px;
+}
+.zy-quad-detail {
+  margin: 20px 0;
+  padding: 14px 18px;
+  border: 1px solid var(--zy-border);
+  border-radius: 8px;
+  summary { cursor: pointer; font-weight: 600; }
+  &[open] summary { margin-bottom: 14px; }
+  p:last-child { margin-bottom: 0; }
+}
+.zy-quad-table {
+  overflow-x: auto;
+  table { width: 100%; min-width: 620px; border-collapse: collapse; font-size: 14px; }
+  th, td { padding: 10px 12px; vertical-align: top; border-bottom: 1px solid var(--zy-border); }
+}
+.zy-quad-equation { max-width: 100%; overflow-x: auto; padding: 4px 12px; }
+.zy-quad-pan-hint { display: none; }
+@media (max-width: 991.98px) {
+  .zy-quad-pan-hint { display: inline; }
+}
+
 @media (max-width: 575.98px) {
   .zy-footer { margin-top: 48px; padding: 18px 0 26px; }
   .zy-footer-row { gap: 6px 0; }
