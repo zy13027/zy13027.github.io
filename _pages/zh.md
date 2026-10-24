@@ -24,17 +24,6 @@ nav_order: 5
 
 <p>我正在把重心移回机器人方向。工业伺服控制与机器人运动控制本质上是同一门学科的两套词汇——轨迹规划、闭环位置控制、多轴协调运动，以及传感器失效或轴在运动过程中发生故障时系统应当如何响应。</p>
 
-<h2 class="zy-mono zy-label">研究</h2>
-
-<div class="zy-card zy-zh-card">
-  <div class="zy-zh-card-head">
-    <span class="zy-pill">已提交至 arXiv</span>
-    <h3 class="zy-h3">Effects of AI Inference Delay on Robotic Pick-and-Place Performance</h3>
-    <p class="zy-muted">作者：Zinan Yang。2026 年 10 月 10 日，我向 arXiv 首次提交论文，主要分类为机器人学（cs.RO）。这项仿真研究使用三个训练完成的 ACT 策略，在 6,300 次仿真任务中评估人为设置的响应延迟与动作分块执行策略对机器人抓取与放置性能的影响。</p>
-    <p class="zy-muted zy-small">目前等待 arXiv 处理与审核，尚未确认公开的 arXiv 编号或论文链接。<a href="{{ '/publications/#ai-inference-delay' | relative_url }}">英文研究条目 →</a></p>
-  </div>
-</div>
-
 <h2 class="zy-mono zy-label">进行中</h2>
 
 <div class="zy-card zy-zh-card">
