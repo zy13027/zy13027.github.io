@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="570" viewBox="0 0 1040 570" role="img" aria-labelledby="title desc">
+  <title id="title">Reference LCM telemetry flow</title>
+  <desc id="desc">RobotRunner publishes command, leg-data and estimated-state snapshots on three typed LCM channels. Illustrative tools can subscribe for live inspection, recording or replay. These channels are distinct from the platform hardware-command path.</desc>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0L8 4L0 8Z" fill="#39716f"/></marker></defs>
+  <rect width="1040" height="570" fill="#fbfdfc"/>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#183c40">
+    <text x="40" y="44" font-size="27" font-weight="700">Observe commands and state without conflating the paths</text>
+    <text x="40" y="75" font-size="16" fill="#566e73">Public reference channels · typed messages · illustrative subscribers</text>
+    <rect x="40" y="112" width="280" height="350" rx="12" fill="#eaf6f3" stroke="#b8d8d0"/>
+    <text x="62" y="145" font-size="23" font-weight="700">RobotRunner</text>
+    <text x="62" y="172" font-size="17" fill="#566e73">finalizeStep() snapshots</text>
+    <rect x="60" y="191" width="240" height="62" rx="8" fill="#fff" stroke="#c8ded7"/>
+    <text x="78" y="216" font-size="18" font-weight="700">Leg commands</text>
+    <text x="78" y="239" font-size="16">Targets · gains · feed-forward</text>
+    <rect x="60" y="280" width="240" height="62" rx="8" fill="#fff" stroke="#c8ded7"/>
+    <text x="78" y="305" font-size="18" font-weight="700">Leg data</text>
+    <text x="78" y="328" font-size="16">Joint / foot state · torque est.</text>
+    <rect x="60" y="369" width="240" height="62" rx="8" fill="#fff" stroke="#c8ded7"/>
+    <text x="78" y="394" font-size="18" font-weight="700">Estimated body state</text>
+    <text x="78" y="417" font-size="16">Pose · body / world velocities</text>
+    <text x="365" y="145" font-size="20" font-weight="700">Typed LCM channels</text>
+    <g stroke="#39716f" stroke-width="2.5" fill="none" marker-end="url(#arrow)">
+      <path d="M300 222H665"/>
+      <path d="M300 311H665"/>
+      <path d="M300 400H665"/>
+    </g>
+    <g fill="#fbfdfc">
+      <rect x="348" y="204" width="292" height="35"/>
+      <rect x="348" y="293" width="292" height="35"/>
+      <rect x="348" y="382" width="292" height="35"/>
+    </g>
+    <g font-family="Consolas, monospace" font-size="18" fill="#12635f">
+      <text x="360" y="228">leg_control_command</text>
+      <text x="360" y="317">leg_control_data</text>
+      <text x="360" y="406">state_estimator</text>
+    </g>
+    <path d="M675 222V400" fill="none" stroke="#39716f" stroke-width="3"/>
+    <rect x="710" y="112" width="290" height="350" rx="12" fill="#f0f4f7" stroke="#cedbe2"/>
+    <text x="730" y="145" font-size="21" font-weight="700">Illustrative subscribers</text>
+    <text x="730" y="172" font-size="16" fill="#566e73">Choose channels to inspect</text>
+    <g fill="#fff" stroke="#cedbe2">
+      <rect x="730" y="191" width="250" height="62" rx="8"/>
+      <rect x="730" y="280" width="250" height="62" rx="8"/>
+      <rect x="730" y="369" width="250" height="62" rx="8"/>
+    </g>
+    <g fill="none" stroke="#39716f" stroke-width="2.5" marker-end="url(#arrow)">
+      <path d="M675 222H724"/>
+      <path d="M675 311H724"/>
+      <path d="M675 400H724"/>
+    </g>
+    <text x="750" y="217" font-size="18" font-weight="700">Live inspection</text>
+    <text x="750" y="240" font-size="16">Compare command and state</text>
+    <text x="750" y="306" font-size="18" font-weight="700">Log recorder</text>
+    <text x="750" y="329" font-size="16">Retain message sequences</text>
+    <text x="750" y="395" font-size="18" font-weight="700">Replay / analysis</text>
+    <text x="750" y="418" font-size="16">Review behaviour offline</text>
+    <rect x="40" y="491" width="960" height="49" rx="8" fill="#fff7e7" stroke="#dfc68d"/>
+    <text x="62" y="522" font-size="18">Telemetry exposes controller data. The platform hardware-command path remains separate.</text>
+  </g>
+</svg>
