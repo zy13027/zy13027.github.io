@@ -72,6 +72,7 @@ jobs:
       - name: Verify build output
         run: |
           test -f _site/index.html || { echo "::error::_site/index.html missing"; exit 1; }
+          node bin/check-mathjax-integrity.mjs
           echo "Built $(find _site -type f | wc -l) files"
 
       - name: Upload artifact
