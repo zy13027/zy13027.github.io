@@ -5,7 +5,7 @@ cv:
   location: Beijing, China
   image: ""
   summary: >
-    Robotics and motion control engineer. Quadruped navigation, industrial servo
+    Robotics and motion control engineer. Quadruped motion control, industrial servo
     motion systems, and the control software between an algorithm and a moving
     machine. MSc Robotics (KCL), BEng Mechanical Engineering (Bristol).
 
@@ -52,17 +52,16 @@ cv:
           - "Customer-facing consulting — requirements analysis, solution architecture, demos, pre-commissioning design reviews, training"
 
       - company: Geely Research Institute
-        position: Robotics Algorithm Engineer
+        position: Robotics Intern — Motion Control
         location: China
-        start_date: 2021-12-01
-        end_date: 2022-07-31
+        start_date: 2022
+        end_date: 2022
         summary: >
-          Navigation stack for a quadruped robot platform.
+          YoboGo quadruped motion control using an MIT Mini Cheetah-derived stack on an Up Board.
         highlights:
-          - "EKF state estimation fusing leg odometry and IMU on a legged platform"
-          - "A* path planning over a traversability costmap"
-          - "LiDAR processing and ground segmentation from a continuously tilting sensor frame"
-          - "ROS node architecture and integration"
+          - "Motion-control integration and Up Board Linux bring-up with the existing C++ stack"
+          - "LCM-based command, state and logging interfaces"
+          - "Worked alongside colleagues responsible for Jetson-side SLAM and LiDAR"
 
       - company: Wärtsilä
         position: Product Engineer
@@ -78,8 +77,8 @@ cv:
         summary: "ROS 2 Jazzy, Gazebo Harmonic, Nav2, planar EKF and gz_ros2_control. Public source and clean-clone verification confirmed 13 October 2026; versioned release and public demonstration pending."
         url: "https://github.com/zy13027/agv-ros2-sim"
 
-      - name: Quadruped robot navigation
-        summary: "EKF, A*, LiDAR processing for a legged platform at Geely Research Institute."
+      - name: YoboGo quadruped motion control
+        summary: "MIT Mini Cheetah-derived C++ control stack, Up Board bring-up and LCM interfaces during a 2022 internship at Geely Research Institute."
         url: ""
 
       - name: Servo motion control library

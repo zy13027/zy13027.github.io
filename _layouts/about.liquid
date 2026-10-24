@@ -56,11 +56,12 @@ layout: default
       <div class="zy-building-head">
         <div class="zy-building-lead">
           <div class="zy-meta-row">
-            <span class="zy-mono zy-kicker">Now building</span>
+            <span class="zy-mono zy-kicker">Project status</span>
             <span class="zy-pill"><span class="zy-dot"></span>{{ bl.status }}</span>
           </div>
           <h2 id="zy-building-title" class="zy-h2"><a href="{{ bl.url | relative_url }}">{{ bl.title }}</a></h2>
           <p class="zy-muted">{{ bl.summary }}</p>
+          {% if bl.as_of %}<p class="zy-muted zy-small">Status as of {{ bl.as_of }}. Latest recorded verification: {{ bl.verified_on }}.</p>{% endif %}
         </div>
         <div class="zy-mono zy-stackline">{{ bl.stack }}</div>
       </div>

@@ -18,9 +18,9 @@ nav_order: 5
 
 <p class="zy-lede">机器人与运动控制工程师——算法与真实运动机构之间的那层控制软件。</p>
 
-<p>我的背景分布在这个问题的两端：一端是机器人方向的硕士学习与四足机器人导航开发，另一端是四年工业伺服运动控制的工程实践。</p>
+<p>我的背景包括机器人方向的硕士学习、四足机器人运动控制，以及四年工业伺服运动控制的工程实践。</p>
 
-<p>目前在<strong>西门子（中国）有限公司</strong>担任应用工程师，方向为运动控制——SINAMICS S120 / S200 / V90 伺服驱动系统，涵盖回原点、凸轮同步、故障诊断的可复用 SCL 轴控制库，以及用程序化方式生成和校验控制项目的工程工具链。在此之前，我在<strong>吉利研究院</strong>负责四足机器人的导航开发：EKF 状态估计、A* 路径规划、激光雷达数据处理与 ROS 集成。</p>
+<p>目前在<strong>西门子（中国）有限公司</strong>担任应用工程师，方向为运动控制，涉及 SINAMICS S120 / S200 / V90 伺服驱动系统、回原点、凸轮同步、故障诊断的可复用 SCL 轴控制库，以及用程序化方式生成和校验控制项目的工程工具链。2022 年在<strong>吉利研究院</strong>实习期间，我参与 YoboGo 四足机器人的运动控制，在 Up Board 上使用基于 MIT Mini Cheetah 的 C++ 控制软件；Jetson 端的 SLAM 与激光雷达工作由同事负责。</p>
 
 <p>我正在把重心移回机器人方向。工业伺服控制与机器人运动控制本质上是同一门学科的两套词汇——轨迹规划、闭环位置控制、多轴协调运动，以及传感器失效或轴在运动过程中发生故障时系统应当如何响应。</p>
 
@@ -30,6 +30,7 @@ nav_order: 5
   <div class="zy-zh-card-head">
     <span class="zy-pill"><span class="zy-dot"></span>源码已公开 · 全新克隆验证通过</span>
     <h3 class="zy-h3">差速驱动 AGV 导航栈</h3>
+    <p class="zy-muted zy-small">状态截至 2026 年 11 月 24 日。最近一次记录中的全新克隆验证完成于 2026 年 10 月 13 日。</p>
     <p class="zy-muted">基于 ROS 2 Jazzy 与 Gazebo Harmonic 的差速驱动 AGV 仿真：gz_ros2_control 仿真关节接口、轮式里程计与 IMU 的平面 EKF 融合、SLAM Toolbox 建图、已保存地图上的 AMCL 定位，以及 NavFn 与 Regulated Pure Pursuit 导航。带时间戳的速度指令依次经过 Nav2、Collision Monitor、健康监控节点和差速控制器。2026 年 10 月 10 日的测试记录中，30 次常规导航任务全部完成，未发生障碍物接触。</p>
     <p class="zy-muted zy-small">2026 年 10 月 13 日，源码仓库已公开，全新克隆验证通过：三个软件包构建成功，七项测试通过，畅通路线导航成功，接触和恢复次数均为零，最终误差为 0.0819 m / 0.0495 rad。验证使用 WSL2 上的 Ubuntu 24.04 容器、软件渲染，运行时网络已禁用。项目采用 Apache-2.0 许可证。</p>
     <p class="zy-muted zy-small">50 次已完成的故障测试满足计划中的停车或有限时间终止要求。原始严格测试集仍为 78/80 通过，失败记录保留；首次启动未运动即失败的测试种子，在源码未改动的情况下补测完成，共记录 81 次尝试。脚本障碍场景为 4/5 到达目标，另一次无接触停车后，在有限次恢复尝试后因未取得进展而终止。常规任务的最大位置误差为 0.1458 m，接近 0.15 m 目标，余量有限。</p>
@@ -43,7 +44,7 @@ nav_order: 5
 
 <ul class="zy-list">
   <li class="zy-list-row"><span class="zy-mono zy-list-when">2022 — 至今</span><span><strong>西门子（中国）有限公司</strong> — 应用工程师（数字化工业集团）。运动控制库、驱动调试、TIA 博途 Openness 工程自动化。</span></li>
-  <li class="zy-list-row"><span class="zy-mono zy-list-when">2021 — 22</span><span><strong>吉利研究院</strong> — 机器人算法工程师。四足机器人导航：EKF、A*、激光雷达、ROS。</span></li>
+  <li class="zy-list-row"><span class="zy-mono zy-list-when">2022</span><span><strong>吉利研究院</strong>，机器人运动控制实习。YoboGo 四足机器人运动控制与 Up Board 环境配置。</span></li>
   <li class="zy-list-row"><span class="zy-mono zy-list-when">2020 — 21</span><span><strong>机器人学 硕士</strong>，伦敦国王学院。</span></li>
   <li class="zy-list-row"><span class="zy-mono zy-list-when">2018 — 20</span><span><strong>瓦锡兰</strong>（上海）— 产品工程师。</span></li>
   <li class="zy-list-row"><span class="zy-mono zy-list-when">2013 — 17</span><span><strong>机械工程 MEng（本硕连读）</strong>，布里斯托大学。</span></li>
@@ -54,8 +55,8 @@ nav_order: 5
 <div class="zy-zh-projects">
   <div class="zy-zh-project">
     <div class="zy-mono zy-row-cat">机器人</div>
-    <h3 class="zy-h3">四足机器人导航<span class="zy-mono zy-zh-org">吉利研究院</span></h3>
-    <p class="zy-muted">腿式平台的状态估计与路径规划。机身随步态持续俯仰与横滚，里程计来自腿部运动学而非编码器，激光雷达始终处于倾斜坐标系中——这些都使轮式导航的既有假设不再成立。</p>
+    <h3 class="zy-h3">YoboGo 四足机器人运动控制<span class="zy-mono zy-zh-org">吉利研究院</span></h3>
+    <p class="zy-muted">2022 年实习期间参与四足机器人运动控制，使用基于 MIT Mini Cheetah 的 C++ 控制软件，工作重点是 Up Board 控制端的环境配置与软件集成，以及已有的 LCM 指令、状态和日志接口。Jetson 端的 SLAM 与激光雷达工作由同事负责。</p>
   </div>
   <div class="zy-zh-project">
     <div class="zy-mono zy-row-cat">运动控制</div>

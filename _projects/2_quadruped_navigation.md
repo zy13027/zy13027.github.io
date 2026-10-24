@@ -1,39 +1,39 @@
 ---
 layout: page
-title: Quadruped robot navigation
-description: EKF state estimation, A* planning and LiDAR processing for a legged platform at Geely Research Institute.
+title: YoboGo quadruped motion control
+description: Motion-control integration and Up Board bring-up with an MIT Mini Cheetah-derived stack at Geely Research Institute.
 
 importance: 2
 category: robotics
 org: Geely Research Institute
 period: "2022"
-stack_line: ROS · EKF · A* · LiDAR · C++ / Python
-blurb: EKF fusing leg odometry with IMU on a body that pitches with every step; A* over a traversability costmap; ground segmentation from a LiDAR that is never level; ROS integration and the timing behaviour that decides whether a stack works on hardware or only in simulation.
+stack_line: C++ · Linux · Up Board · LCM · MIT Mini Cheetah-derived control
+blurb: YoboGo quadruped motion control during my 2022 internship. My work focused on the existing C++ control stack and Up Board bring-up; colleagues handled Jetson-side SLAM and LiDAR.
 ---
 
-**Stack:** ROS · EKF · A\* · LiDAR · C++ / Python
+**Stack:** C++ · Linux · Up Board · LCM · MIT Mini Cheetah-derived control
+
 **Where:** Geely Research Institute, 2022
 
-Navigation for a quadruped platform. Legged locomotion breaks assumptions that
-wheeled navigation takes for granted — the body pitches and rolls with every
-step, odometry is derived from leg kinematics rather than wheel encoders, and
-LiDAR returns arrive from a sensor that is never level.
+During my internship at Geely Research Institute, I worked on motion control
+for the YoboGo quadruped. The robot used an existing C++ control stack derived
+from MIT Mini Cheetah software, running on an Up Board.
 
 **What I worked on**
 
-- **State estimation** — EKF fusing leg odometry with IMU, on a base whose motion
-  is periodic and whose odometry drifts differently from a wheeled robot's
-- **Path planning** — A\* over a costmap, with traversability meaning something
-  different for a machine that can step over an obstacle a wheeled robot must go around
-- **Perception** — LiDAR processing and ground segmentation from a continuously
-  tilting sensor frame
-- **Integration** — ROS nodes, message design, and the timing behaviour that
-  determines whether the stack works on hardware or only in simulation
+- **Motion control** — working with the existing quadruped control software
+  and its integration on the target computer.
+- **Target bring-up** — the Up Board Linux environment and the dependencies
+  needed to build and run the control stack.
+- **Software interfaces** — working with the stack's LCM-based command, state
+  and logging interfaces.
 
-&lt;Add: what the platform was, what the navigation had to achieve, and a
-measurable outcome — success rate, localisation error, distance covered
-autonomously. If a demo video exists and is not proprietary, link it; this is the
-single most convincing asset you have for a robotics application.&gt;
+**Team context**
+
+The team divided motion control and perception across two computers. My focus
+was the Up Board motion-control side; colleagues handled SLAM and LiDAR on a
+Jetson. This experience shaped my interest in the practical interface between
+control software, the target computer and a moving robot.
 
 ---
 
