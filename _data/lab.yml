@@ -34,6 +34,34 @@ groups:
         tags: [quadruped, convex MPC, WBC]
         zh_title: Cheetah 四足控制栈
         zh_blurb: MIT Cheetah 运动控制架构：步态调度、约 40 Hz 的凸 MPC、500 Hz 的全身控制，以及位于其上的状态机。
+      - slug: groot-n1-interactive-guide
+        title: GR00T N1 Interactive Guide
+        kind: field guide
+        blurb: Follow language and visual observations through a humanoid policy, then explore how flow matching generates a chunk of actions.
+        tags: [humanoid robotics, VLA, flow matching]
+        zh_title: GR00T N1 交互指南
+        zh_blurb: 看人形机器人的策略如何处理语言指令和视觉观测，并通过流匹配生成一段动作序列。
+      - slug: isaac-lab-interactive-guide
+        title: Isaac Lab Interactive Guide
+        kind: field guide
+        blurb: Explore how GPU simulation, observations, actions and rewards fit together in a robot learning environment.
+        tags: [Isaac Lab, GPU simulation, reinforcement learning]
+        zh_title: Isaac Lab 交互指南
+        zh_blurb: 了解 GPU 仿真如何与观测、动作和奖励配合，搭建机器人学习环境。
+      - slug: cosmos-3-technical-guide
+        title: Cosmos 3 Technical Guide
+        kind: field guide
+        blurb: Trace how context and attention shape predictions in a multimodal world model, with interactive diagrams.
+        tags: [Cosmos 3, world models, attention]
+        zh_title: Cosmos 3 技术指南
+        zh_blurb: 通过交互图解，理解多模态世界模型如何利用上下文和注意力机制进行预测。
+      - slug: sonic-interactive-guide
+        title: SONIC Interactive Guide
+        kind: field guide
+        blurb: Follow a human motion reference through retargeting and a tracking policy to whole-body humanoid control.
+        tags: [humanoid robotics, motion retargeting, whole-body control]
+        zh_title: SONIC 交互指南
+        zh_blurb: 从人体参考动作出发，了解动作重定向、策略跟踪与人形机器人全身控制之间的关系。
 
   - title: Siemens motion & automation
     zh_title: 西门子 · 非官方笔记
