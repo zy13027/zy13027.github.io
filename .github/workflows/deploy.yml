@@ -26,7 +26,8 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # Ruby 3.3.5 has a prebuilt package for this runner image.
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -84,7 +85,7 @@ jobs:
   deploy:
     needs: build
     if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -101,7 +102,7 @@ jobs:
   deploy-ecs:
     needs: build
     if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Download built site
         uses: actions/download-artifact@v7
