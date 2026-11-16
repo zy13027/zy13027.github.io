@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -39,9 +39,9 @@ jobs:
 
       # al-folio v1 builds its stylesheet with Tailwind via Node at build time
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install JS dependencies
@@ -49,7 +49,7 @@ jobs:
 
       # jekyll-jupyter-notebook (in the Gemfile) shells out to nbconvert
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.13'
 
@@ -76,9 +76,10 @@ jobs:
           echo "Built $(find _site -type f | wc -l) files"
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: _site
+          include-hidden-files: true
 
   deploy:
     needs: build
@@ -90,7 +91,7 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
   # -------------------------------------------------------------------------
   # China half: rsync the same build to the 阿里云 ECS over SSH.
@@ -103,7 +104,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download built site
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: github-pages
           path: pages-artifact
