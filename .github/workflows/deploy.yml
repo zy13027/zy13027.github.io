@@ -132,6 +132,9 @@ jobs:
 
       - name: Verify
         run: |
-          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "http://${{ secrets.ECS_HOST }}/" || echo "000")
-          echo "ECS responded HTTP $code"
-          test "$code" = "200" || echo "::warning::ECS returned $code — is port 80 open in the security group?"
+          if code=$(curl --silent --show-error --output /dev/null --write-out '%{http_code}' --max-time 15 https://zinanyang.com/); then
+            echo "https://zinanyang.com/ responded HTTP $code"
+            test "$code" = "200" || echo "::warning::https://zinanyang.com/ returned HTTP $code"
+          else
+            echo "::warning::HTTPS request to https://zinanyang.com/ failed"
+          fi
